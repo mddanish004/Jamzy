@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
+  <rect width="48" height="48" rx="12" fill="#12100e" />
+  <rect width="48" height="48" rx="12" fill="url(#g)" fill-opacity="0.16" />
+  <g fill="url(#bars)">
+    <rect x="9" y="19" width="5" height="10" rx="2.5" />
+    <rect x="17" y="12" width="5" height="24" rx="2.5" />
+    <rect x="25" y="21" width="5" height="6" rx="2.5" />
+    <rect x="33" y="15" width="5" height="18" rx="2.5" />
+  </g>
+  <defs>
+    <linearGradient id="bars" x1="9" y1="12" x2="38" y2="36" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fcd34d" />
+      <stop offset="1" stop-color="#f97316" />
+    </linearGradient>
+    <linearGradient id="g" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f7a23b" />
+      <stop offset="1" stop-color="#f97316" />
+    </linearGradient>
+  </defs>
+</svg>

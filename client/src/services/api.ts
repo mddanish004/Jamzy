@@ -1,0 +1,143 @@
+import type {
+  ApiError,
+  CreateRoomResponse,
+  JoinRoomResponse,
+  LeaveRoomResponse,
+  MeResponse,
+  ProfileResponse,
+  RoomResponse,
+  YouTubePlaylistResponse,
+  YouTubeSearchResponse,
+  YouTubeVideoResponse,
+} from "./types";
+import { clientConfig } from "../config/env";
+
+export const API_BASE_URL = clientConfig.apiBaseUrl;
+
+type GetToken = () => Promise<string | null>;
+
+async function request<T>(
+  path: string,
+  getToken: GetToken,
+  options: RequestInit = {},
+): Promise<T> {
+  const token = await getToken();
+
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    ...(options.headers as Record<string, string> | undefined),
+  };
+
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  const res = await fetch(`${API_BASE_URL}${path}`, {
+    ...options,
+    headers,
+    credentials: "include",
+  });
+
+  let body: unknown;
+  const contentType = res.headers.get("content-type");
+  if (contentType?.includes("application/json")) {
+    body = await res.json();
+  } else {
+    body = await res.text();
+  }
+
+  if (!res.ok) {
+    const error = (body ?? {}) as ApiError;
+    const message =
+      typeof error === "string" ? error : (error.message ?? "Request failed");
+    const err = new Error(message) as Error & { status: number };
+    err.status = res.status;
+    throw err;
+  }
+
+  return body as T;
+}
+
+export function getMe(getToken: GetToken): Promise<MeResponse> {
+  return request<MeResponse>("/me", getToken, { method: "GET" });
+}
+
+export function createProfile(
+  getToken: GetToken,
+  username: string,
+): Promise<ProfileResponse> {
+  return request<ProfileResponse>("/users/profile", getToken, {
+    method: "POST",
+    body: JSON.stringify({ username }),
+  });
+}
+
+export function createRoom(getToken: GetToken): Promise<CreateRoomResponse> {
+  return request<CreateRoomResponse>("/rooms", getToken, { method: "POST" });
+}
+
+export function joinRoom(
+  getToken: GetToken,
+  roomCode: string,
+): Promise<JoinRoomResponse> {
+  return request<JoinRoomResponse>(
+    `/rooms/${encodeURIComponent(roomCode)}/join`,
+    getToken,
+    { method: "POST" },
+  );
+}
+
+export function getRoom(
+  getToken: GetToken,
+  roomCode: string,
+): Promise<RoomResponse> {
+  return request<RoomResponse>(
+    `/rooms/${encodeURIComponent(roomCode)}`,
+    getToken,
+    { method: "GET" },
+  );
+}
+
+export function leaveRoom(
+  getToken: GetToken,
+  roomCode: string,
+): Promise<LeaveRoomResponse> {
+  return request<LeaveRoomResponse>(
+    `/rooms/${encodeURIComponent(roomCode)}/leave`,
+    getToken,
+    { method: "POST" },
+  );
+}
+
+export function searchMusic(
+  getToken: GetToken,
+  query: string,
+): Promise<YouTubeSearchResponse> {
+  return request<YouTubeSearchResponse>(
+    `/music/search?q=${encodeURIComponent(query)}`,
+    getToken,
+    { method: "GET" },
+  );
+}
+
+export function resolveYouTubeLink(
+  getToken: GetToken,
+  urlOrId: string,
+): Promise<YouTubeVideoResponse> {
+  return request<YouTubeVideoResponse>(
+    `/music/video?url=${encodeURIComponent(urlOrId)}`,
+    getToken,
+    { method: "GET" },
+  );
+}
+
+export function resolveYouTubePlaylist(
+  getToken: GetToken,
+  urlOrId: string,
+): Promise<YouTubePlaylistResponse> {
+  return request<YouTubePlaylistResponse>(
+    `/music/playlist?url=${encodeURIComponent(urlOrId)}`,
+    getToken,
+    { method: "GET" },
+  );
+}

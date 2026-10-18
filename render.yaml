@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: jamzy-api
+    runtime: go
+    plan: free
+    rootDir: server
+    buildCommand: go build -o bin/jamzy-api ./cmd/api
+    startCommand: ./bin/jamzy-api
+    healthCheckPath: /api/health
+    envVars:
+      - key: GO_VERSION
+        value: 1.27.2
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: CORS_ORIGIN
+        sync: false
+      - key: CLERK_PUBLISHABLE_KEY
+        sync: false
+      - key: CLERK_SECRET_KEY
+        sync: false
+      - key: CLERK_AUTHORIZED_PARTIES
+        sync: false
+      - key: YOUTUBE_API_KEY
+        sync: false

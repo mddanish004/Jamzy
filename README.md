@@ -1,0 +1,969 @@
+<div align="center">
+
+<img src="client/public/favicon.svg" alt="Jamzy Equalizer Icon" width="100" height="100" style="border-radius: 22px; margin-bottom: 14px;" />
+
+# Jamzy
+
+### *The Real-Time Social Music-Listening Sanctuary & Synchronized Media Lounge*
+
+[![React 19](https://img.shields.io/badge/React-19.2-21262d?style=flat-square&logo=react&logoColor=61DAFB&labelColor=0d1117)](https://react.dev/)
+[![TypeScript 5.8](https://img.shields.io/badge/TypeScript-5.8-21262d?style=flat-square&logo=typescript&logoColor=3178C6&labelColor=0d1117)](https://www.typescriptlang.org/)
+[![Vite v8](https://img.shields.io/badge/Vite-v8.2-21262d?style=flat-square&logo=vite&logoColor=FFD62E&labelColor=0d1117)](https://vitejs.dev/)
+[![Tailwind CSS v4](https://img.shields.io/badge/Tailwind_CSS-v4.3-21262d?style=flat-square&logo=tailwindcss&logoColor=38B2AC&labelColor=0d1117)](https://tailwindcss.com/)
+
+[![Go 1.27](https://img.shields.io/badge/Go-1.27+-21262d?style=flat-square&logo=go&logoColor=00ADD8&labelColor=0d1117)](https://go.dev/)
+[![Socket.IO v4](https://img.shields.io/badge/Socket.IO-v4.8-21262d?style=flat-square&logo=socket.io&logoColor=010101&labelColor=0d1117)](https://socket.io/)
+[![pgx](https://img.shields.io/badge/pgx-v5-21262d?style=flat-square&logo=postgresql&logoColor=4169E1&labelColor=0d1117)](https://github.com/jackc/pgx)
+
+[![PostgreSQL Neon](https://img.shields.io/badge/PostgreSQL-Neon_Serverless-21262d?style=flat-square&logo=postgresql&logoColor=4169E1&labelColor=0d1117)](https://neon.tech/)
+[![Clerk Auth](https://img.shields.io/badge/Clerk-Authentication-21262d?style=flat-square&logo=clerk&logoColor=6C47FF&labelColor=0d1117)](https://clerk.com/)
+[![YouTube API](https://img.shields.io/badge/YouTube-Data_v3-21262d?style=flat-square&logo=youtube&logoColor=FF0000&labelColor=0d1117)](https://developers.google.com/youtube/v3)
+[![License ISC](https://img.shields.io/badge/License-ISC-21262d?style=flat-square&logo=opensourceinitiative&logoColor=94A3B8&labelColor=0d1117)](LICENSE)
+
+<br/>
+
+<p align="center">
+  <b>⚡ Server-Authoritative Playback</b> &nbsp;•&nbsp;
+  <b>🔄 Dynamic Drift Correction (&lt; 2s)</b> &nbsp;•&nbsp;
+  <b>🛡️ Host-Guarded Governance</b> &nbsp;•&nbsp;
+  <b>💬 Ephemeral Presence &amp; Real-Time Chat</b> &nbsp;•&nbsp;
+  <b>🎶 Shared Playback Queue</b>
+</p>
+
+<p align="center">
+  <a href="#-why-jamzy">Why Jamzy</a> •
+  <a href="#-experience-modules">Experience Modules</a> •
+  <a href="#-real-time-protocol-specification">Protocol Spec</a> •
+  <a href="#-system-architecture">Architecture</a> •
+  <a href="#-visual-deep-dives">Deep Dives</a> •
+  <a href="#-rest-api-reference">REST APIs</a> •
+  <a href="#-database-schema">Database Schema</a> •
+  <a href="#-quick-start">Quick Start</a> •
+  <a href="#-configuration--environment">Configuration</a> •
+  <a href="#-directory-structure">Directory Structure</a> •
+  <a href="#-roadmap">Roadmap</a>
+</p>
+
+---
+
+</div>
+
+<br/>
+
+## 🧭 Why Jamzy?
+
+Listening to music with friends online shouldn't require messy screen shares, desynchronized browser tabs, awkward Discord voice bot delays, or compromised audio bitrates.
+
+**Jamzy** delivers a dedicated, hyper-synchronized listening sanctuary:
+
+> **Engineered with Go, Socket.IO, and React 19**, Jamzy fuses **server-authoritative playheads**, **millisecond drift correction**, **zero-latency YouTube media streaming**, and **persistent community rooms** into one unified, warm-sunset cinematic lounge.
+
+<table>
+<tr>
+<td width="33%" align="center">
+<b>🎧 Server-Authoritative Sync</b><br/>
+<sub>Playback time is calculated from server timestamps with client-side auto-reseeking when drift exceeds 2 seconds.</sub>
+</td>
+<td width="33%" align="center">
+<b>🛡️ Host-Guarded Governance</b><br/>
+<sub>Strict backend authorization ensures only room hosts mutate playback, while every member enjoys real-time chat.</sub>
+</td>
+<td width="33%" align="center">
+<b>🌅 Warm Cinematic Aesthetic</b><br/>
+<sub>Curated warm-sunset palette, glowing amber accents, equalizer animations, and high-performance glassmorphism.</sub>
+</td>
+</tr>
+</table>
+
+<br/>
+
+---
+
+## 🎛️ Experience Modules
+
+Jamzy organizes the collaborative listening experience across dedicated full-stack modules designed for speed, resilience, and visual warmth:
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+### 🌅 1. Cinematic Landing & Brand Showcase
+* **Three.js WebGL FloatingLines Shader:** Ambient GPU-rendered sunset wave lines with reactive mouse curvature, parallax physics, and warm amber gradients.
+* **Tactile Spring Physics:** Magnetic cursor attraction on primary CTA buttons (`MagneticButton`) and airport-style split-flap departure board animations (`SplitFlapText`).
+* **Hero CTA Icon Flipper:** Fluid 3D flipping icon cycling between action and YouTube marks in the main entrance button (`HeroIconFlipper`).
+* **Live Vinyl Turntable & Album Art:** High-fidelity vinyl grooves, tone arm tracking, and real-time album artwork hydration (`useAlbumArt`).
+* **Themed Micro-Interactions:** Slim custom dark-charcoal & amber scrollbars conforming across WebKit and Firefox browsers.
+
+</td>
+<td width="50%" valign="top">
+
+### 🔐 2. Authentication & Onboarding
+* **Clerk OAuth & Google Sign-In:** Secure, token-verified user authentication with automatic session restoration and token rotation.
+* **Username Onboarding Flow:** Dedicated reservation step ensuring unique, sanitized display handles stored in PostgreSQL.
+* **Single-Fetch Current User Cache:** Centralized `CurrentUserProvider` eliminates redundant `/api/me` network requests during route traversal.
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+### 🏠 3. Lounge Dashboard & Room Operations
+* **Cryptographic Shortcodes:** 6-character room codes generated via nanoid/crypto algorithms for quick clipboard sharing (`/room/:roomCode`).
+* **Instant Room Creation:** Room creators automatically become authoritative hosts and registered members in an atomic transaction.
+* **Persistent Membership:** Relational `RoomMember` records track permanent membership independent of ephemeral socket connections.
+
+</td>
+<td width="50%" valign="top">
+
+### 🔍 4. YouTube Search, URL Resolver & Playlist Importer
+* **Full Playlist Import Engine:** Resolves up to 50 playable tracks from YouTube playlists via `GET /api/music/playlist`, preserving track order while filtering private/unembeddable videos.
+* **Instant Live Previews:** Debounced auto-preview cards in search and header navbar inputs for pasted YouTube video and playlist links before playing or enqueuing.
+* **Server-Side API Proxy:** YouTube Data API v3 queries proxy securely through the Go backend, keeping credentials hidden from client bundles.
+* **Universal URL Parsing:** Resolves YouTube Shorts, standard watch links (`v=`), embeds, live streams, shortlinks (`youtu.be`), and playlist links (`list=`).
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+### 🎚️ 5. Server-Authoritative Playback & Pro Controls
+* **Timestamp-Based Playhead:** Clients compute live playback position as `playbackPosition + (now - playbackUpdatedAt)` to eliminate network latency lag.
+* **Sub-2-Second Drift Reseeking:** A 5-second background interval evaluates local vs expected playhead; if drift > 2s, the player seamlessly reseeks.
+* **30-Track Playback History & Rewind:** Client-side track history allowing hosts to return to previous tracks with instant `queue:prepend` for uninterrupted queue flow.
+* **Pro Audio Controls:** Local volume & mute slider with `localStorage` persistence, variable speed selector (0.5x–2x), and read-only dynamic video stream quality badge (4K, 1080p, 720p, etc.).
+* **Single-Track Looper:** Instant loop toggle overriding auto-advance for focused listening sessions.
+
+</td>
+<td width="50%" valign="top">
+
+### 💬 6. Live Presence & Real-Time Chat
+* **In-Memory Presence Store:** Ephemeral multi-tab tracking without database overhead, broadcasting live online/offline member statuses.
+* **Persist-Before-Broadcast Chat:** Messages write to PostgreSQL first; broadcast occurs only on confirmed write to preserve history.
+* **Smart Auto-Scroll & Badging:** Automatically scrolls when at the bottom of the feed; displays an interactive "↓ New messages" pill when scrolled up.
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+### 🎶 7. Shared Playback Queue
+* **In-Memory Per-Room Queue:** Ephemeral `QueueStore` (same pattern as `PresenceStore`) — no schema migration required, capped at 50 items per room.
+* **Drag-to-Reorder & Mobile Controls:** Host-only `QueuePanel` with thumbnail list, drag-and-drop reorder (HTML5 DnD), smooth chevron buttons, per-item remove, Skip, and Clear all.
+* **Dual Play/Queue Actions:** Search and playlist previews offer one-click "Play now", "+ Queue", or bulk "Queue all (N)" operations.
+* **Zero-Poll Auto-Advance:** When the host's player emits `ended`, the server pops the front item and broadcasts the next track to all room members.
+
+</td>
+<td width="50%" valign="top">
+
+### 👑 8. Host Transfer & Room Continuity
+* **Grace Period Disconnect Protection:** 30-second server countdown arms when host drops; reconnecting within the window cancels the transfer, preserving ownership across refreshes.
+* **Longest-Standing Member Succession:** Automatically promotes the earliest-joined online member when the grace period expires.
+* **Manual Host Promotion:** Host-only `host:transfer` event from the people dropdown allows instant role delegation.
+* **Safe Room Exits:** Host leaving hands over ownership in an atomic transaction; rooms are deleted only when the final member exits.
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+### 🛡️ 9. Enterprise Security & Multi-Tier Rate Limiting
+* **Multi-Tier Rate Limiting:** Fixed-window rate limiting across REST routes (`joinRoom`, `createRoom`, `musicSearch`, `musicPlaylist`) and Socket.IO events (`chat`, `playback`, `queue`).
+* **Brute-Force & Quota Defense:** Limits room code attempts (30 per 5 min against $31^6$ space) and search queries (30/min) to safeguard YouTube API quotas.
+* **Strict SSRF & Input Sanitization:** Image thumbnail URLs strictly validated against YouTube CDN domains (`i.ytimg.com`, `ytimg.com`), rejecting external links.
+* **34 Automated Security Tests:** Comprehensive native Node test suite verifying rate limiter isolation, CSPRNG room code entropy, socket acks, and schema boundaries.
+
+</td>
+<td width="50%" valign="top">
+
+### 🎹 10. Integrated Navbar Search & Keyboard Shortcuts
+* **Pill Navbar Search (`RoomNavbarSearch`):** Integrated directly into `AppHeader` with brand logo and magnifying glass trigger for distraction-free navigation.
+* **Global Keyboard Shortcuts Cheatsheet:** In-room modal with single-key triggers for Space (Play/Pause), M (Mute), F (Fullscreen), Arrow Left/Right (±5s Seek), J/L (±10s Seek), Arrow Up/Down (Volume), Y (Previous Track), and N (Next Track).
+* **Surface Click Ripples:** Animated visual ripples confirming play/pause actions on the player viewport.
+
+</td>
+</tr>
+</table>
+
+<br/>
+
+---
+
+## 📡 Real-Time Protocol Specification
+
+Jamzy utilizes Socket.IO over WebSockets with Clerk JWT handshake verification. All client-to-server mutations require acknowledgement callbacks (`ack`), ensuring deterministic state updates.
+
+### 1. Socket.IO Event Matrix
+
+| Event Name | Direction | Auth Required | Description | Payload Shape |
+| :--- | :--- | :--- | :--- | :--- |
+| `room:join` | Client → Server | Verified Member | Joins a room channel and requests snapshot | `{ roomCode: string }` |
+| `room:leave` | Client → Server | Joined Socket | Leaves current room channel | `{ roomCode: string }` |
+| `playback:set` | Client → Server | **Host Only** | Loads a new track and initiates playback | `{ roomCode: string, track: TrackPayload }` |
+| `playback:control` | Client → Server | **Host Only** | Dispatches `play`, `pause`, or `seek` | `{ roomCode: string, action: string, position: number }` |
+| `playback:clear` | Client → Server | **Host Only** | Clears the active track **and queue** | `{ roomCode: string }` |
+| `chat:send` | Client → Server | Verified Member | Sends a room chat message (max 500 chars) | `{ roomCode: string, content: string }` |
+| `queue:add` | Client → Server | **Host Only** | Appends a track to the in-memory queue | `{ roomCode: string, track: TrackPayload }` |
+| `queue:prepend` | Client → Server | **Host Only** | Prepends a track to the front of the queue | `{ roomCode: string, track: TrackPayload }` |
+| `queue:remove` | Client → Server | **Host Only** | Removes item at the given index | `{ roomCode: string, index: number }` |
+| `queue:reorder` | Client → Server | **Host Only** | Moves item from one index to another | `{ roomCode: string, fromIndex: number, toIndex: number }` |
+| `queue:advance` | Client → Server | **Host Only** | Pops front item and plays it (or clears if empty) | `{ roomCode: string }` |
+| `queue:clear` | Client → Server | **Host Only** | Empties the entire queue | `{ roomCode: string }` |
+| `host:transfer` | Client → Server | **Host Only** | Promotes a member to room host | `{ roomCode: string, newHostUserId: string }` |
+| `playback:update` | Server → Room | Room Channel | Broadcasts updated server-authoritative playback | `PlaybackSnapshot` |
+| `presence:update` | Server → Room | Room Channel | Broadcasts online/offline member list and host ID | `PresenceSnapshot` |
+| `chat:new` | Server → Room | Room Channel | Broadcasts newly persisted chat message | `ChatMessageDTO` |
+| `queue:update` | Server → Room | Room Channel | Broadcasts authoritative ordered queue snapshot | `QueueItem[]` |
+| `host:pending` | Server → Room | Room Channel | Broadcasts pending host transfer countdown deadline | `{ deadline: number }` |
+| `host:update` | Server → Room | Room Channel | Broadcasts host promotion notification & reason | `{ hostUserId: string, reason: string }` |
+
+<br/>
+
+### 2. Handshake & Acknowledgement Payloads
+
+```ts
+// Join Acknowledgement payload received by joining client
+interface RoomJoinResponse {
+  ok: boolean;
+  hostUserId?: string;
+  presence?: {
+    members: Array<{ userId: string; username: string; online: boolean }>;
+  };
+  playback?: {
+    videoId: string | null;
+    title: string | null;
+    thumbnailUrl: string | null;
+    duration: number | null;
+    isPlaying: boolean;
+    playbackPosition: number;
+    playbackUpdatedAt: string | null;
+    playbackUpdatedById: string | null;
+  };
+  messages?: Array<{
+    id: string;
+    roomId: string;
+    userId: string;
+    username: string;
+    content: string;
+    createdAt: string;
+  }>;
+  // Ephemeral queue snapshot
+  queue?: Array<{
+    videoId: string;
+    title: string;
+    thumbnailUrl: string;
+    duration: string; // ISO 8601, e.g. "PT3M45S"
+  }>;
+  message?: string;
+}
+```
+
+<br/>
+
+---
+
+## 🏗️ System Architecture
+
+Jamzy decouples persistent domain logic (users, rooms, persistent memberships, chat history) in PostgreSQL from ephemeral real-time state (active sockets, user presence, playback sync) managed by Socket.IO and in-memory caches.
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#181512', 'primaryTextColor': '#f5f3f0', 'primaryBorderColor': '#f7a23b', 'lineColor': '#f7a23b', 'secondaryColor': '#12100e', 'tertiaryColor': '#201b16' }}}%%
+graph TB
+    subgraph Presentation ["Frontend Presentation Layer (React 19 • Vite • Tailwind CSS v4)"]
+        UI["Application Shell & Router (App.tsx)"]
+        LANDING["Cinematic Landing & Brand Showcase"]
+        AUTH_VIEW["Clerk Auth & Username Onboarding"]
+        HOME_VIEW["Dashboard & Room Manager"]
+        ROOM_VIEW["Room Lounge (/room/:roomCode)"]
+        YT_PLAYER["YouTube IFrame Player Hook (useYouTubePlayer)"]
+        SOCKET_HOOK["Socket Gateway Hook (useRoomSocket)"]
+        CHAT_PANEL["Real-Time Chat Panel"]
+    end
+
+    subgraph Security ["Identity & Auth Boundary"]
+        CLERK["Clerk Authentication Provider (JWT / OAuth)"]
+    end
+
+    subgraph ServerCore ["Backend Core (Go)"]
+        HTTP["HTTP API (/api/*)"]
+        AUTH_MW["Clerk Token Verification Middleware"]
+        SOCKET_SERVER["Socket.IO Server Gateway"]
+        USERS_MOD["Users Package & Profile Handler"]
+        ROOMS_MOD["Rooms Package (CRUD & Membership)"]
+        MUSIC_MOD["Music Package (YouTube Data API v3 Proxy)"]
+        PLAYBACK_SVC["Playback Service (Host Authoritative Engine)"]
+        MSG_SVC["Messages Service (Chat Persistence)"]
+        PRESENCE_STORE["In-Memory Ephemeral Presence Store"]
+        QUEUE_STORE["In-Memory Ephemeral Queue Store"]
+    end
+
+    subgraph DataLayer ["Persistence & External Services"]
+        MIGRATIONS["Embedded SQL Migrations"]
+        NEON["Neon Serverless PostgreSQL DB"]
+        YT_API["Google YouTube Data API v3"]
+    end
+
+    UI --> AUTH_VIEW
+    UI --> HOME_VIEW
+    UI --> ROOM_VIEW
+    ROOM_VIEW --> YT_PLAYER
+    ROOM_VIEW --> SOCKET_HOOK
+    ROOM_VIEW --> CHAT_PANEL
+
+    AUTH_VIEW -.-> CLERK
+    SOCKET_HOOK -.-> CLERK
+    
+    SOCKET_HOOK <==>|"WebSocket (JWT Handshake)"| SOCKET_SERVER
+    HOME_VIEW -->|"REST / JSON"| HTTP
+    ROOM_VIEW -->|"REST / JSON"| HTTP
+
+    HTTP --> AUTH_MW
+    SOCKET_SERVER --> AUTH_MW
+    AUTH_MW --> USERS_MOD
+
+    HTTP --> ROOMS_MOD
+    HTTP --> MUSIC_MOD
+    MUSIC_MOD --> YT_API
+
+    SOCKET_SERVER --> PLAYBACK_SVC
+    SOCKET_SERVER --> MSG_SVC
+    SOCKET_SERVER --> PRESENCE_STORE
+    SOCKET_SERVER --> QUEUE_STORE
+
+    USERS_MOD --> MIGRATIONS
+    ROOMS_MOD --> MIGRATIONS
+    PLAYBACK_SVC --> MIGRATIONS
+    MSG_SVC --> MIGRATIONS
+    MIGRATIONS --> NEON
+```
+
+<br/>
+
+---
+
+## 🔬 Visual Deep Dives
+
+### 1. Server-Authoritative Playback & Drift Correction
+
+When the host toggles play, pauses, or seeks, the mutation updates the database and broadcasts an authoritative timestamp. Clients derive the playhead mathematically and auto-reseek if local drift occurs:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Host as Room Host
+    participant ClientH as Host Client (React 19)
+    participant Server as Socket.IO / Server
+    participant DB as PostgreSQL (Neon)
+    participant ClientJ as Guest Client (React 19)
+    participant YT as YouTube IFrame Player
+
+    Host->>ClientH: Clicks Seek to 01:45
+    ClientH->>Server: emit("playback:control", { action: "seek", position: 105 })
+    Server->>Server: assertJoined() & assertHost()
+    Server->>DB: UPDATE rooms SET playbackPosition = 105, isPlaying = true, playbackUpdatedAt = NOW()
+    Server-->>ClientH: ack({ ok: true, playback })
+    Server->>ClientJ: broadcast("playback:update", playbackSnapshot)
+    
+    Note over ClientJ,YT: Client calculates expected position:<br/>current = playbackPosition + (now - playbackUpdatedAt)
+    ClientJ->>YT: player.seekTo(current) & player.playVideo()
+    
+    loop Every 5 Seconds (Drift Monitor)
+        ClientJ->>YT: readCurrentTime()
+        ClientJ->>ClientJ: drift = |readTime - expectedTime|
+        opt drift > 2.0s
+            ClientJ->>YT: player.seekTo(expectedTime) [Seamless Resync]
+        end
+    end
+```
+
+<br/>
+
+### 2. Room Join & Initial Synchronization Handshake
+
+A single atomic socket handshake delivers presence status, authoritative media playhead, and recent chat history to joining members without redundant HTTP requests:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Joining Member
+    participant Client as Web App (useRoomSocket)
+    participant Socket as Socket.IO Server
+    participant Presence as In-Memory PresenceStore
+    participant DB as PostgreSQL
+
+    User->>Client: Enters /room/:roomCode
+    Client->>Socket: Connect with auth: { token: ClerkJWT }
+    Socket->>Socket: verifyToken(token) via Clerk Backend
+    Socket-->>Client: Connection Established
+    Client->>Socket: emit("room:join", { roomCode: "A1B2C3" })
+    Socket->>DB: Verify membership in RoomMember table
+    Socket->>Presence: addSocket(roomCode, userId, socketId)
+    Socket->>DB: Fetch Room Playback & Top 50 Messages
+    Socket->>Socket: Load Queue Snapshot from QueueStore
+    Socket-->>Client: ack({ ok: true, presence, playback, messages, queue })
+    Socket->>Socket: broadcast("presence:update") to other members
+    Client->>Client: Hydrate Player, Render Chat, Queue & Mark Host Online
+```
+
+<br/>
+
+---
+
+## 🔌 REST API Reference
+
+All protected REST routes require a valid Clerk Bearer JWT passed in the `Authorization` header (`Authorization: Bearer <session_token>`).
+
+| Method | Endpoint | Auth | Description | Response Details |
+| :--- | :--- | :--- | :--- | :--- |
+| `GET` | `/api/health` | Public | System uptime & health status | `{ success: true, message: "API is running" }` |
+| `GET` | `/api/me` | Authenticated | Fetches current user profile & onboarding flag | `{ user: UserProfile, onboardingComplete: boolean }` |
+| `POST` | `/api/users/profile` | Authenticated | Completes onboarding by reserving a username | `{ user: UserProfile, onboardingComplete: true }` |
+| `POST` | `/api/rooms` | Authenticated | Creates a new room; user becomes creator & host | `{ room: RoomDTO }` (Returns generated 6-char `roomCode`) |
+| `GET` | `/api/rooms/:roomCode` | Authenticated | Retrieves room metadata, host data, and member list | `{ room: RoomDTO }` |
+| `POST` | `/api/rooms/:roomCode/join` | Authenticated | Enrolls user as a permanent room member | `{ room: RoomDTO }` |
+| `POST` | `/api/rooms/:roomCode/leave` | Authenticated | Removes user from permanent room membership | `{ success: true }` |
+| `GET` | `/api/music/search` | Authenticated | Searches YouTube for music and video tracks | `{ results: YouTubeSearchResult[] }` |
+| `GET` | `/api/music/video` | Authenticated | Resolves pasted YouTube URL or ID to playable track | `{ result: YouTubeSearchResult }` |
+| `GET` | `/api/music/playlist` | Authenticated | Resolves YouTube playlist link/ID to up to 50 playable tracks | `{ results: YouTubeSearchResult[], playlistTitle?: string }` |
+
+<br/>
+
+---
+
+## 💾 Database Schema
+
+Jamzy relies on **Neon Serverless PostgreSQL**. The data model enforces strong relational integrity, unique room codes, and cascading constraints.
+
+The schema below mirrors `server/prisma/schema.prisma`. The SQL the Go service executes lives in `server/internal/db/migrations/` and is applied automatically at startup.
+
+```prisma
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                   String       @id @default(cuid())
+  clerkUserId          String       @unique @map("clerk_user_id")
+  username             String       @unique
+  createdAt            DateTime     @default(now()) @map("created_at")
+  updatedAt            DateTime     @updatedAt @map("updated_at")
+
+  hostedRooms          Room[]       @relation("RoomHost")
+  playbackUpdatedRooms Room[]       @relation("RoomPlaybackUpdater")
+  memberships          RoomMember[]
+  messages             Message[]
+
+  @@map("users")
+}
+
+model Room {
+  id                  String       @id @default(cuid())
+  roomCode            String       @unique @map("room_code")
+  hostUserId          String       @map("host_user_id")
+  currentVideoId      String?      @map("current_video_id")
+  currentTitle        String?      @map("current_title")
+  currentThumbnailUrl String?      @map("current_thumbnail_url")
+  currentDuration     Float?       @map("current_duration")
+  isPlaying           Boolean      @default(false) @map("is_playing")
+  playbackPosition    Float        @default(0) @map("playback_position")
+  playbackUpdatedAt   DateTime?    @map("playback_updated_at")
+  playbackUpdatedById String?      @map("playback_updated_by")
+  createdAt           DateTime     @default(now()) @map("created_at")
+  updatedAt           DateTime     @updatedAt @map("updated_at")
+
+  host                User         @relation("RoomHost", fields: [hostUserId], references: [id], onDelete: Restrict)
+  playbackUpdatedBy   User?        @relation("RoomPlaybackUpdater", fields: [playbackUpdatedById], references: [id], onDelete: SetNull)
+  members             RoomMember[]
+  messages            Message[]
+
+  @@index([hostUserId], map: "rooms_host_user_id_idx")
+  @@map("rooms")
+}
+
+model RoomMember {
+  roomId   String   @map("room_id")
+  userId   String   @map("user_id")
+  joinedAt DateTime @default(now()) @map("joined_at")
+
+  room     Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([roomId, userId])
+  @@index([userId], map: "room_members_user_id_idx")
+  @@map("room_members")
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  roomId    String   @map("room_id")
+  userId    String   @map("user_id")
+  content   String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([roomId, createdAt], map: "messages_room_id_created_at_idx")
+  @@index([userId], map: "messages_user_id_idx")
+  @@map("messages")
+}
+```
+
+<br/>
+
+---
+
+## ⚡ Quick Start
+
+### Prerequisites
+
+| Tool | Minimum Version | Note |
+| :--- | :--- | :--- |
+| **Go** | `1.27+` | Runtime environment for the backend |
+| **Node.js** | `v20.x` or `v22.x` | Runtime environment for the client tooling |
+| **npm** / **pnpm** | `v10.x+` | Package manager |
+| **PostgreSQL / Neon** | `v15+` | Serverless PostgreSQL database with connection pooling |
+| **Clerk Account** | Free tier | Provides OAuth, JWT authentication, and user identity |
+| **YouTube Data API v3** | Google Cloud Console | Server-side API key for music queries |
+
+<br/>
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/your-username/jamzy.git
+cd jamzy
+```
+
+<br/>
+
+### 2. Configure Environment Variables
+
+Create environment configuration files for both the backend server and frontend client:
+
+#### Server Configuration (`server/.env`)
+```env
+PORT=5000
+NODE_ENV=development
+CORS_ORIGIN=http://localhost:5173
+
+# Neon / PostgreSQL Database URL
+DATABASE_URL="postgresql://user:password@ep-cool-sample.us-east-2.aws.neon.tech/jamzy?sslmode=require"
+
+# Clerk Authentication Secrets
+CLERK_PUBLISHABLE_KEY="pk_test_..."
+CLERK_SECRET_KEY="sk_test_..."
+
+# Google Cloud YouTube Data API Key
+YOUTUBE_API_KEY="AIzaSy..."
+```
+
+#### Client Configuration (`client/.env`)
+```env
+VITE_API_BASE_URL="http://localhost:5000/api"
+VITE_CLERK_PUBLISHABLE_KEY="pk_test_..."
+```
+
+<br/>
+
+### 3. Install Dependencies & Migrate Database
+
+```bash
+# 1. Fetch Go modules (migrations are embedded and applied on first startup)
+cd server
+go mod download
+
+# 2. Install client dependencies
+cd ../client
+npm install
+```
+
+<br/>
+
+### 4. Run Development Servers
+
+Run both servers concurrently in separate terminal windows:
+
+```bash
+# Terminal 1 — Start Go Backend (HTTP + Socket.IO, Port 5000)
+cd server
+go run ./cmd/api
+
+# Terminal 2 — Start Frontend React 19 Client (Port 5173)
+cd client
+npm run dev
+```
+
+Visit [`http://localhost:5173`](http://localhost:5173) in your browser to start listening together.
+
+<br/>
+
+### 5. Run Automated Unit & Security Test Suite
+
+Validate rate limiting, socket acknowledgements, SSRF defenses, room shortcode entropy, and input schemas:
+
+```bash
+# Run all backend unit & security tests from the repository root
+npm test
+# or directly from the Go module:
+cd server && go test ./...
+```
+
+The end-to-end suite needs a throwaway PostgreSQL database and is skipped unless
+`TEST_DATABASE_URL` is set. See `server/README.md` for the details.
+
+<br/>
+
+---
+
+## ⚙️ Configuration & Environment
+
+<details>
+<summary><b>🛠️ Backend Server Environment Variables (<code>server/.env</code>)</b></summary>
+
+<br/>
+
+| Variable | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `PORT` | Number | `5000` | Port on which the HTTP and Socket.IO server listens |
+| `NODE_ENV` | String | `development` | Runtime environment (`development` or `production`) |
+| `CORS_ORIGIN` | String | `http://localhost:5173` | Comma-separated allowed CORS origins |
+| `DATABASE_URL` | String | `""` | Connection string for Neon/PostgreSQL database |
+| `CLERK_PUBLISHABLE_KEY` | String | `""` | Clerk public key for client integration |
+| `CLERK_SECRET_KEY` | String | `""` | Clerk secret key used by backend to verify session tokens |
+| `CLERK_AUTHORIZED_PARTIES` | String | `CORS_ORIGIN` | Comma-separated `azp` values accepted on session tokens |
+| `YOUTUBE_API_KEY` | String | `""` | Google Cloud API key for querying YouTube Data API v3 |
+
+</details>
+
+<details>
+<summary><b>💻 Frontend Client Environment Variables (<code>client/.env</code>)</b></summary>
+
+<br/>
+
+| Variable | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `VITE_API_BASE_URL` | String | `http://localhost:5000/api` | Base URL targeting the backend REST API |
+| `VITE_CLERK_PUBLISHABLE_KEY` | String | `""` | Clerk publishable key for client-side authentication widgets |
+
+</details>
+
+<br/>
+
+---
+
+## 📂 Directory Structure
+
+<details>
+<summary><b>📁 Explore Full Project Directory Tree</b></summary>
+
+<br/>
+
+```
+Jamzy/
+├── 📁 client/                         # Frontend presentation layer (React 19 + Vite 8)
+│   ├── 📁 public/                     # Static brand assets & SVG iconography
+│   │   ├── 📄 favicon.svg             # Multi-bar equalizer favicon mark
+│   │   └── 📄 icons.svg               # SVG sprite definitions
+│   ├── 📁 src/                        # Client source code
+│   │   ├── 📁 assets/                 # Local media assets
+│   │   ├── 📁 components/             # Reusable UI & Feature components
+│   │   │   ├── 📁 icons/              # Scalable SVG brand & provider icons (YouTubeIcon)
+│   │   │   ├── 📁 landing/            # Landing page sections & WebGL shader modules
+│   │   │   │   ├── 📄 FloatingLines.tsx # Three.js WebGL GPU shader background
+│   │   │   │   ├── 📄 Hero.tsx        # Cinematic Hero with equalizer & turntable
+│   │   │   │   ├── 📄 HeroIconFlipper.tsx # 3D rotating action/YouTube mark flipper
+│   │   │   │   ├── 📄 ProductShowcase.tsx # Real-time album art & device mockup
+│   │   │   │   └── 📄 FinalCTA.tsx    # Interactive closing section with FloatingLines
+│   │   │   ├── 📁 ui/                 # Atomic design controls & tactile micro-interactions
+│   │   │   │   ├── 📄 MagneticButton.tsx # Spring-physics magnetic cursor follower
+│   │   │   │   ├── 📄 SplitFlapText.tsx  # Departure-board character ticker animation
+│   │   │   │   ├── 📄 EqualizerBars.tsx  # Dynamic SVG equalizer rhythm bars
+│   │   │   │   ├── 📄 AppHeader.tsx      # Shared sticky header with pill search bar
+│   │   │   │   ├── 📄 Button.tsx         # Pill buttons with amber glow & variants
+│   │   │   │   └── 📄 Card.tsx           # Glassmorphism container primitives
+│   │   │   ├── 📄 AuthStatusScreen.tsx# Full-page auth error & retry screen
+│   │   │   ├── 📄 ChatPanel.tsx       # Live room chat panel with auto-scroll management
+│   │   │   ├── 📄 MusicSearch.tsx     # YouTube search query input & video link resolver
+│   │   │   ├── 📄 ProtectedRoute.tsx  # Auth & Onboarding route guards
+│   │   │   ├── 📄 QueuePanel.tsx      # Host queue list: thumbnails, drag-reorder & controls
+│   │   │   ├── 📄 RoomNavbarSearch.tsx# Header-mounted pill search with live preview dropdown
+│   │   │   └── 📄 YouTubePlayer.tsx   # Pro synchronized player with speed, volume & shortcuts
+│   │   ├── 📁 config/                 # Environment configuration loader
+│   │   │   └── 📄 env.ts              # API & Socket URL configurations
+│   │   ├── 📁 hooks/                  # Custom React reactive hooks
+│   │   │   ├── 📄 useAlbumArt.ts      # Real-time album cover fetcher & cache
+│   │   │   ├── 📄 useCurrentUser.ts   # Cached user profile consumer hook
+│   │   │   ├── 📄 useRoomSocket.ts    # Socket.IO lifecycle, presence, chat & playback state
+│   │   │   └── 📄 useYouTubePlayer.ts # Low-level YouTube IFrame API control hook
+│   │   ├── 📁 pages/                  # Page-level route views
+│   │   │   ├── 📄 Home.tsx            # User dashboard with FloatingLines & room actions
+│   │   │   ├── 📄 Landing.tsx         # High-conversion marketing landing page
+│   │   │   ├── 📄 Onboarding.tsx      # Username creation wizard
+│   │   │   ├── 📄 Room.tsx            # Two-column synchronized listening lounge
+│   │   │   └── 📄 RootGuard.tsx       # Gateway session router
+│   │   ├── 📁 providers/              # React context providers
+│   │   │   └── 📄 CurrentUserProvider.tsx # Shared single-fetch user profile context
+│   │   ├── 📁 services/               # HTTP client & TypeScript interfaces
+│   │   │   ├── 📄 api.ts              # Fetch wrappers for /api/* REST endpoints
+│   │   │   └── 📄 types.ts            # Client-side domain and protocol type definitions
+│   │   ├── 📄 App.tsx                 # Root application routes & Clerk appearance theme
+│   │   ├── 📄 index.css               # Tailwind CSS v4 design tokens & themed scrollbars
+│   │   └── 📄 main.tsx                # Client entrypoint with ClerkProvider
+│   ├── 📄 package.json                # Frontend dependencies & Vite scripts
+│   └── 📄 vite.config.ts              # Vite configuration with React Compiler plugin
+├── 📁 server/                         # Backend REST & real-time API (Go)
+│   ├── 📁 cmd/api/                    # Entrypoint: config, pool, migrations, HTTP server
+│   ├── 📁 internal/                   # Backend packages
+│   │   ├── 📁 apperr/                 # Error type carrying an HTTP status
+│   │   ├── 📁 auth/                   # Clerk JWT verification & JWKS key cache
+│   │   ├── 📁 config/                 # Environment loader & rate limit definitions
+│   │   ├── 📁 db/                     # pgx pool, embedded SQL migrations, migrator
+│   │   ├── 📁 httpapi/                # Route table & dependency wiring
+│   │   ├── 📁 httpx/                  # Recovery, logging, security headers, CORS, rate limits
+│   │   ├── 📁 id/                     # CUID-shaped id generator
+│   │   ├── 📁 logging/                # Structured logging utility
+│   │   ├── 📁 messages/               # Chat persistence & 500-char validation
+│   │   ├── 📁 music/                  # YouTube search, video resolver & playlist importer
+│   │   ├── 📁 playback/               # Host-authoritative playback persistence
+│   │   ├── 📁 ratelimit/              # In-memory fixed-window limiter
+│   │   ├── 📁 realtime/               # Socket.IO hub, presence store, queue store, host transfer
+│   │   ├── 📁 rooms/                  # Room creation, code validation & membership
+│   │   ├── 📁 textlen/                # UTF-16 length measurement for validation
+│   │   ├── 📁 timex/                  # ISO-8601 timestamp formatting
+│   │   └── 📁 users/                  # User profile retrieval & username onboarding
+│   ├── 📁 prisma/                     # schema.prisma (readable data model)
+│   ├── 📄 go.mod                      # Go module definition
+│   └── 📄 .env.example                # Backend environment template
+├── 📄 render.yaml                     # Render.com deployment manifest for jamzy-api
+└── 📄 package.json                    # Workspace root scripts
+```
+
+</details>
+
+<br/>
+
+---
+
+## 🗺️ Roadmap
+
+- [x] **Phase 1: Foundation & Authentication**
+  - [x] Clerk JWT integration on the backend and React frontend
+  - [x] PostgreSQL & Neon database provisioning with embedded SQL migrations
+  - [x] Base schema migrations for Users, Rooms, Members, and Messages
+- [x] **Phase 2: User Onboarding & Persistence**
+  - [x] Unique username reservation workflow and validation
+  - [x] Single-fetch `CurrentUserProvider` caching to prevent route race conditions
+  - [x] Full error fallback screens with retry triggers
+- [x] **Phase 3: Room Lifecycle & Membership**
+  - [x] Unique 6-character room code generation
+  - [x] Atomic room creation (creator becomes initial host and first member)
+  - [x] Room joining, detail queries, and membership exit flows
+- [x] **Phase 4: Real-Time Presence Gateway**
+  - [x] Socket.IO connection authenticated via Clerk JWT handshake
+  - [x] In-memory presence store supporting multi-tab connections per user
+  - [x] Live presence broadcasts on member join, leave, and disconnect
+- [x] **Phase 5: YouTube Music & Video Integration**
+  - [x] Secure server-side YouTube Data API v3 proxy
+  - [x] Universal video URL resolver (Shorts, Watch, Embeds, youtu.be)
+  - [x] YouTube IFrame player mounting and error translation
+- [x] **Phase 6: Server-Authoritative Playback Synchronization**
+  - [x] Server playhead calculations: `playbackPosition + (now - playbackUpdatedAt)`
+  - [x] Strict host-only authorization for track changes, play, pause, and seek
+  - [x] Client-side 5-second drift monitoring with auto-reseek past 2 seconds
+  - [x] Echo-loop suppression on remote state application
+- [x] **Phase 7: Real-Time Chat & Room UI Refinement**
+  - [x] Persist-before-broadcast room messaging with 500-char content validation
+  - [x] Chat history delivery bundled into the initial `room:join` socket ack
+  - [x] Responsive two-column lounge layout (left: video/controls, right: presence/chat)
+  - [x] Independent chat scrolling with "↓ New messages" pill for unread messages
+- [x] **Phase 8: Shared Media Queue**
+  - [x] In-memory per-room queue with 50-item cap (no schema change)
+  - [x] Host-only queue operations: add, remove, reorder (drag & drop), skip, clear
+  - [x] Automatic track advancement when the active video ends
+  - [x] Queue snapshot bundled into the `room:join` ack for instant late-joiner sync
+  - [x] Dual **Play now** / **+ Queue** buttons in search results when a track is playing
+- [x] **Phase 9: Host Transfer & Room Continuity**
+  - [x] Automatic host transfer on disconnect, behind a 30-second grace period
+  - [x] Manual host promotion from the in-room people list
+  - [x] Host handover on deliberate leave — the room is no longer deleted
+- [x] **Phase 10: Enterprise Security Hardening & Multi-Tier Rate Limiting**
+  - [x] Multi-tier in-memory fixed-window rate limiting on REST endpoints and WebSocket events
+  - [x] Room shortcode brute-force defense (30 attempts / 5 min against $31^6$ namespace)
+  - [x] SSRF defense with strict YouTube CDN domain whitelisting (`i.ytimg.com`, `ytimg.com`)
+  - [x] Prototype pollution defense, input sanitization, and Helmet-equivalent HTTP security headers
+  - [x] Automated unit and security tests alongside the backend packages
+- [x] **Phase 11: YouTube Playlist Importer & Instant Live Previews**
+  - [x] Full playlist import endpoint (`GET /api/music/playlist`) fetching up to 50 playable tracks
+  - [x] Real-time debounced preview cards for pasted video and playlist URLs in search & navbar
+  - [x] Bulk playlist playback and queue operations ("Play playlist" and "Queue all (N)")
+- [x] **Phase 12: Pro Lounge Controls, Playback History & WebGL Visual Physics**
+  - [x] 30-track client-side playback history with instant `queue:prepend` for returning to previous tracks
+  - [x] Independent local volume & mute controls with `localStorage` persistence
+  - [x] Multi-speed playback selector (0.5x to 2x) with rate-adjusted drift compensation
+  - [x] Dynamic video stream quality badge (4K, 1080p, 720p, etc.) hooked to IFrame quality events
+  - [x] Global keyboard shortcuts popover and hotkeys (Space, M, F, J/L, Arrows, Y, N)
+  - [x] Header-integrated pill search bar (`RoomNavbarSearch`)
+  - [x] Three.js WebGL FloatingLines GPU shader background in Home and Final CTA
+  - [x] Split-flap departure board room code typography and spring-physics magnetic buttons
+- [ ] **Phase 13: Interactive Reactions & Production Scaling**
+  - [ ] Ephemeral audio soundboard and floating emoji bursts
+  - [ ] Redis Adapter for multi-instance Socket.IO cluster scaling
+  - [ ] Free-for-all listening mode where any member can control playback
+
+<br/>
+
+---
+
+## 🚀 Recent Updates
+
+### 🐹 Backend Rewritten in Go
+
+* **🔄 Port Without a Client Change:** The Node.js + Express + Prisma backend was replaced by a Go service in `server/`. The REST contract and the Socket.IO v4 wire protocol are identical, so the client needed no changes.
+* **📦 Standard Library First:** Routing uses `net/http`'s `ServeMux` and data access uses `pgx` with hand-written SQL in a per-domain service layer. No ORM, no code generator.
+* **🗄️ Embedded Migrations:** The SQL the Prisma migrations produced is embedded in the binary and applied on startup, under an advisory lock and inside transactions. A database that Prisma already migrated is adopted rather than replayed.
+* **⚡ Real-Time Rebuilt:** Presence, queue, and host-transfer state are in-memory and mutex-guarded, with a goroutine per socket event and a panic guard around every one, so a single bad payload cannot take the process down.
+
+### 🛡️ Enterprise Security Hardening, Multi-Tier Rate Limiting & SSRF Defense
+
+* **⏱️ Multi-Tier Rate Limiting Architecture:**
+  * Implemented robust in-memory fixed-window rate limiters protecting all REST API endpoints and Socket.IO real-time events.
+  * Configured abuse ceilings designed to block scripted exhaustion while keeping regular human usage unrestricted (`server/internal/config/ratelimits.go`):
+    * `joinRoom`: 30 attempts per 5 minutes — effectively eliminates brute-force room shortcode guessing across the $31^6$ space.
+    * `musicSearch`: 30 requests per minute — prevents malicious burning of the Google Cloud YouTube Data API quota.
+    * `musicPlaylist`: 15 requests per minute — bounds heavy multi-video batch calls.
+    * `createRoom` (15 / 5m), `createProfile` (10 / 10m), `/me` (60 / 1m).
+    * Socket rate limits: `roomJoin` (20/m), `chatSend` (15 / 10s), `playback` (40 / 10s), `queue` (100 / 10s — handles bulk playlist enqueues), `hostTransfer` (10/m).
+* **🔒 SSRF Defense & Payload Sanitization:**
+  * **Strict Thumbnail Sanitization:** Rejects arbitrary external image URLs in track payloads; strictly enforces official YouTube CDN domains (`i.ytimg.com`, `*.ytimg.com`) to prevent SSRF and IP tracking of room members.
+  * **Video ID Validation:** Enforces strict 11-character alphanumeric YouTube ID patterns (`^[a-zA-Z0-9_-]{11}$`).
+  * **Username & Chat Guardrails:** Normalizes and trims display handles, defends against prototype pollution (`__proto__`), and enforces a strict 500-character ceiling on chat messages.
+  * **Helmet HTTP Headers:** Adds standard HTTP security headers (X-Content-Type-Options, X-Frame-Options, etc.).
+* **🧪 Automated Unit & Security Tests:**
+  * Unit and security tests live beside the packages they cover (`server/internal/**/*_test.go`), verifying rate limit depletion, caller isolation, room code randomness, socket ack safety, and playlist link parsing. `go test ./...` runs them.
+
+<br/>
+
+### 📑 YouTube Playlist Import & Instant Link Previews
+
+* **🎵 Full-Stack Playlist Import Engine:**
+  * Added `GET /api/music/playlist?url=<link>` endpoint resolving entire YouTube playlists using the YouTube Data API v3 `playlistItems` and `videos` endpoints.
+  * Automatically filters out private and unembeddable tracks while preserving original track sequencing, returning up to 50 playable tracks in a single batch.
+* **⚡ Debounced Live Preview Cards:**
+  * `RoomNavbarSearch` and `MusicSearch` automatically detect pasted YouTube video or playlist links with a 400ms debounce.
+  * Displays high-resolution thumbnail, video/playlist title, channel attribution, duration, and track count *before* adding to the room.
+* **🚀 Bulk Playlist Actions:**
+  * **Play playlist:** Starts playing the first track immediately and enqueues all subsequent tracks.
+  * **Queue all (N):** Appends all tracks from the playlist directly to the shared room queue with one click.
+
+<br/>
+
+### 🎛️ Pro Lounge Player: Playback History, Speed, Volume & Shortcuts
+
+* **⏪ 30-Track Playback History & Rewind Navigation:**
+  * Client-side history tracks the last 30 played songs in the room.
+  * Host can click "Previous track" (or press <kbd>Y</kbd>) to return to the preceding song.
+  * Automatically prepends the currently playing track to the front of the queue (`queue:prepend` socket event), ensuring playheads are never lost during navigation.
+* **🔊 Persistent Local Volume & Mute:**
+  * Independent volume slider and mute toggle that control only the local user's player without altering room state.
+  * Volume and mute states persist seamlessly across page reloads and room transitions via `localStorage` (`jamzy_volume`, `jamzy_muted`).
+* **⏩ Multi-Rate Playback Engine:**
+  * Choose between 0.5x, 0.75x, 1x, 1.25x, 1.5x, and 2x playback rates.
+  * Drift calculation dynamically compensates for the playback rate (`((now - atMs) / 1000) * playbackRate`), maintaining synchrony across speed changes.
+* **📺 Read-Only Video Stream Quality Badge:**
+  * Real-time stream resolution indicator (4K, 1440p, 1080p, 720p, 480p, Auto) updated directly from YouTube's `onPlaybackQualityChange` IFrame API event.
+* **🔁 Single-Track Looper:**
+  * Toggle infinite looping on the active track; seeks back to 00:00 on video end instead of auto-advancing the queue.
+* **🎹 Global In-Room Keyboard Shortcuts:**
+  * Built-in cheatsheet popover with intuitive hotkeys:
+    * <kbd>Space</kbd> / <kbd>K</kbd>: Play / Pause
+    * <kbd>M</kbd>: Mute / Unmute
+    * <kbd>F</kbd>: Toggle Fullscreen
+    * <kbd>←</kbd> / <kbd>→</kbd>: Seek backward / forward 5 seconds
+    * <kbd>J</kbd> / <kbd>L</kbd>: Seek backward / forward 10 seconds
+    * <kbd>↑</kbd> / <kbd>↓</kbd>: Adjust volume ±5%
+    * <kbd>Y</kbd>: Navigate to previous video
+    * <kbd>N</kbd>: Skip to next video in queue
+* **🔍 Header-Mounted Pill Search Bar:**
+  * Replaced bulky in-page search forms with a streamlined, pill-shaped `RoomNavbarSearch` mounted in `AppHeader`.
+  * Preserves screen space for the synchronized video player, real-time chat, and queue list.
+
+<br/>
+
+### ✨ WebGL Shader & Tactile Landing Physics
+
+* **🌊 Three.js WebGL FloatingLines Shader:**
+  * Interactive GPU-rendered sunset wave shader background mounted on the Landing page and Dashboard (`Home.tsx`).
+  * Real-time cursor proximity curvature, wave displacement, parallax physics, and warm amber color ramps.
+* **🧲 Spring-Physics Magnetic Buttons:**
+  * `MagneticButton` wrapper adds tactile cursor attraction to primary call-to-action buttons.
+* **🔤 Split-Flap Departure Board Typography:**
+  * `SplitFlapText` simulates mechanical flip-card character animations for room shortcode previews and interactive text reveals.
+* **🔄 Hero 3D CTA Icon Flipper:**
+  * `HeroIconFlipper` cycles smoothly between plus and YouTube iconography with 3D entry/exit transforms.
+* **💿 Real Album Art Hydration:**
+  * Integrated `useAlbumArt` hook fetching verified cover artwork for showcase vinyl turntables and interactive previews.
+
+<br/>
+
+### 👑 Phase 9 Complete — Host Transfer
+
+* **⏱️ Automatic Transfer with a Grace Period:**
+  * When the host's last socket for a room drops, a **30-second** countdown is armed in `HostTransferStore` (`Map<roomCode, Timeout>` — the same in-memory pattern as `PresenceStore` and `QueueStore`, so no schema change was needed).
+  * Reconnecting inside the window cancels the countdown, so a page refresh or a brief network blip never costs the host their room.
+  * On expiry every precondition is re-checked — the host may have returned, the successor may have left — before anything is written.
+  * The successor is the **longest-standing online member**, taken from the existing `joinedAt`-ascending member ordering.
+* **🎚️ Manual Promotion:**
+  * New host-only `host:transfer` event; the target is validated against `RoomMember` server-side, never trusted from the payload.
+  * The people dropdown gains a **MAKE HOST** action next to each online member.
+* **🚪 Leaving No Longer Closes the Room:**
+  * `POST /rooms/:roomCode/leave` previously **deleted the entire room** when the host left. It now hands the room to the longest-standing remaining member in a transaction, and deletes the room only when the host was the last member.
+* **🔒 One Host, Always:**
+  * All three paths write through a single `updateMany` conditional on the current host, so an expiring timer racing a manual transfer or a departing host resolves to exactly one winner.
+  * `hostUserId` now rides on every `presence:update`, so clients follow the live host instead of the value from the initial REST load — and `assertHost` re-reads it per event, so playback and queue permissions move with the role instantly.
+* **🖥️ In-Room Feedback:** a countdown banner while a transfer is pending, and a notice naming the new host and why the change happened (`manual` / `disconnect` / `left`).
+* **⏭️ Side Benefit:** the queue no longer stalls when the host's tab closes mid-track — the new host's player takes over `ended → queue:advance`.
+
+<br/>
+
+### 🎶 Phase 8 Complete — Shared Playback Queue
+* **🗂️ In-Memory Queue Store:**
+  * Implemented `QueueStore` using the same ephemeral `Map<roomCode, QueueItem[]>` pattern as `PresenceStore` — no database schema change required.
+  * Queue is capped at **50 items per room** and cleared automatically when `playback:clear` fires.
+  * Full queue snapshot bundled into the `room:join` ack — late joiners and reconnects receive it in the same round-trip as presence, playback, and chat history.
+* **🎛️ Host Queue Controls:**
+  * Five new host-only socket events: `queue:add`, `queue:remove`, `queue:reorder`, `queue:advance`, `queue:clear` — all enforced server-side via `assertHost`.
+  * New `QueuePanel` component: numbered thumbnail list, drag-to-reorder (HTML5 DnD), arrow-button fallback, per-item remove, Skip to next, and Clear all.
+  * `MusicSearch` now shows dual **Play now** / **+ Queue** buttons when a track is already playing.
+* **⏭️ Auto-Advance:**
+  * When the host's YouTube player fires the `ended` event it emits `queue:advance` to the server.
+  * The server pops the front queue item, calls `setRoomTrack` (or `clearRoomTrack` if empty), and broadcasts `playback:update` + `queue:update` to the whole room — no polling, no client-side timers.
+  * The `onEnded` callback fires unconditionally before echo-suppression guards, preventing queue stall during reconnects.
+
+### 🌟 Phase 7 Complete — Real-Time Chat & Room UI Refinement
+* **💬 Integrated Room Chat Engine:**
+  * Added instant real-time messaging using Socket.IO events (`chat:send` → `chat:new`).
+  * Enforced a **persist-before-broadcast** guarantee: messages are committed to PostgreSQL before emission, preventing ghost messages across clients.
+  * History delivery rides the `room:join` socket ack—the latest 50 messages arrive seamlessly alongside playback and presence snapshots on connection.
+* **📱 Responsive Lounge Architecture:**
+  * Redesigned `/room/:roomCode` into a balanced two-column desktop layout (`lg+`), stacking video & controls on the left with live presence & chat on the right.
+  * Internal independently scrolling chat viewport with unread pill indicators (`↓ New messages`).
+  * Instant room code clipboard copying with visual toast feedback.
+
+### 🎚️ Phase 6 Complete — Synchronized Playback Engine
+* **⏱️ Server-Authoritative Playhead:**
+  * Playback status, position, and timestamps persist directly to the `Room` row in PostgreSQL.
+  * Client playhead calculation accounts for transmission latency without storing per-second database writes.
+* **🎯 Sub-2-Second Drift Correction:**
+  * 5-second polling interval detects playback divergence and automatically reseeks client players into tight synchrony.
+
+<br/>
+
+---
+
+<div align="center">
+
+**Synchronized music, seamless presence, and warm cinematic vibes for listening together.**
+
+<sub>Crafted with precision using React 19, Vite, Tailwind CSS v4, Socket.IO, and Go.</sub>
+
+</div>
