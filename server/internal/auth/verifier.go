@@ -97,7 +97,7 @@ func (v *ClerkVerifier) key(ctx context.Context, keyID string) (*clerk.JSONWebKe
 		return cached, nil
 	}
 
-	set, err := jwks.Get(ctx, nil)
+	set, err := jwks.Get(ctx, &jwks.GetParams{})
 	if err != nil {
 		return nil, err
 	}
