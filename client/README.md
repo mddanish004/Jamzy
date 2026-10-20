@@ -1,183 +1,129 @@
-# Jamzy — Frontend (`client`)
+# Jamzy Web Client
 
-> The modern, high-aesthetic web client for **Jamzy** — a real-time social music-listening application.  
-> Built with **React 19**, **Vite**, **TypeScript**, **Tailwind CSS v4**, **Socket.IO**, and **Clerk**.
+The React single-page app for [Jamzy](../README.md): the landing page, Clerk sign-in and username onboarding, the room lobby, and the synchronized listening room with its player, queue, roster, and chat. It talks to the Go API over authenticated fetches and to the server's Socket.IO layer over WebSockets.
 
----
+Deployed at [jamzy.mddanish.dev](https://jamzy.mddanish.dev/) on Vercel; see [Deployment](#deployment).
 
-## Features
-
-- **Synchronized Music Player**: Embedded YouTube IFrame player with server-authoritative timekeeping, automatic 5s / 2s drift correction, and echo-loop suppression.
-- **Music Search & Universal URL Resolver**: In-room music search powered by YouTube Data API v3, plus direct resolution for standard YouTube URLs, Shorts, embed links, and `youtu.be` shortcuts.
-- **Live Room Presence**: Ephemeral real-time member roster with multi-tab awareness and connection resilience.
-- **Real-Time Persistent Chat**: In-room messaging with 500-character safety caps, smart auto-scroll anchoring, and unread indicator pills.
-- **Rich Cinematic Aesthetics**: Dark-mode theme with warm amber highlights, WebGL background shaders (`FloatingLines` via OGL), and glassmorphism.
-- **Zero-Friction Authentication**: Clerk-powered OAuth (Google) and magic links with single-session `/me` caching via `CurrentUserProvider`.
-
----
-
-## Tech Stack
+## Stack
 
 | Category | Technology |
-| :--- | :--- |
-| **Framework** | [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/) |
-| **Build Tool** | [Vite 8](https://vite.dev/) with React Compiler & Babel Preset |
-| **Styling** | [Tailwind CSS v4](https://tailwindcss.com/) (`@theme` tokens) |
-| **Routing** | [React Router 7](https://reactrouter.com/) |
-| **Real-Time** | [Socket.IO Client](https://socket.io/) (`socket.io-client` v4) |
-| **Authentication** | [Clerk React](https://clerk.com/) (`@clerk/react`) |
-| **Graphics & Shaders** | [OGL](https://github.com/oframe/ogl) & [Three.js](https://threejs.org/) |
-| **Icons & Typography** | [Lucide React](https://lucide.dev/), Manrope, Caveat, JetBrains Mono |
+| --- | --- |
+| Framework | [React 19.2](https://react.dev/) + [TypeScript 6](https://www.typescriptlang.org/) |
+| Build tool | [Vite 8](https://vite.dev/) with the [React Compiler](https://react.dev/learn/react-compiler) enabled via Babel |
+| Styling | [Tailwind CSS v4](https://tailwindcss.com/) with Material-3-style `@theme` tokens |
+| Routing | [React Router 7](https://reactrouter.com/) |
+| Real time | [socket.io-client](https://socket.io/) v4 |
+| Authentication | [Clerk React](https://clerk.com/) with embedded `<SignIn />` / `<SignUp />` components |
+| Media | YouTube IFrame Player API, loaded as a script |
 
----
+Routes: the public landing page, `/signin` and `/signup`, `/onboarding` for first-time username selection, `/home` for the room lobby, and `/room/:roomCode` for the listening room. Route guards redirect unsigned or un-onboarded users before the room UI ever mounts.
 
-## Project Structure
+## Requirements
 
-```text
-client/
-├── public/                 # Static assets (favicon.svg, hero graphics)
-├── src/
-│   ├── assets/             # Brand marks, SVGs, background textures
-│   ├── components/         # Presentation & feature components
-│   │   ├── landing/        # Marketing views (Hero, Features, FinalCTA, FloatingLines)
-│   │   ├── ui/             # Reusable design atoms (Button, Avatar, Logo, ScrollReveal)
-│   │   ├── YouTubePlayer.tsx # Embedded player with controls & seek bar
-│   │   ├── ChatPanel.tsx   # Real-time chat list & message composer
-│   │   ├── MusicSearch.tsx # Search modal & link paste resolver
-│   │   └── ProtectedRoute.tsx # Route barrier for authenticated users
-│   ├── config/             # Environment configuration (env.ts)
-│   ├── hooks/              # Custom domain hooks
-│   │   ├── useCurrentUser.ts     # Access cached profile context
-│   │   ├── useRoomSocket.ts      # WebSocket connection, presence & chat
-│   │   └── useYouTubePlayer.ts   # Player lifecycle, drift detection & echo locks
-│   ├── pages/              # Primary route views
-│   │   ├── Landing.tsx     # Product marketing page
-│   │   ├── Home.tsx        # Dashboard (Create Room / Join Room)
-│   │   ├── Room.tsx        # 2-column room lounge (player + chat + roster)
-│   │   ├── Onboarding.tsx  # First-time username selection
-│   │   └── RootGuard.tsx   # Root session dispatcher
-│   ├── providers/          # React Context providers
-│   │   ├── CurrentUserProvider.tsx # Shared /me cache & onboarding status
-│   │   └── currentUserContext.ts
-│   ├── services/           # Typed API communication
-│   │   ├── api.ts          # Authenticated fetch client
-│   │   └── types.ts        # Shared TypeScript DTOs
-│   ├── utils/              # Time formatters, helper functions
-│   ├── App.tsx             # Route definitions & layout wrappers
-│   ├── index.css           # Global Tailwind tokens, animations & resets
-│   └── main.tsx            # App bootstrap & ClerkProvider
-├── .env.example            # Environment variable template
-├── vite.config.ts          # Vite build & plugin configuration
-└── package.json            # Client dependencies & scripts
-```
+- Node.js 20 or newer
+- The Jamzy API running locally on port 5000, or its deployed URL
+- A Clerk application publishable key
 
----
+## Getting started
 
-## Getting Started
-
-### 1. Prerequisites
-
-- **Node.js**: v20.x or higher
-- **Jamzy Server**: Running locally on port `5000` (or accessible remotely)
-- **Clerk Account**: Active Clerk application with a Publishable Key
-
-### 2. Environment Setup
-
-Create a `.env` file in `client/` by copying the example:
+Copy the template and fill in two values:
 
 ```bash
+cd client
 cp .env.example .env
 ```
 
-Configure the environment variables:
-
-```ini
-# Backend API Base URL
+```env
 VITE_API_BASE_URL=http://localhost:5000/api
-
-# Clerk Authentication Publishable Key
-VITE_CLERK_PUBLISHABLE_KEY=pk_test_your_clerk_key_here
+VITE_CLERK_PUBLISHABLE_KEY=pk_test_or_live_key
 ```
 
-### 3. Install Dependencies
+`VITE_API_BASE_URL` must end with `/api`; the WebSocket base is derived from it by stripping that suffix. `VITE_CLERK_PUBLISHABLE_KEY` is the Clerk publishable key from your Clerk dashboard, which is public by design and safe to expose to the browser.
+
+Install, then run the dev server:
 
 ```bash
 npm install
-```
-
-### 4. Run Development Server
-
-```bash
 npm run dev
 ```
 
-The application will be accessible at `http://localhost:5173`.
+The app is served at `http://localhost:5173`, which matches the API backend's default allowed CORS origin.
 
----
-
-## Available Scripts
+## Scripts
 
 | Script | Command | Description |
-| :--- | :--- | :--- |
-| `npm run dev` | `vite` | Starts the local Vite development server with Hot Module Replacement (HMR). |
-| `npm run build` | `tsc -b && vite build` | Type-checks with TypeScript and compiles the production bundle into `dist/`. |
-| `npm run preview`| `vite preview` | Serves the production build locally for verification. |
-| `npm run lint` | `eslint .` | Runs ESLint across all TypeScript and React files. |
+| --- | --- | --- |
+| `dev` | `vite` | Development server with hot module replacement |
+| `build` | `tsc -b && vite build` | Strict type-check, then a production bundle into `dist/` |
+| `preview` | `vite preview` | Serve the production build locally |
+| `lint` | `eslint .` | ESLint across TypeScript and React files |
 
----
+There are no client-side unit tests; correctness is verified by `npm run build`'s strict `tsc` pass and by the server's tests, which cover the API and socket contracts the client depends on.
 
-## Core Client Architecture
+## How it works
 
-### 1. User Session Caching (`CurrentUserProvider`)
-Rather than refetching `/me` on every route transition:
-- Current user profile is fetched **once** upon initial sign-in and cached in memory.
-- If `onboardingComplete: false`, the user is redirected to `/onboarding`.
-- Profile creation seeds the context directly from the mutation response, preventing extra round trips and race conditions.
+### Single-fetch user session (`CurrentUserProvider`)
 
-### 2. Real-Time Room Coordination (`useRoomSocket`)
-Encapsulates all WebSocket communication:
-- Passes the Clerk session token during the Socket.IO handshake.
-- Dispatches `room:join` and receives initial presence, playback state, and recent chat history in a single acknowledgment.
-- Subscribes to `presence:update`, `playback:update`, and `chat:new` events.
-- Gracefully re-syncs state on reconnects without page reloads.
+The profile fetch for `/api/me` happens once per sign-in and is cached in React context. Route guards read the cached result to decide between the room app and the onboarding screen, so navigation never re-requests the profile. The onboarding response seeds the cache directly, avoiding a refetch race between route transition and profile creation.
 
-### 3. Playback Synchronization Engine (`useYouTubePlayer`)
-Controls the YouTube IFrame player with zero jitter:
-- **Mathematical Playhead Derivation**: Derives current playback position locally using `playbackPosition + (Now - playbackUpdatedAt)`.
-- **Drift Correction Loop**: Checks alignment every 5 seconds; if the local player deviates by more than 2 seconds, it silently seeks into place.
-- **Echo-Loop Suppression**: Suppresses local playback event listeners when applying remote updates to avoid circular broadcast storms.
+### One acknowledgment per room entry (`useRoomSocket`)
 
----
+The hook owns the Socket.IO connection lifecycle. It passes the Clerk session token in the handshake, which the server verifies before any room access. `room:join` is issued once per room and its acknowledgment carries everything needed to render the room in one round trip: the presence roster, the persisted playback snapshot, the in-memory queue, and recent chat history. Every server-to-client event (`presence:update`, `playback:update`, `queue:update`, `chat:new`, `host:update`, `host:pending`) updates a small piece of state, and reconnection re-syncs without a page reload.
 
-## Design System & Styling
+### Playback derivation and drift correction (`useYouTubePlayer`)
 
-Jamzy uses **Tailwind CSS v4** with unified `@theme` tokens in `src/index.css`:
+The player controls the YouTube IFrame API. Rather than trusting the local player's timeline, the hook derives the authoritative playhead from the server snapshot:
 
-```css
-@theme {
-  /* Surfaces */
-  --color-canvas: #0a0908;
-  --color-surface: #12100e;
-  --color-raised: #181512;
-  --color-overlay: #201b16;
-
-  /* Accent Palette */
-  --color-accent: #f7a23b;
-  --color-accent-hi: #f97316;
-  --color-accent-lo: rgba(247, 162, 59, 0.12);
-
-  /* Status Colors */
-  --color-online: #34d399;
-  --color-warning: #fbbf24;
-  --color-danger: #f87171;
-}
+```
+expected = playbackPosition + (now - playbackUpdatedAt)
 ```
 
----
+A 5-second interval compares the live player time to this expectation and silently reseeks when the difference exceeds 2 seconds. The elapsed time is multiplied by the playback rate, so speed changes stay in sync. While a remote update is being applied, local event listeners are suppressed so the correction cannot echo back to the server as a new host-editing event.
+
+## Structure
+
+```text
+client/
+├── public/                  Favicon and album artwork
+├── src/
+│   ├── components/
+│   │   ├── landing/         Landing sections (hero, showcase, story, telemetry, footer)
+│   │   ├── ui/              Shared atoms: logo, avatar, buttons, emoji picker, equalizer bars
+│   │   ├── YouTubePlayer.tsx   Synchronized player with the full control deck
+│   │   ├── ChatPanel.tsx    Persistent chat with scroll anchoring
+│   │   ├── QueuePanel.tsx   Host-only queue: drag reorder, skip, clear
+│   │   ├── RoomNavbarSearch.tsx  Header search with pasted-URL previews
+│   │   ├── AuthStatusScreen.tsx  Auth error and retry states
+│   │   └── ProtectedRoute.tsx   Auth and onboarding guards
+│   ├── pages/               Landing, RootGuard, auth, onboarding, home, Room.tsx
+│   ├── hooks/               useRoomSocket, useYouTubePlayer, useCurrentUser
+│   ├── providers/           CurrentUserProvider and its context
+│   ├── services/            Typed fetch client (api.ts) and shared DTOs (types.ts)
+│   ├── config/env.ts        Runtime URL and key configuration
+│   └── App.tsx              Route definitions
+├── vercel.json              SPA rewrites and security response headers
+└── vite.config.ts           Vite + Tailwind + React Compiler Babel setup
+```
+
+## Design system
+
+Styling is Tailwind v4 with a Material-3-style token set in `src/index.css`, on a dark obsidian base:
+
+| Token | Value | Role |
+| --- | --- | --- |
+| `--color-background` | `#0e0e10` | Obsidian canvas |
+| `--color-primary` | `#fb7185` | Rose primary for interactive elements |
+| `--color-secondary` | `#fda4af` | Soft blush supporting accents |
+| `--color-tertiary` | `#10b981` | Emerald for live, synced, and online states |
+| `--color-error` | `#ffb4ab` | Error foreground |
+
+Type roles use a size scale that mirrors the token names (`label-sm` through `headline-xl`), set in Plus Jakarta Sans; Geist is reserved for code-style labels; Material Symbols Outlined provides icons. Responsive behavior is part of the layout work rather than a separate breakpoint pass: the room page collapses to a single column and the landing page reflows per section on narrow screens.
 
 ## Deployment
 
-The client is an SPA and can be deployed to any static host (Vercel, Cloudflare Pages, Netlify):
+The client is a static SPA deployed to Vercel from this repository, with the root directory set to `client/`. [`vercel.json`](vercel.json) provides both pieces the SPA needs:
 
-1. **SPA Rewrites**: Ensure all non-asset requests rewrite to `/index.html` (configured in `vercel.json`).
-2. **Environment Variables**: Set `VITE_API_BASE_URL` (pointing to production backend) and `VITE_CLERK_PUBLISHABLE_KEY` in your hosting dashboard.
+1. All deep links (for example a pasted `/room/A1B2C3` URL) rewrite to `/index.html` so React Router owns every path.
+2. Security response headers (`X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`, `Strict-Transport-Security`) are applied to every route.
+
+Set `VITE_API_BASE_URL` (the deployed API URL ending in `/api`) and `VITE_CLERK_PUBLISHABLE_KEY` in the Vercel project's environment variables, then redeploy so the new values are baked into the bundle. The Clerk instance must recognize the deployed domain; see the deployment section of the root README for the full wiring across Vercel, Render, and Clerk.
