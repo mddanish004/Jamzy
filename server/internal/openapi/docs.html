@@ -236,7 +236,7 @@
   .fact span {
     font-family: var(--mono);
     color: var(--text);
-    word-break: break-all;
+    overflow-wrap: anywhere;
   }
 
   .notes {
@@ -284,7 +284,7 @@
 
   .tag {
     margin-top: 54px;
-    scroll-margin-top: 76px;
+    scroll-margin-top: 96px;
   }
 
   .tag-head {
@@ -326,7 +326,7 @@
     border: 1px solid var(--border);
     border-radius: var(--radius);
     margin: 12px 0;
-    scroll-margin-top: 76px;
+    scroll-margin-top: 96px;
   }
 
   .op-head {
@@ -366,7 +366,7 @@
   .path {
     font: 500 14.5px var(--mono);
     color: var(--text);
-    word-break: break-all;
+    overflow-wrap: anywhere;
   }
 
   .path b {
@@ -528,7 +528,7 @@
 
   .models {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr));
     gap: 12px;
     margin-top: 12px;
   }
@@ -538,7 +538,7 @@
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 16px 18px;
-    scroll-margin-top: 76px;
+    scroll-margin-top: 96px;
   }
 
   .model h3 {
@@ -599,13 +599,7 @@
   }
 
   .toc {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-
-  .toc::-webkit-scrollbar {
-    display: none;
+    flex-wrap: wrap;
   }
 
   .toc a {
@@ -623,7 +617,7 @@
 
   .doc {
     margin-top: 58px;
-    scroll-margin-top: 82px;
+    scroll-margin-top: 96px;
   }
 
   .doc-head {
@@ -1100,6 +1094,88 @@
 
     .op-id {
       display: none;
+    }
+  }
+
+  @media (max-width: 359px) {
+    .bar {
+      gap: 10px;
+      padding: 10px 14px;
+    }
+
+    .brand {
+      gap: 8px;
+    }
+
+    .download {
+      font-size: 11px;
+      padding: 5px 9px;
+    }
+
+    .toc a {
+      font-size: 12px;
+      padding: 4px 8px;
+    }
+
+    main {
+      padding: 0 14px 48px;
+    }
+
+    .hero {
+      padding-top: 32px;
+    }
+
+    h1 {
+      font-size: clamp(26px, 8.2vw, 30px);
+    }
+
+    .doc h2 {
+      font-size: 20px;
+    }
+
+    .fact {
+      padding: 6px 10px;
+    }
+
+    .stats {
+      grid-template-columns: 1fr;
+    }
+
+    .stat {
+      padding: 14px 16px;
+    }
+
+    .op-head {
+      padding: 14px 14px 0;
+    }
+
+    .op-body {
+      padding: 4px 14px 16px;
+    }
+
+    .card {
+      padding: 14px 15px;
+    }
+
+    .card code,
+    .callout code,
+    .doc-lede code {
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    .note {
+      min-width: 0;
+    }
+
+    .note p,
+    .note code {
+      overflow-wrap: anywhere;
+    }
+
+    .res-desc {
+      min-width: 0;
+      flex-basis: 100%;
     }
   }
 
