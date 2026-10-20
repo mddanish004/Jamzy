@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/mddanish004/jamzy/server/internal/apperr"
 	"github.com/mddanish004/jamzy/server/internal/db"
 	"github.com/mddanish004/jamzy/server/internal/httpapi"
@@ -48,6 +49,7 @@ func (stubVerifier) Verify(_ context.Context, token string) (string, error) {
 type harness struct {
 	t      *testing.T
 	server *httptest.Server
+	pool   *pgxpool.Pool
 }
 
 func newHarness(t *testing.T) *harness {
@@ -110,7 +112,7 @@ func newHarness(t *testing.T) *harness {
 	server := httptest.NewServer(router)
 	t.Cleanup(server.Close)
 
-	return &harness{t: t, server: server}
+	return &harness{t: t, server: server, pool: pool}
 }
 
 func (h *harness) request(method string, path string, token string, body any) (int, map[string]any) {
