@@ -1,85 +1,72 @@
-import { Section, SectionHeading } from "./Section";
-import GlareHover from "../ui/GlareHover";
-import { ScrollReveal } from "../ui/ScrollReveal";
-
-const features = [
+const FEATURES = [
   {
-    title: "Shared music",
-    description:
-      "Everyone hears the same track together, perfectly synchronized.",
-    d: "M9 18V5l12-3v13M9 18c0 1.657-1.343 3-3 3s-3-1.343-3-3 1.343-3 3-3 3 1.343 3 3zm12-3c0 1.657-1.343 3-3 3s-3-1.343-3-3 1.343-3 3-3 3 1.343 3 3z",
+    icon: "library_music",
+    title: "One Library",
+    copy: "Search YouTube together and everyone queues from the same shelf — no matching streaming plans or local files required.",
   },
   {
-    title: "Real-time sync",
-    description:
-      "Playback stays aligned across everyone in the room, down to the second.",
-    d: "M13 10V3L4 14h7v7l9-11h-7z",
+    icon: "sync_saved_locally",
+    title: "Beat-Matched Sync",
+    copy: "Drift correction holds every playhead in place, so hits, breaks, and drops all land at once.",
   },
   {
-    title: "Shared rooms",
-    description:
-      "Invite friends with a simple room code — no account needed to join.",
-    d: "M17 20h5v-2a3 3 0 0 0-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 0 1 5.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 0 1 9.288 0M15 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z",
+    icon: "meeting_room",
+    title: "Private Rooms",
+    copy: "Rooms locked behind a short code, with DJ rights held by the host and live presence for every member.",
   },
   {
-    title: "Live chat",
-    description:
-      "React, request, and talk about the music while you listen — in real time.",
-    d: "M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 0 1-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8Z",
+    icon: "chat_bubble",
+    title: "In-Moment Chat",
+    copy: "Post timestamped notes and emoji pulses right as the chorus lands — everything stays tied to the moment.",
   },
   {
-    title: "Music search",
-    description:
-      "Find a song or paste a link and add it to the queue without leaving the room.",
-    d: "M21 21l-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0z",
+    icon: "search",
+    title: "Track Finder",
+    copy: "Type a song or paste a YouTube link and the room picks it up instantly — playlists open up into queueable tracks.",
   },
   {
-    title: "Live presence",
-    description:
-      "See who is listening with you — avatars, status, and real-time activity.",
-    d: "M18 9v6m3-3h-6m-3-2a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM3 20a6 6 0 0 1 12 0v1H3v-1z",
+    icon: "sensors",
+    title: "Who's Here",
+    copy: "Beacons light up when friends are listening, adding tracks, or settling in with headphones.",
   },
 ];
 
 export function Features() {
   return (
-    <Section id="features">
-      <SectionHeading
-        title="Built for shared listening."
-        subtitle="Every feature serves one goal: making music feel social again."
-      />
+    <section className="mx-auto w-full max-w-7xl px-gutter py-24">
+      <div className="mx-auto mb-16 max-w-3xl text-center">
+        <span className="font-label-caption text-label-caption uppercase tracking-widest text-primary">
+          Designed Around Sharing
+        </span>
+        <h2 className="mt-2 font-headline-lg text-headline-lg text-on-surface">
+          Made for listening side by side
+        </h2>
+        <p className="mt-4 font-body-lg text-body-lg text-on-surface-variant">
+          Every feature exists to shrink the distance between listeners around
+          the globe.
+        </p>
+      </div>
 
-      <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {features.map((feature, index) => (
-          <ScrollReveal
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {FEATURES.map((feature) => (
+          <div
             key={feature.title}
-            delay={index * 80}
-            distance={24}
-            className="h-full"
+            className="rounded-2xl border border-obsidian-border bg-[#141418] p-8 transition-all hover:border-primary/40 hover:bg-[#1c1b1d]"
           >
-            <GlareHover
-              glareColor="#f7a23b"
-              glareOpacity={0.25}
-              glareAngle={-45}
-              glareSize={280}
-              transitionDuration={650}
-              className="group block h-full w-full rounded-lg border border-line bg-raised p-6 shadow-md transition-all duration-300 hover:border-line-strong hover:bg-surface/80"
-            >
-              <div className="grid h-11 w-11 place-items-center rounded-md border border-line bg-white/3 text-accent transition-colors group-hover:bg-accent-lo group-hover:border-accent/30">
-                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.6} d={feature.d} />
-                </svg>
-              </div>
-              <h3 className="mt-4 text-base font-semibold text-ink">
-                {feature.title}
-              </h3>
-              <p className="mt-1.5 text-sm leading-relaxed text-ink-muted">
-                {feature.description}
-              </p>
-            </GlareHover>
-          </ScrollReveal>
+            <div className="mb-6 grid size-12 place-items-center rounded-xl border border-obsidian-border bg-surface-container text-primary">
+              <span className="material-symbols-outlined text-[26px]">
+                {feature.icon}
+              </span>
+            </div>
+            <h3 className="font-headline-sm text-headline-sm text-on-surface">
+              {feature.title}
+            </h3>
+            <p className="mt-2 font-body-md text-body-md leading-relaxed text-on-surface-variant">
+              {feature.copy}
+            </p>
+          </div>
         ))}
       </div>
-    </Section>
+    </section>
   );
 }

@@ -32,22 +32,9 @@ export function ScrollToTop() {
         type="button"
         onClick={scrollToTop}
         aria-label="Scroll to top of page"
-        className="group grid h-12 w-12 place-items-center rounded-full border border-line bg-raised/90 text-ink-muted shadow-lg backdrop-blur-md transition-all duration-300 hover:border-accent/60 hover:bg-surface hover:text-accent hover:shadow-[0_0_24px_rgba(247,162,59,0.25)] active:scale-95 cursor-pointer"
+        className="group grid h-11 w-11 cursor-pointer place-items-center rounded-xl border border-obsidian-border bg-surface-container-low text-on-surface-variant shadow-lg transition-colors duration-300 hover:bg-surface-bright hover:text-primary active:scale-95"
       >
-        <svg
-          className="h-5 w-5 transition-transform duration-200 group-hover:scale-110"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          aria-hidden="true"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2.2}
-            d="M5 10l7-7m0 0l7 7m-7-7v18"
-          />
-        </svg>
+        <span className="material-symbols-outlined text-[20px]">arrow_upward</span>
       </button>
     </div>
   );

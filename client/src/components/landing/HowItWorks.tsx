@@ -1,95 +1,104 @@
-import { Section, SectionHeading } from "./Section";
-import { ScrollReveal, ParallaxImage } from "../ui/ScrollReveal";
-import { SplitFlapText } from "../ui/SplitFlapText";
-
-const steps = [
-  {
-    number: "01",
-    title: "Create a room",
-    description: "Start a listening room in seconds and become the host.",
-  },
-  {
-    number: "02",
-    title: "Share the code",
-    description: "Send your room code to your friends or group.",
-    code: "ROOM-7XK9",
-  },
-  {
-    number: "03",
-    title: "Listen together",
-    description:
-      "Search for music, press play, and everyone follows the same playback in sync.",
-  },
-];
-
-function HowItWorksBackground() {
+export function HowItWorks() {
   return (
-    <div
-      className="pointer-events-none absolute inset-0 overflow-hidden"
-      aria-hidden="true"
-    >
-      <ParallaxImage
-        src="/bottom-landscape-headphones.webp"
-        speed={0.14}
-        opacity={0.5}
-      />
-      {/* Atmospheric grading to blend seamlessly with canvas */}
-      <div className="absolute inset-0 bg-gradient-to-b from-canvas via-canvas/60 to-canvas" />
-      <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-canvas to-transparent" />
-      <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-canvas to-transparent" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_55%_at_50%_45%,transparent_15%,var(--color-canvas)_95%)]" />
-    </div>
+    <section className="mx-auto w-full max-w-7xl px-gutter py-24">
+      <div className="mb-16 flex flex-col justify-between md:flex-row md:items-end">
+        <div>
+          <span className="font-label-caption text-label-caption uppercase tracking-widest text-primary">
+            The Flow
+          </span>
+          <h2 className="mt-2 font-headline-lg text-headline-lg text-on-surface">
+            Sharing a listen is easy
+          </h2>
+        </div>
+        <p className="mt-2 max-w-sm font-body-md text-body-md text-on-surface-variant md:mt-0">
+          Spin up a shared listening room in under ten seconds, with nothing in
+          your way.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        <Step
+          number="01"
+          title="Start a room"
+          copy="Open a room in seconds and you instantly become the host. Find any track and hit play for everyone inside."
+          accent="primary"
+          icon="radio_button_checked"
+          footer="Host Powers, Instantly"
+        />
+        <Step
+          number="02"
+          title="Pass the code"
+          copy="Drop the code into a chat with your friends or group. They tap it and land straight in the room — no signup on your invite, and they connect without a hitch."
+          accent="tertiary"
+          icon="group_add"
+          footer="No Listener Cap"
+          card
+        />
+        <Step
+          number="03"
+          title="Enjoy it together"
+          copy="Find the music, hit play, and everyone rides the exact same playback, nudged back in place by the room's drift correction."
+          accent="primary"
+          icon="equalizer"
+          footer="Self-Correcting Playback"
+        />
+      </div>
+    </section>
   );
 }
 
-export function HowItWorks() {
+function Step({
+  number,
+  title,
+  copy,
+  accent,
+  icon,
+  footer,
+  card = false,
+}: {
+  number: string;
+  title: string;
+  copy: string;
+  accent: "primary" | "tertiary";
+  icon: string;
+  footer: string;
+  card?: boolean;
+}) {
   return (
-    <Section
-      id="how-it-works"
-      className="overflow-hidden"
-      background={<HowItWorksBackground />}
-    >
-      <SectionHeading
-        title="Listening together is simple."
-        subtitle="Three steps. Zero friction. Instant shared listening."
-      />
-
-      <div className="relative mt-16 grid gap-10 md:grid-cols-3 md:gap-8">
-        {/* connecting rule */}
-        <div
-          className="pointer-events-none absolute left-0 right-0 top-10 hidden h-px bg-gradient-to-r from-transparent via-line-strong to-transparent md:block"
-          aria-hidden="true"
-        />
-
-        {steps.map((step, index) => (
-          <ScrollReveal
-            key={step.number}
-            delay={index * 130}
-            distance={28}
-            className="relative z-10 flex flex-col items-center text-center"
-          >
-            <div className="grid h-20 w-20 place-items-center rounded-lg border border-line bg-raised/85 shadow-lg backdrop-blur-md transition-transform duration-300 hover:scale-105">
-              <span className="font-mono text-2xl font-medium text-accent">
-                {step.number}
+    <div className="group flex flex-col justify-between rounded-2xl border border-obsidian-border bg-[#141418] p-8 transition-colors hover:border-primary/40 hover:bg-[#1c1b1d]">
+      <div>
+        <div className="mb-6 flex size-12 items-center justify-center rounded-xl border border-obsidian-border bg-surface-container font-headline-sm text-headline-sm text-primary transition-colors group-hover:text-primary-container">
+          {number}
+        </div>
+        <h3 className="font-headline-sm text-headline-sm text-on-surface">{title}</h3>
+        <p className="mt-3 font-body-md text-body-md leading-relaxed text-on-surface-variant">
+          {copy}
+        </p>
+        {card && (
+          <div className="mt-6 flex items-center justify-between rounded-lg border border-obsidian-border bg-surface-container-lowest p-3">
+            <span className="font-label-code text-label-code tracking-widest text-primary">
+              ROOM - 71K9
+            </span>
+            <button
+              type="button"
+              className="flex items-center gap-1 rounded border border-obsidian-border bg-surface-container-high px-2.5 py-1 font-label-caption text-label-caption text-on-surface transition-colors hover:bg-primary-container hover:text-white"
+            >
+              <span className="material-symbols-outlined text-[14px]">
+                content_copy
               </span>
-            </div>
-            <h3 className="mt-6 text-lg font-semibold text-ink">{step.title}</h3>
-            <p className="mt-2 max-w-xs text-sm text-ink-muted">
-              {step.description}
-            </p>
-            {step.code && (
-              <div className="mt-5 flex flex-col items-center gap-1.5">
-                <span className="text-[9px] font-semibold uppercase tracking-[0.2em] text-ink-faint">
-                  Room code
-                </span>
-                <div className="flex items-center gap-[2px] rounded-md border border-white/10 bg-[#0c0a08] px-3 py-2 ring-1 ring-black/40">
-                  <SplitFlapText text={step.code} />
-                </div>
-              </div>
-            )}
-          </ScrollReveal>
-        ))}
+              Copy
+            </button>
+          </div>
+        )}
       </div>
-    </Section>
+      <div
+        className={`mt-8 flex items-center gap-2 pt-4 font-label-ui text-label-ui ${
+          accent === "tertiary" ? "text-tertiary" : "text-primary"
+        }`}
+      >
+        <span className="material-symbols-outlined text-[18px]">{icon}</span>
+        {footer}
+      </div>
+    </div>
   );
 }

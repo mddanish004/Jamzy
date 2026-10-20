@@ -27,7 +27,6 @@ function loadYouTubeAPI(): Promise<void> {
     const tag = document.createElement("script");
     tag.src = "https://www.youtube.com/iframe_api";
     tag.onerror = () => {
-      // Let the next mount retry instead of caching a dead promise.
       apiLoadingPromise = null;
       reject(new Error("Could not load the YouTube player script"));
     };
@@ -46,7 +45,6 @@ export type PlayerState =
   | "ended"
   | "error";
 
-/** YouTube IFrame API `onError` codes, translated into something actionable. */
 function describeError(code: number): string {
   switch (code) {
     case 2:
@@ -73,14 +71,11 @@ function readCurrentTime(ref: React.RefObject<YT.Player | null>): number {
 
 export interface YouTubePlayerHandle {
   state: PlayerState;
-  /** True once the IFrame player exists and accepts commands. */
   ready: boolean;
   error: string | null;
   currentTime: number;
   duration: number;
-  /** Load and auto-play a video from the given start position. */
   loadVideo: (videoId: string, startSeconds?: number) => void;
-  /** Load a video in a paused/cued state without auto-playing. */
   cueVideo: (videoId: string, startSeconds?: number) => void;
   play: () => void;
   pause: () => void;
@@ -96,27 +91,14 @@ export interface YouTubePlayerHandle {
   getPlaybackRate: () => number;
   setPlaybackQuality: (quality: string) => void;
   getPlaybackQuality: () => string;
-  /**
-   * The quality level YouTube has actually chosen for the current stream.
-   * Read-only — YouTube controls this based on network and player size.
-   * Updated in real time via the `onPlaybackQualityChange` IFrame API event.
-   */
   playbackQuality: string;
   availableQualityLevels: string[];
 }
 
 export interface YouTubePlayerOptions {
-  /** Fired for user-driven transitions so callers can broadcast them. */
   onStateChange?: (state: PlayerState, currentTime: number) => void;
 }
 
-/**
- * Owns a single YouTube IFrame player mounted into `containerRef`.
- *
- * The container element must be present in the DOM for the whole lifetime of
- * the component using this hook. Rendering it conditionally leaves the ref
- * null when the effect runs and the player is never constructed.
- */
 export function useYouTubePlayer(
   containerRef: React.RefObject<HTMLDivElement | null>,
   options: YouTubePlayerOptions = {},
@@ -152,8 +134,6 @@ export function useYouTubePlayer(
 
     let disposed = false;
 
-    // The API replaces the element it is given with an iframe, so hand it a
-    // throwaway child rather than the React-owned container.
     const mountPoint = document.createElement("div");
     container.appendChild(mountPoint);
 
@@ -166,13 +146,6 @@ export function useYouTubePlayer(
           width: "100%",
           playerVars: {
             autoplay: 0,
-            // Jamzy owns playback: the room decides what plays, where the
-            // playhead is, and who may move it. YouTube's own control bar is a
-            // second, ungoverned input surface — anyone could drive their own
-            // player with it, silently diverging from the room — so it is off,
-            // along with the keyboard shortcuts and clickable annotations that
-            // do the same thing. Play, pause and seek all come from this app's
-            // controls instead.
             controls: 0,
             disablekb: 1,
             iv_load_policy: 3,
@@ -194,7 +167,6 @@ export function useYouTubePlayer(
                 const levels = playerRef.current?.getAvailableQualityLevels();
                 if (levels && levels.length > 0) setAvailableQualityLevels(levels);
               } catch {
-                // Ignore
               }
 
               const pending = pendingVideo.current;
@@ -220,7 +192,6 @@ export function useYouTubePlayer(
                 const levels = playerRef.current?.getAvailableQualityLevels();
                 if (levels && levels.length > 0) setAvailableQualityLevels(levels);
               } catch {
-                // Ignore
               }
             },
             onStateChange: (e: YT.OnStateChangeEvent) => {
@@ -236,7 +207,6 @@ export function useYouTubePlayer(
                     const levels = playerRef.current?.getAvailableQualityLevels();
                     if (levels && levels.length > 0) setAvailableQualityLevels(levels);
                   } catch {
-                    // Ignore
                   }
                   break;
                 case YT.PlayerState.PAUSED:
@@ -286,14 +256,12 @@ export function useYouTubePlayer(
         playerRef.current?.stopVideo();
         playerRef.current?.destroy();
       } catch {
-        // The iframe may already be gone; nothing to clean up.
       }
       playerRef.current = null;
       container.innerHTML = "";
     };
   }, [containerRef]);
 
-  // Progress polling only makes sense once the player exists.
   useEffect(() => {
     if (!ready) return;
 
@@ -304,7 +272,6 @@ export function useYouTubePlayer(
         setCurrentTime(player.getCurrentTime());
         setDuration(player.getDuration());
       } catch {
-        // Player is mid-transition; the next tick will pick it up.
       }
     }, 500);
 
@@ -323,17 +290,10 @@ export function useYouTubePlayer(
       return;
     }
 
-    // Player not constructed yet — onReady drains this.
     pendingVideo.current = { videoId, startSeconds, paused: false };
     setState("buffering");
   }, []);
 
-  /**
-   * Like `loadVideo` but loads the video into a paused/cued state without
-   * auto-playing. Maps to `cueVideoById` in the YouTube IFrame API.
-   * Use this whenever the room's `isPlaying` is false on a fresh load so the
-   * video doesn't start playing before a `pause()` call can reach the player.
-   */
   const cueVideo = useCallback((videoId: string, startSeconds = 0) => {
     setError(null);
     setCurrentTime(startSeconds);
@@ -341,13 +301,11 @@ export function useYouTubePlayer(
 
     const player = playerRef.current;
     if (player) {
-      // cueVideoById puts the player in CUED state — no auto-play.
       setState("idle");
       player.cueVideoById(videoId, startSeconds);
       return;
     }
 
-    // Player not constructed yet — onReady drains this with paused: true.
     pendingVideo.current = { videoId, startSeconds, paused: true };
     setState("idle");
   }, []);
@@ -356,7 +314,6 @@ export function useYouTubePlayer(
     try {
       playerRef.current?.playVideo();
     } catch {
-      // Ignore commands sent while the player is tearing down.
     }
   }, []);
 
@@ -364,7 +321,6 @@ export function useYouTubePlayer(
     try {
       playerRef.current?.pauseVideo();
     } catch {
-      // Ignore commands sent while the player is tearing down.
     }
   }, []);
 
@@ -378,7 +334,6 @@ export function useYouTubePlayer(
       playerRef.current?.stopVideo();
       playerRef.current?.pauseVideo();
     } catch {
-      // Ignore commands sent while the player is tearing down.
     }
   }, []);
 
@@ -387,7 +342,6 @@ export function useYouTubePlayer(
       playerRef.current?.seekTo(seconds, true);
       setCurrentTime(seconds);
     } catch {
-      // Ignore commands sent while the player is tearing down.
     }
   }, []);
 
@@ -397,7 +351,6 @@ export function useYouTubePlayer(
     try {
       playerRef.current?.setVolume(volume);
     } catch {
-      // Ignore commands sent while the player is tearing down.
     }
   }, []);
 
@@ -413,7 +366,6 @@ export function useYouTubePlayer(
     try {
       playerRef.current?.mute();
     } catch {
-      // Ignore commands sent while the player is tearing down.
     }
   }, []);
 
@@ -421,7 +373,6 @@ export function useYouTubePlayer(
     try {
       playerRef.current?.unMute();
     } catch {
-      // Ignore commands sent while the player is tearing down.
     }
   }, []);
 
@@ -437,7 +388,6 @@ export function useYouTubePlayer(
     try {
       playerRef.current?.setPlaybackRate(rate);
     } catch {
-      // Ignore commands sent while the player is tearing down.
     }
   }, []);
 
@@ -454,7 +404,6 @@ export function useYouTubePlayer(
       playerRef.current?.setPlaybackQuality(quality as YT.SuggestedVideoQuality);
       setPlaybackQualityState(quality);
     } catch {
-      // Ignore
     }
   }, []);
 

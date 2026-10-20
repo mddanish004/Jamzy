@@ -1,5 +1,4 @@
 interface EqualizerBarsProps {
-  /** Animate the bars. When false they sit flat (paused / idle). */
   active?: boolean;
   className?: string;
 }
@@ -11,7 +10,6 @@ const BARS = [
   { h: 13, delay: "90ms" },
 ];
 
-/** Compact audio-activity indicator used wherever playback is live. */
 export function EqualizerBars({ active = true, className = "" }: EqualizerBarsProps) {
   return (
     <span
@@ -21,7 +19,7 @@ export function EqualizerBars({ active = true, className = "" }: EqualizerBarsPr
       {BARS.map((bar, i) => (
         <span
           key={i}
-          className={`w-[3px] rounded-full bg-accent ${active ? "jamzy-eq-bar" : ""}`}
+          className={`w-[3px] rounded-full bg-primary ${active ? "jamzy-eq-bar" : ""}`}
           style={{
             height: bar.h,
             animationDelay: bar.delay,

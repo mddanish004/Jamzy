@@ -1,487 +1,308 @@
-import { Button } from "../ui/Button";
-import { Avatar } from "../ui/Avatar";
-import { EqualizerBars } from "../ui/EqualizerBars";
-import { ScrollReveal, ParallaxImage } from "../ui/ScrollReveal";
-import { useAlbumArt } from "../../hooks/useAlbumArt";
-import { MagneticButton } from "../ui/MagneticButton";
-import { HeroIconFlipper } from "./HeroIconFlipper";
+import { Link } from "react-router-dom";
+import { ShowcaseArt } from "./ShowcaseArt";
 
-/* -------------------------------------------------------------------------- */
-/*  Data                                                                       */
-/* -------------------------------------------------------------------------- */
+const HERO_ART = "/album-art/tum-hi-ho.jpg";
 
-const listeners = [
-  { name: "Aman", city: "Delhi", pos: "left-[4%] top-[6%]" },
-  { name: "Priya", city: "Bengaluru", pos: "right-[2%] top-[2%]" },
-  { name: "Rahul", city: "Mumbai", pos: "left-[1%] bottom-[9%]" },
-  { name: "Nibedan", city: "Kolkata", pos: "right-[11%] bottom-[22%]" },
-] as const;
-
-// Deterministic waveform bar heights (0–1). ~62% is "played".
-const waveBars = [
-  0.3, 0.55, 0.4, 0.7, 0.5, 0.85, 0.6, 0.45, 0.75, 0.55, 0.9, 0.65, 0.5, 0.8,
-  0.6, 0.42, 0.7, 0.52, 0.88, 0.6, 0.48, 0.72, 0.58, 0.82, 0.5, 0.66, 0.44,
-  0.78, 0.56, 0.7, 0.46, 0.6, 0.5, 0.74, 0.54, 0.64, 0.4, 0.58, 0.48, 0.36,
+const LISTENERS = [
+  { initial: "D", name: "Danish", role: "Host · DJ", host: true },
+  { initial: "S", name: "Sujal", role: "±2ms Drift" },
+  { initial: "A", name: "Akshat", role: "±5ms Drift" },
+  { initial: "Z", name: "Zoya", role: "±1ms Drift" },
 ];
-const PLAYED = Math.round(waveBars.length * 0.62);
-
-const heroFeatures = [
-  { label: "Real-time sync", d: "M13 10V3L4 14h7v7l9-11h-7z" },
-  {
-    label: "Live presence",
-    d: "M17 20h5v-2a3 3 0 0 0-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 0 1 5.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 0 1 9.288 0M15 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z",
-  },
-  {
-    label: "Chat & reactions",
-    d: "M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 0 1-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8Z",
-  },
-];
-
-/* -------------------------------------------------------------------------- */
-/*  Background                                                                 */
-/* -------------------------------------------------------------------------- */
-
-function HeroBackground() {
-  return (
-    <div
-      className="pointer-events-none absolute inset-0 overflow-hidden"
-      aria-hidden="true"
-    >
-      <ParallaxImage
-        src="/hero-background-primary.webp"
-        speed={0.16}
-      />
-      {/* Atmospheric grading — sink the photo into the canvas */}
-      <div className="absolute inset-0 bg-gradient-to-b from-canvas/60 via-canvas/25 to-canvas" />
-      <div className="absolute inset-0 bg-gradient-to-r from-canvas via-canvas/40 to-transparent lg:via-canvas/20" />
-      {/* Warm horizon lift (atmosphere only) */}
-      <div className="absolute inset-x-0 bottom-0 h-2/3 bg-[radial-gradient(ellipse_60%_50%_at_18%_100%,var(--color-accent-lo),transparent_70%)]" />
-      {/* Edge vignette */}
-      <div className="absolute inset-0 shadow-[inset_0_0_240px_70px_rgba(7,10,15,0.9)]" />
-      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-canvas to-transparent" />
-    </div>
-  );
-}
-
-/* -------------------------------------------------------------------------- */
-/*  Listener network                                                           */
-/* -------------------------------------------------------------------------- */
-
-function ConnectionLines() {
-  return (
-    <svg
-      className="absolute inset-0 h-full w-full"
-      viewBox="0 0 100 100"
-      preserveAspectRatio="none"
-      aria-hidden="true"
-    >
-      <defs>
-        <radialGradient id="jamzy-line" cx="40%" cy="50%" r="55%">
-          <stop offset="0%" stopColor="#fcd34d" stopOpacity="0.9" />
-          <stop offset="50%" stopColor="#f7a23b" stopOpacity="0.75" />
-          <stop offset="100%" stopColor="#f97316" stopOpacity="0.4" />
-        </radialGradient>
-      </defs>
-      <g
-        fill="none"
-        stroke="url(#jamzy-line)"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        style={{ vectorEffect: "non-scaling-stroke" }}
-      >
-        {/* Card -> Aman (top-left) */}
-        <path d="M28,28 Q18,22 12,14" className="jamzy-dash" style={{ vectorEffect: "non-scaling-stroke" }} />
-        {/* Card -> Priya (top-right) */}
-        <path d="M62,34 Q76,22 90,11" className="jamzy-dash" style={{ vectorEffect: "non-scaling-stroke", animationDelay: "-0.7s" }} />
-        {/* Card -> Rahul (bottom-left) */}
-        <path d="M22,72 Q14,76 8,81" className="jamzy-dash" style={{ vectorEffect: "non-scaling-stroke", animationDelay: "-1.4s" }} />
-        {/* Card -> Nibedan (bottom-right) */}
-        <path d="M62,60 Q72,65 81,70" className="jamzy-dash" style={{ vectorEffect: "non-scaling-stroke", animationDelay: "-2.1s" }} />
-      </g>
-    </svg>
-  );
-}
-
-function ListenerNode({ name, city }: { name: string; city: string }) {
-  return (
-    <div className="flex flex-col items-center gap-1.5 text-center">
-      <div className="relative">
-        <Avatar name={name} size={52} online />
-        <span className="absolute -bottom-0.5 -right-0.5 block h-3 w-3 rounded-full bg-online jamzy-pulse-ring" />
-      </div>
-      <div className="leading-tight">
-        <p className="text-[13px] font-medium text-ink">{name}</p>
-        <p className="text-[11px] text-ink-faint">{city}</p>
-      </div>
-    </div>
-  );
-}
-
-/* -------------------------------------------------------------------------- */
-/*  Music player                                                               */
-/* -------------------------------------------------------------------------- */
-
-/** Fetches real cover art from the iTunes Search API (no API key required). */
-function AlbumArt({ src }: { src: string | null }) {
-  if (src) {
-    return (
-      <div className="relative aspect-square w-24 shrink-0 overflow-hidden rounded-md ring-1 ring-line-strong sm:w-28">
-        <img
-          src={src}
-          alt="Midnight City – M83 album art"
-          className="h-full w-full object-cover"
-          draggable={false}
-        />
-      </div>
-    );
-  }
-
-  // Fallback gradient while loading or if fetch fails
-  return (
-    <div className="relative aspect-square w-24 shrink-0 overflow-hidden rounded-md ring-1 ring-line-strong sm:w-28">
-      <div className="absolute inset-0 bg-[linear-gradient(160deg,#4a2a1c_0%,#241228_45%,#0a0908_100%)]" />
-      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-[radial-gradient(ellipse_at_bottom,var(--color-accent-lo),transparent_70%)]" />
-      <span className="absolute left-3 top-3 h-px w-px rounded-full bg-white shadow-[0_0_3px_1px_rgba(255,255,255,0.7)]" />
-      <span className="absolute right-5 top-5 h-px w-px rounded-full bg-white shadow-[0_0_2px_1px_rgba(255,255,255,0.6)]" />
-      <span className="absolute left-8 top-9 h-px w-px rounded-full bg-white/80" />
-      <span className="absolute left-4 top-6 h-px w-10 -rotate-[28deg] bg-gradient-to-r from-transparent via-white to-transparent" />
-    </div>
-  );
-}
-
-const TRACK = {
-  title: "Midnight City",
-  artist: "M83",
-  album: "Hurry Up, We're Dreaming",
-  duration: "4:03",
-  elapsed: "1:42",
-};
-
-function MusicPlayerCard() {
-  const artUrl = useAlbumArt(TRACK.title, TRACK.artist);
-
-  return (
-    <div className="relative w-full max-w-[380px] rounded-xl border border-line-strong bg-surface/85 p-5 shadow-lg backdrop-blur-xl">
-      <div className="flex items-center justify-between">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-2.5 py-1 text-[11px] font-medium tracking-wide text-ink ring-1 ring-line">
-          <span className="relative flex h-1.5 w-1.5">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-online opacity-75" />
-            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-online" />
-          </span>
-          LIVE
-        </span>
-        <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-[11px] text-ink-muted">
-          <EqualizerBars className="h-3.5 shrink-0" />
-          Synced · 4 listeners
-        </span>
-      </div>
-
-      <div className="mt-4 flex items-start gap-4">
-        <AlbumArt src={artUrl} />
-        <div className="min-w-0 flex-1 pt-1">
-          <h3 className="truncate text-[15px] font-semibold text-ink">{TRACK.title}</h3>
-          <p className="mt-0.5 truncate text-xs text-ink-muted">
-            {TRACK.artist} · {TRACK.album}
-          </p>
-
-          <div className="mt-3 flex h-9 items-center gap-[2px]">
-            {waveBars.map((h, i) => (
-              <span
-                key={i}
-                className={`w-full rounded-full ${
-                  i < PLAYED ? "bg-accent" : "bg-white/12"
-                }`}
-                style={{ height: `${Math.max(12, h * 100)}%` }}
-              />
-            ))}
-          </div>
-          <div className="mt-1.5 flex justify-between font-mono text-[10px] text-ink-faint">
-            <span>{TRACK.elapsed}</span>
-            <span>{TRACK.duration}</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-4 flex items-center justify-between">
-        <button className="text-ink-muted transition-colors hover:text-ink" aria-label="Shuffle">
-          <svg className="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
-        <button className="text-ink transition-colors hover:text-ink" aria-label="Previous track">
-          <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z" /></svg>
-        </button>
-        <button
-          className="jamzy-glow grid h-12 w-12 place-items-center rounded-full bg-accent text-accent-ink transition-transform hover:scale-105"
-          aria-label="Pause"
-        >
-          <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5h3v14H8zm5 0h3v14h-3z" /></svg>
-        </button>
-        <button className="text-ink transition-colors hover:text-ink" aria-label="Next track">
-          <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 18l8.5-6L6 6v12zM16 6h2v12h-2z" /></svg>
-        </button>
-        <button className="text-ink-muted transition-colors hover:text-accent" aria-label="Add to favourites">
-          <svg className="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M12 21s-7.5-4.9-10-9.4C.5 8.2 2 4.5 5.5 4.5c2 0 3.5 1.2 4.5 2.7 1-1.5 2.5-2.7 4.5-2.7C22 4.5 23.5 8.2 22 11.6 19.5 16.1 12 21 12 21Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
-          </svg>
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function ChatReaction() {
-  return (
-    <div className="flex items-start gap-2.5 rounded-lg border border-line bg-surface/90 px-3.5 py-3 shadow-md backdrop-blur-xl">
-      <Avatar name="Priya" size={28} />
-      <div className="leading-tight">
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-medium text-ink">Priya</span>
-          <span className="text-[10px] text-ink-faint">2m ago</span>
-        </div>
-        <p className="mt-0.5 text-xs text-ink-muted">This song is insane 🔥</p>
-      </div>
-    </div>
-  );
-}
-
-/* -------------------------------------------------------------------------- */
-/*  Social proof                                                               */
-/* -------------------------------------------------------------------------- */
-
-function SocialProof() {
-  return (
-    <div className="mt-10 flex flex-col gap-5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-7">
-      <div className="flex -space-x-2.5">
-        {listeners.map((l) => (
-          <Avatar
-            key={l.name}
-            name={l.name}
-            size={32}
-            className="ring-2 ring-canvas rounded-full"
-          />
-        ))}
-        <div className="grid h-8 w-8 place-items-center rounded-full bg-white/10 text-[10px] font-semibold text-ink-muted ring-2 ring-canvas">
-          +2
-        </div>
-      </div>
-
-      <div className="flex items-center gap-5 sm:gap-7">
-        <div>
-          <p className="text-xl font-bold text-ink">10K+</p>
-          <p className="text-xs text-ink-muted">People already syncing</p>
-        </div>
-        <div className="h-9 w-px bg-line" />
-        <div>
-          <p className="text-xl font-bold text-ink">4.9/5</p>
-          <p className="max-w-[13rem] text-xs text-ink-muted">
-            Because music is better together
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* -------------------------------------------------------------------------- */
-/*  Hero                                                                       */
-/* -------------------------------------------------------------------------- */
 
 export function Hero() {
   return (
-    <section className="relative flex min-h-screen items-center overflow-hidden pt-28 pb-20 lg:pt-20">
-      <HeroBackground />
+    <div className="relative w-full">
+      <div className="pointer-events-none absolute -top-32 left-1/2 h-[360px] w-[720px] -translate-x-1/2 rounded-full bg-primary-container/15 blur-[140px]" />
+      <div className="pointer-events-none absolute top-[480px] -left-20 h-[420px] w-[420px] rounded-full bg-secondary-container/20 blur-[130px]" />
 
-      <div className="relative z-10 mx-auto grid w-full max-w-6xl grid-cols-1 gap-12 px-5 sm:px-8 lg:grid-cols-12 lg:gap-8">
-        {/* ---------------------------------------------------- Left column */}
-        <div className="min-w-0 lg:col-span-5 lg:pt-6">
-          <ScrollReveal animation="fade-up" distance={16} duration={700} delay={60}>
-            <span className="inline-flex items-center gap-2 rounded-full border border-line bg-white/5 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.14em] text-ink-muted backdrop-blur-sm">
-              <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-              Music brings people closer
+      <section className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center px-gutter pt-12 pb-20 text-center">
+        <div className="inline-flex items-center gap-space-sm rounded-full border border-obsidian-border bg-surface-container-low px-4 py-1.5 shadow-sm">
+          <span className="h-2 w-2 animate-pulse rounded-full bg-primary-container shadow-[0_0_10px_#fb7185]" />
+          <span className="font-label-ui text-label-ui uppercase tracking-wider text-primary">
+            Music is better with company
+          </span>
+        </div>
+
+        <h1 className="mt-8 max-w-4xl font-display-hero text-display-hero tracking-tight text-on-surface">
+          Play it together. Stay in{" "}
+          <span className="bg-gradient-to-r from-[#fda4af] via-[#fb7185] to-[#f43f5e] bg-clip-text text-transparent drop-shadow-[0_2px_15px_rgba(251,113,133,0.3)]">
+            step.
+          </span>
+        </h1>
+
+        <p className="mt-6 max-w-2xl font-body-lg text-body-lg leading-relaxed text-on-surface-variant">
+          Spin up a room, pass the code around, and hear every track together in
+          real time — no matter where your people are.
+        </p>
+
+        <div className="mt-10 flex flex-col items-center gap-space-md sm:flex-row">
+          <Link
+            to="/enter"
+            className="inline-flex w-full items-center justify-center gap-space-sm rounded-xl border border-primary/30 bg-gradient-to-r from-[#f43f5e] to-[#fb7185] px-8 py-3.5 shadow-lg shadow-[#fb7185]/25 transition-all hover:scale-[1.02] hover:opacity-95 active:scale-[0.98] sm:w-auto"
+          >
+            <span className="material-symbols-outlined text-[20px]">graphic_eq</span>
+            <span className="font-headline-sm text-headline-sm text-white">
+              Start a room
             </span>
-          </ScrollReveal>
+          </Link>
+          <Link
+            to="/home"
+            className="inline-flex w-full items-center justify-center gap-space-sm rounded-xl border border-obsidian-border bg-[#1c1b1d] px-8 py-3.5 shadow-sm transition-all hover:bg-surface-bright sm:w-auto"
+          >
+            <span className="material-symbols-outlined text-[20px] text-primary">key</span>
+            <span className="font-headline-sm text-headline-sm text-on-surface">
+              Enter a room
+            </span>
+          </Link>
+        </div>
 
-          <ScrollReveal animation="fade-up" distance={24} duration={850} delay={140}>
-            <h1 className="mt-6 text-[2.5rem] font-extrabold leading-[1.05] tracking-tight text-ink sm:text-5xl lg:text-[3.5rem]">
-              Listen together.
-              <br />
-              Stay in{" "}
-              <span className="bg-gradient-to-r from-amber-300 to-orange-500 bg-clip-text text-transparent">
-                sync
+        <p className="mt-3 font-body-sm text-body-sm text-on-surface-variant/80">
+          No ghost-room clutter · Free forever
+        </p>
+
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-8 rounded-2xl border border-obsidian-border/60 bg-surface-container-lowest/80 px-6 py-3 shadow-lg backdrop-blur-md">
+          <div className="flex items-center gap-space-sm">
+            <div className="flex -space-x-2">
+              <span className="grid size-6 place-items-center rounded-full border border-primary/30 bg-primary/25 text-[10px] font-bold text-primary">
+                D
               </span>
-              .
-            </h1>
-          </ScrollReveal>
-
-          <ScrollReveal animation="fade-up" distance={20} duration={850} delay={220}>
-            <p className="mt-5 max-w-md text-base leading-relaxed text-ink-muted sm:text-[17px]">
-              Create a room, share the code, and enjoy music together in real time —
-              wherever your friends are.
-            </p>
-          </ScrollReveal>
-
-          <ScrollReveal animation="fade-up" distance={18} duration={850} delay={300}>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <MagneticButton>
-                <Button to="/enter" size="lg" variant="light" pill glow className="group">
-                  <HeroIconFlipper />
-                  Create a room
-                </Button>
-              </MagneticButton>
-              <Button to="/enter" size="lg" variant="secondary" pill className="group">
-                <svg
-                  className="h-4 w-4 text-accent transition-transform duration-200 group-hover:scale-110"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
-                  <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
-                </svg>
-                Join a room
-              </Button>
+              <span className="grid size-6 place-items-center rounded-full border border-tertiary/30 bg-tertiary/25 text-[10px] font-bold text-tertiary">
+                S
+              </span>
+              <span className="grid size-6 place-items-center rounded-full border border-secondary/30 bg-secondary/25 text-[10px] font-bold text-secondary">
+                Z
+              </span>
             </div>
-
-            <p className="mt-5 text-xs text-ink-faint">
-              No account required to join · Free forever
-            </p>
-          </ScrollReveal>
-
-          <ScrollReveal animation="fade-up" distance={16} duration={850} delay={380}>
-            <SocialProof />
-          </ScrollReveal>
+            <span className="font-label-ui text-label-ui text-on-surface">
+              <strong className="font-bold text-primary">Rooms</strong> tuned in
+              right now
+            </span>
+          </div>
+          <div className="hidden h-4 w-px bg-outline-variant/30 sm:block" />
+          <div className="flex items-center gap-1.5 font-label-ui text-label-ui text-on-surface">
+            <div className="flex text-primary">
+              {[0, 1, 2, 3, 4].map((i) => (
+                <span
+                  key={i}
+                  className="material-symbols-outlined text-[16px] msr-fill"
+                >
+                  star
+                </span>
+              ))}
+            </div>
+            <span>
+              <strong className={"font-bold text-on-surface"}>In rhythm</strong>{" "}
+              — Because music was meant to be shared
+            </span>
+          </div>
         </div>
 
-        {/* ---------------------------------------------------- Right column */}
-        <div className="min-w-0 lg:col-span-7">
-          <div className="relative mx-auto hidden min-h-[560px] max-w-2xl lg:block">
-            {/* Connection lines fade in smoothly as listeners connect */}
-            <ScrollReveal
-              animation="fade-up"
-              distance={0}
-              blur={false}
-              duration={900}
-              delay={450}
-              className="pointer-events-none absolute inset-0 h-full w-full"
-            >
-              <ConnectionLines />
-            </ScrollReveal>
-
-            {/* Listeners enter sequentially one by one */}
-            {listeners.map((l, index) => (
-              <div key={l.name} className={`absolute ${l.pos}`}>
-                <ScrollReveal
-                  animation="zoom-in"
-                  distance={12}
-                  duration={650}
-                  delay={350 + index * 130}
-                >
-                  <ListenerNode {...l} />
-                </ScrollReveal>
+        <div className="mt-14 w-full max-w-5xl rounded-2xl border border-obsidian-border bg-[#141418] p-4 shadow-[0_20px_50px_rgba(0,0,0,0.6)] shadow-2xl sm:p-6">
+          <div className="flex flex-col items-stretch gap-6 lg:flex-row">
+            <div className="relative flex flex-1 flex-col justify-between overflow-hidden rounded-xl border border-obsidian-border/60 bg-[#1c1b1d] p-5 sm:p-6">
+              <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-primary-container/15 blur-3xl" />
+              <div className="z-10 flex items-start justify-between">
+                <div className="flex items-center gap-space-sm min-w-0">
+                  <span className="flex items-center gap-1.5 rounded-full border border-tertiary/20 bg-tertiary/15 px-2.5 py-1 font-label-caption text-label-caption text-tertiary">
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-tertiary" />
+                    LIVE · LOCKED
+                  </span>
+                  <span className="truncate rounded border border-obsidian-border/40 bg-surface-container-lowest px-2 py-0.5 font-label-code text-label-code tracking-widest text-on-surface-variant/90">
+                    #AMBR-990
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined cursor-pointer text-[20px] text-on-surface-variant hover:text-on-surface">
+                    airplay
+                  </span>
+                  <span className="material-symbols-outlined text-[20px] text-primary">
+                    equalizer
+                  </span>
+                </div>
               </div>
-            ))}
 
-            {/* Central Music Player anchors the room */}
-            <div className="absolute left-1/2 top-1/2 w-full -translate-x-1/2 -translate-y-1/2 px-10">
-              <ScrollReveal
-                animation="zoom-in"
-                distance={16}
-                duration={800}
-                delay={200}
-              >
-                <MusicPlayerCard />
-              </ScrollReveal>
+              <div className="z-10 my-8 flex flex-col items-center gap-6 sm:flex-row">
+                <ShowcaseArt
+                  src={HERO_ART}
+                  alt="Tum Hi Ho single cover — Arijit Singh singing against a warm gold backdrop with red music notes"
+                  className="h-28 w-28 rounded-xl border border-obsidian-border/60 object-cover shadow-xl sm:h-36 sm:w-36"
+                />
+                <div className="min-w-0 text-center sm:text-left">
+                  <span className="font-label-caption text-label-caption uppercase tracking-wider text-primary">
+                    Now Playing For All
+                  </span>
+                  <h3 className="mt-1 truncate font-headline-md text-headline-md text-on-surface">
+                    Tum Hi Ho
+                  </h3>
+                  <p className="font-body-md text-body-md text-on-surface-variant">
+                    Arijit Singh · Aashiqui 2
+                  </p>
+                  <div className="mt-3 flex items-center justify-center gap-2 sm:justify-start">
+                    <span className="rounded border border-obsidian-border bg-surface-bright px-2 py-0.5 font-label-caption text-label-caption text-on-surface">
+                      FLAC 24-bit / 96kHz
+                    </span>
+                    <span className="flex items-center gap-1 font-label-caption text-label-caption text-tertiary">
+                      <span className="material-symbols-outlined text-[14px]">
+                        bolt
+                      </span>
+                      14ms Round Trip
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="z-10 space-y-2">
+                <div className="flex w-full items-center justify-between font-label-caption text-label-caption text-on-surface-variant">
+                  <span>02:44</span>
+                  <div className="flex items-center gap-1 text-primary">
+                    <span className="material-symbols-outlined text-[14px]">
+                      sync
+                    </span>
+                    <span>Following the Host</span>
+                  </div>
+                  <span>04:22</span>
+                </div>
+
+                <div className="relative flex h-3 w-full items-center overflow-hidden rounded-full border border-obsidian-border/50 bg-surface-container-lowest px-1">
+                  <div className="relative h-1.5 w-[64%] rounded-full bg-gradient-to-r from-primary-container to-primary shadow-[0_0_10px_rgba(251,113,133,0.4)]">
+                    <span className="absolute right-0 top-1/2 h-3 w-3 -translate-y-1/2 rounded-full bg-white shadow-[0_0_8px_#fb7185]" />
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-center gap-6 pt-3">
+                  <button
+                    type="button"
+                    className="text-on-surface-variant transition-colors hover:text-on-surface"
+                    aria-label="Shuffle"
+                  >
+                    <span className="material-symbols-outlined text-[24px]">
+                      shuffle
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    className="text-on-surface-variant transition-colors hover:text-on-surface"
+                    aria-label="Skip previous"
+                  >
+                    <span className="material-symbols-outlined text-[28px]">
+                      skip_previous
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    className="grid size-12 place-items-center rounded-full border border-primary/40 bg-gradient-to-tr from-primary-container to-primary text-white shadow-md shadow-primary-container/30 transition-transform hover:scale-105"
+                    aria-label="Pause"
+                  >
+                    <span className="material-symbols-outlined text-[28px] msr-fill">
+                      pause
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    className="text-on-surface-variant transition-colors hover:text-on-surface"
+                    aria-label="Skip next"
+                  >
+                    <span className="material-symbols-outlined text-[28px]">
+                      skip_next
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    className="text-on-surface-variant transition-colors hover:text-on-surface"
+                    aria-label="Repeat"
+                  >
+                    <span className="material-symbols-outlined text-[24px]">
+                      repeat
+                    </span>
+                  </button>
+                </div>
+              </div>
             </div>
 
-            {/* Live Chat reaction pops up after the session is established */}
-            <div className="absolute -bottom-2 right-0 w-[236px]">
-              <ScrollReveal
-                animation="fade-up"
-                distance={20}
-                duration={700}
-                delay={920}
-              >
-                <ChatReaction />
-              </ScrollReveal>
-            </div>
+            <div className="flex w-full flex-col justify-between rounded-xl border border-obsidian-border/60 bg-[#1c1b1d] p-5 lg:w-72">
+              <div>
+                <div className="flex items-center justify-between pb-3">
+                  <span className="font-headline-sm text-headline-sm text-on-surface">
+                    Here Right Now
+                  </span>
+                  <span className="rounded-full border border-primary/25 bg-primary/20 px-2 py-0.5 font-label-caption text-label-caption text-primary">
+                    4 Listening
+                  </span>
+                </div>
 
-            {/* Atmospheric handwritten note drifts in last */}
-            <div className="pointer-events-none absolute right-0 top-[30%] text-right">
-              <ScrollReveal
-                animation="fade-left"
-                distance={14}
-                duration={750}
-                delay={1080}
-                as="p"
-                className="font-hand text-lg leading-tight text-ink-muted/80"
-              >
-                Same song.
-                <br />
-                Different places.
-                <br />
-                One moment.
-              </ScrollReveal>
-            </div>
-          </div>
+                <div className="mt-3 space-y-3">
+                  {LISTENERS.map((listener) => (
+                    <div
+                      key={listener.name}
+                      className={`flex items-center justify-between rounded-lg border p-2 ${
+                        listener.host
+                          ? "border-obsidian-border/40 bg-surface-container"
+                          : "border-obsidian-border/30 bg-surface-container/60"
+                      }`}
+                    >
+                      <div className="flex min-w-0 items-center gap-space-sm">
+                        <div className="relative">
+                          <div
+                            className={`grid size-8 place-items-center rounded-full text-xs font-bold shadow-sm ${
+                              listener.host
+                                ? "bg-primary-container text-white"
+                                : "bg-surface-bright text-on-surface"
+                            }`}
+                          >
+                            {listener.initial}
+                          </div>
+                          <span className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full bg-tertiary" />
+                        </div>
+                        <div className="truncate">
+                          <p className="font-body-md text-body-md font-semibold leading-none text-on-surface">
+                            {listener.name}
+                          </p>
+                          <span
+                            className={`font-label-caption text-label-caption ${
+                              listener.host ? "text-primary" : "text-on-surface-variant"
+                            }`}
+                          >
+                            {listener.role}
+                          </span>
+                        </div>
+                      </div>
+                      {listener.host ? (
+                        <span
+                          className="material-symbols-outlined text-[18px] text-primary"
+                          aria-hidden="true"
+                        >
+                          volume_up
+                        </span>
+                      ) : (
+                        <span
+                          className="material-symbols-outlined text-[16px] text-tertiary"
+                          aria-hidden="true"
+                        >
+                          check_circle
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
 
-          {/* Mobile / tablet — staggered card and reaction */}
-          <div className="mx-auto flex max-w-[380px] flex-col items-center gap-5 lg:hidden">
-            <ScrollReveal animation="zoom-in" distance={16} duration={800} delay={200} className="w-full">
-              <MusicPlayerCard />
-            </ScrollReveal>
-            <ScrollReveal animation="fade-up" distance={16} duration={700} delay={420} className="w-full max-w-[300px]">
-              <ChatReaction />
-            </ScrollReveal>
+              <div className="mt-4 rounded-xl border border-obsidian-border/40 bg-surface-container-lowest p-3">
+                <span className="font-label-caption text-label-caption uppercase tracking-wider text-on-surface-variant">
+                  Up Next
+                </span>
+                <p className="mt-0.5 truncate font-body-sm text-body-sm font-semibold text-on-surface">
+                  Kal Ho Naa Ho — Sonu Nigam
+                </p>
+                <div className="mt-1 flex items-center justify-between font-label-caption text-label-caption text-on-surface-variant">
+                  <span>Queued by Sujal</span>
+                  <span>05:39</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* Handwritten anchor over the foreground */}
-      <p className="pointer-events-none absolute bottom-8 left-5 hidden font-hand text-xl leading-tight text-ink-muted/70 lg:block xl:left-8">
-        Music feels better
-        <br />
-        together.
-      </p>
-
-      {/* Feature rail */}
-      <div className="absolute bottom-8 right-8 hidden items-center gap-6 lg:flex">
-        {heroFeatures.map((f) => (
-          <div key={f.label} className="flex items-center gap-2 text-xs font-medium text-ink-muted">
-            <svg className="h-4 w-4 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.6} d={f.d} />
-            </svg>
-            {f.label}
-          </div>
-        ))}
-      </div>
-      {/* Scroll indicator — bottom centre */}
-      <div
-        className="pointer-events-none absolute bottom-7 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-1.5 sm:flex"
-        aria-hidden="true"
-        style={{ animation: "jamzy-scroll-cue 0.7s ease both 1.6s" }}
-      >
-        <span className="text-[9px] font-semibold uppercase tracking-[0.22em] text-ink-faint">
-          Scroll
-        </span>
-        {/* Bouncing chevron */}
-        <svg
-          className="h-4 w-4 text-ink-faint"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={1.8}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          style={{ animation: "jamzy-scroll-bounce 1.4s ease-in-out infinite" }}
-        >
-          <path d="M6 9l6 6 6-6" />
-        </svg>
-      </div>
-    </section>
+      </section>
+    </div>
   );
 }

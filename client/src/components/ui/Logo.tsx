@@ -1,77 +1,57 @@
 interface LogoProps {
   className?: string;
-  /** Hide the "Jamzy" wordmark and render the mark only. */
   markOnly?: boolean;
-  /** Animate the equalizer bars. */
   animated?: boolean;
-  /** px height of the mark. */
   size?: number;
+  dot?: boolean;
 }
 
-/**
- * Jamzy brand lockup — an audio-equalizer mark plus wordmark.
- *
- * The mark reads as sound and as synchronization: bars of different heights
- * settling into rhythm. Sky-blue gradient, matching the product accent.
- */
 export function Logo({
   className = "",
   markOnly = false,
   animated = false,
-  size = 24,
+  size = 40,
+  dot = true,
 }: LogoProps) {
   const bars = [
-    { x: 1, h: 9, delay: "0ms" },
-    { x: 6.5, h: 16, delay: "160ms" },
-    { x: 12, h: 6, delay: "320ms" },
-    { x: 17.5, h: 13, delay: "80ms" },
-    { x: 23, h: 10, delay: "240ms" },
+    { h: 12, delay: "0ms" },
+    { h: 20, delay: "150ms" },
+    { h: 8, delay: "300ms" },
+    { h: 16, delay: "90ms" },
   ];
 
   return (
-    <span className={`inline-flex items-center gap-2.5 ${className}`}>
-      <svg
-        width={size}
-        height={size}
-        viewBox="0 0 26 26"
-        fill="none"
+    <span
+      className={`inline-flex items-center gap-space-sm ${className}`}
+      style={{
+        transition: "transform 300ms ease",
+      }}
+    >
+      <span
+        className="relative flex items-center justify-center overflow-hidden rounded-xl border border-obsidian-border bg-surface-container-high shadow-lg"
+        style={{ width: size, height: size }}
         aria-hidden="true"
-        className="shrink-0"
       >
-        {bars.map((bar) => (
-          <rect
-            key={bar.x}
-            x={bar.x}
-            y={13 - bar.h / 2}
-            width="3"
-            height={bar.h}
-            rx="1.5"
-            className={animated ? "jamzy-eq-bar" : ""}
-            style={
-              animated
-                ? { animationDelay: bar.delay, transformBox: "fill-box" }
-                : undefined
-            }
-            fill="url(#jamzy-logo-gradient)"
-          />
-        ))}
-        <defs>
-          <linearGradient
-            id="jamzy-logo-gradient"
-            x1="0"
-            y1="0"
-            x2="26"
-            y2="26"
-            gradientUnits="userSpaceOnUse"
-          >
-            <stop stopColor="#fcd34d" />
-            <stop offset="1" stopColor="#f97316" />
-          </linearGradient>
-        </defs>
-      </svg>
+        <span className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent" />
+        <span className="relative flex items-end gap-[3px]" style={{ height: size * 0.4 }}>
+          {bars.map((bar, i) => (
+            <span
+              key={i}
+              className={`w-[3px] rounded-full bg-primary ${animated ? "jamzy-eq-bar" : ""}`}
+              style={{ height: bar.h * (size / 40), animationDelay: bar.delay }}
+            />
+          ))}
+        </span>
+      </span>
       {!markOnly && (
-        <span className="text-lg font-bold tracking-tight text-ink">
-          Sync<span className="text-accent">D</span>
+        <span className="text-headline-md font-headline-md flex items-center tracking-tight text-on-surface">
+          Jamzy
+          {dot && (
+            <span
+              className="ml-1 inline-block size-1.5 rounded-full bg-primary-container"
+              style={{ boxShadow: "0 0 8px #fb7185" }}
+            />
+          )}
         </span>
       )}
     </span>

@@ -11,12 +11,10 @@ import type { YouTubeSearchResult } from "../services/types";
 interface RoomNavbarSearchProps {
   onSelect: (result: YouTubeSearchResult) => void;
   disabled?: boolean;
-  /** When true the host can queue tracks instead of (or alongside) playing them immediately. */
   canQueue?: boolean;
-  /** Called when the user clicks "Add to queue". */
   onQueue?: (result: YouTubeSearchResult) => void;
-  /** Overrides the default "connecting" copy shown while disabled. */
   disabledMessage?: string;
+  inputRef?: React.Ref<HTMLInputElement>;
 }
 
 interface VideoPreview {
@@ -32,7 +30,6 @@ interface PlaylistPreview {
 
 type LinkPreview = VideoPreview | PlaylistPreview;
 
-/** Matches any youtube.com / youtu.be URL, with or without a scheme. */
 const YOUTUBE_LINK_REGEX =
   /(^|\/\/|\s)((www|m|music)\.)?(youtube(-nocookie)?\.com|youtu\.be)\//i;
 
@@ -50,6 +47,7 @@ export function RoomNavbarSearch({
   canQueue = false,
   onQueue,
   disabledMessage,
+  inputRef,
 }: RoomNavbarSearchProps) {
   const { getToken } = useAuth();
   const [query, setQuery] = useState("");
@@ -59,15 +57,22 @@ export function RoomNavbarSearch({
   const [hasSearched, setHasSearched] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  // Link preview state
   const [linkPreview, setLinkPreview] = useState<LinkPreview | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewError, setPreviewError] = useState<string | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const localInputRef = useRef<HTMLInputElement>(null);
 
-  // Close dropdown on click outside
+  function setInputEl(el: HTMLInputElement | null) {
+    localInputRef.current = el;
+    if (typeof inputRef === "function") {
+      inputRef(el);
+    } else if (inputRef) {
+      (inputRef as React.RefObject<HTMLInputElement | null>).current = el;
+    }
+  }
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -92,7 +97,6 @@ export function RoomNavbarSearch({
     };
   }, []);
 
-  // Automatically fetch preview when a YouTube link or playlist is pasted/entered
   useEffect(() => {
     const trimmed = query.trim();
     if (!isYouTubeLink(trimmed)) {
@@ -156,7 +160,6 @@ export function RoomNavbarSearch({
     const trimmed = query.trim();
     if (!trimmed || busy || disabled) return;
 
-    // If already showing a single video preview, play it
     if (linkPreview && linkPreview.type === "video") {
       onSelect(linkPreview.track);
       setQuery("");
@@ -165,13 +168,11 @@ export function RoomNavbarSearch({
       return;
     }
 
-    // If showing a playlist preview, play first track and queue the rest
     if (linkPreview && linkPreview.type === "playlist") {
       handlePlayPlaylist(linkPreview);
       return;
     }
 
-    // Plain text search
     setBusy(true);
     setError(null);
     setHasSearched(true);
@@ -226,6 +227,14 @@ export function RoomNavbarSearch({
     setIsOpen(false);
   }
 
+  function handleClearQuery() {
+    setQuery("");
+    setResults([]);
+    setLinkPreview(null);
+    setIsOpen(false);
+    localInputRef.current?.focus();
+  }
+
   const isPlaylist = isYouTubePlaylistLink(query.trim());
   const hasDropdownContent =
     isOpen &&
@@ -238,22 +247,18 @@ export function RoomNavbarSearch({
       (hasSearched && results.length === 0));
 
   return (
-    <div ref={containerRef} className="relative w-full max-w-md lg:max-w-xl">
-      {/* Pill Search Form matching reference image */}
-      <form
-        onSubmit={handleSearch}
-        className="group relative flex h-10 w-full items-center rounded-full border border-white/10 bg-[#12100e] text-ink transition-all duration-200 hover:border-white/20 focus-within:border-accent/60 focus-within:ring-1 focus-within:ring-accent/40"
-      >
-        {/* YouTube Logo Left Cap */}
-        <div className="flex h-full w-12 sm:w-14 shrink-0 items-center justify-center rounded-l-full border-r border-white/10 bg-white/[0.04]">
-          <svg viewBox="-2 0 30 20" className="h-5 w-[2.5rem]" aria-hidden="true" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="30" height="20" rx="5" fill="#FF0000"/>
-            <path d="M13 14V6L21 10L13 14Z" fill="white"/>
-          </svg>
+    <div ref={containerRef} className="relative w-full">
+      <form onSubmit={handleSearch} className="relative flex w-full items-center">
+        <div className="pointer-events-none absolute left-3.5 flex items-center">
+          <span className="flex h-5 w-5 items-center justify-center rounded-md bg-secondary-container shadow-sm">
+            <span className="material-symbols-outlined text-[14px] text-primary">
+              smart_display
+            </span>
+          </span>
         </div>
 
         <input
-          ref={inputRef}
+          ref={setInputEl}
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -265,65 +270,50 @@ export function RoomNavbarSearch({
           placeholder="Search songs or paste YouTube link…"
           autoComplete="off"
           disabled={disabled}
-          className="h-full min-w-0 flex-1 bg-transparent pl-3 pr-2 text-sm text-ink placeholder:text-ink-faint/80 focus:outline-none disabled:opacity-50"
+          className="w-full rounded-xl border border-[#2c2b36] bg-surface-container-low py-2.5 pl-12 pr-24 font-body-md text-body-md text-on-surface transition-all placeholder:text-on-surface-variant/70 focus:border-primary/50 focus:bg-surface-container focus:outline-none disabled:opacity-50"
         />
 
-        {/* Clear query button */}
         {query.length > 0 && (
           <button
             type="button"
-            onClick={() => {
-              setQuery("");
-              setResults([]);
-              setLinkPreview(null);
-              setIsOpen(false);
-              inputRef.current?.focus();
-            }}
-            className="mr-1 rounded-full p-1 text-xs text-ink-faint transition-colors hover:bg-white/10 hover:text-ink"
+            onClick={handleClearQuery}
+            className="absolute right-16 grid size-6 place-items-center rounded-full text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface"
             aria-label="Clear search"
           >
-            ✕
+            <span className="material-symbols-outlined text-[14px]">close</span>
           </button>
         )}
 
-        {/* Integrated Right Search Cap with Magnifying Glass */}
-        <button
-          type="submit"
-          disabled={disabled || query.trim().length === 0 || busy}
-          className="flex h-full w-12 sm:w-14 shrink-0 items-center justify-center rounded-r-full border-l border-white/10 bg-white/[0.04] text-ink-muted transition-all duration-150 hover:bg-white/[0.08] hover:text-ink active:scale-95 disabled:pointer-events-none disabled:opacity-40"
-          aria-label="Search"
-          title="Search"
-        >
+        <div className="pointer-events-none absolute right-3 flex items-center gap-1.5">
+          <kbd className="pointer-events-none rounded border border-[#2c2b36] bg-surface-container-high px-2 py-0.5 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">
+            ⌘K
+          </kbd>
           {busy ? (
-            <span className="h-4 w-4 animate-spin rounded-full border-2 border-accent border-t-transparent" />
+            <span className="pointer-events-none size-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
           ) : (
-            <svg
-              className="h-4 w-4 text-inherit"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2.2}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
+            <button
+              type="submit"
+              disabled={disabled || query.trim().length === 0}
+              aria-label="Search"
+              title="Search"
+              className="pointer-events-auto disabled:pointer-events-none disabled:opacity-40"
             >
-              <circle cx="11" cy="11" r="8" />
-              <path d="m21 21-4.35-4.35" />
-            </svg>
+              <span className="material-symbols-outlined text-[18px] text-primary">
+                search
+              </span>
+            </button>
           )}
-        </button>
+        </div>
       </form>
 
-      {/* Floating Popover Dropdown for Results & Previews */}
       {hasDropdownContent && (
-        <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-[75vh] overflow-y-auto rounded-2xl border border-line-strong bg-surface/95 p-3.5 shadow-2xl backdrop-blur-xl jamzy-scrollbar">
-          {/* Header Row in Dropdown */}
-          <div className="mb-2 flex items-center justify-between px-1">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
+        <div className="jamzy-scrollbar absolute inset-x-0 top-full z-50 mt-2 max-h-[75vh] overflow-y-auto rounded-2xl border border-obsidian-border bg-surface-container p-2.5 shadow-2xl">
+          <div className="mb-1.5 flex items-center justify-between px-1.5">
+            <span className="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">
               {linkPreview
                 ? isPlaylist
-                  ? "Playlist Preview"
-                  : "Track Preview"
+                  ? "Playlist preview"
+                  : "Track preview"
                 : results.length > 0
                   ? `Results (${results.length})`
                   : "Search"}
@@ -331,38 +321,36 @@ export function RoomNavbarSearch({
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="rounded-full px-1.5 py-0.5 text-[11px] text-ink-faint transition-colors hover:bg-white/10 hover:text-ink"
+              className="rounded-full px-1.5 py-0.5 font-label-sm text-label-sm text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface"
             >
-              Esc to close
+              <span className="material-symbols-outlined text-[13px]">close</span>
             </button>
           </div>
 
-          {/* Loading Preview Spinner */}
           {previewLoading && (
-            <div className="flex items-center gap-2.5 rounded-xl border border-line bg-white/3 p-3 text-xs text-ink-muted animate-pulse">
-              <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-accent border-t-transparent shrink-0" />
+            <div className="flex items-center gap-2.5 rounded-xl border border-obsidian-border bg-surface-container-low p-3 font-label-md text-label-md text-on-surface-variant">
+              <span className="size-3.5 shrink-0 animate-spin rounded-full border-2 border-primary border-t-transparent" />
               <span>Resolving {isPlaylist ? "playlist" : "video"} preview…</span>
             </div>
           )}
 
-          {/* Preview Error */}
           {previewError && (
-            <div className="flex items-center justify-between rounded-xl border border-danger/30 bg-danger/10 px-3 py-2 text-xs text-danger">
+            <div className="flex items-center justify-between rounded-xl border border-error/30 bg-error/10 px-3 py-2 font-label-md text-label-md text-error">
               <span>{previewError}</span>
               <button
                 type="button"
                 onClick={() => setPreviewError(null)}
-                className="text-xs text-danger hover:opacity-80"
+                className="text-error transition-opacity hover:opacity-80"
+                aria-label="Dismiss preview error"
               >
-                ✕
+                <span className="material-symbols-outlined text-[14px]">close</span>
               </button>
             </div>
           )}
 
-          {/* Video Preview Card */}
           {linkPreview && linkPreview.type === "video" && (
-            <div className="relative overflow-hidden rounded-xl border border-line-strong bg-white/4 p-3 shadow-xl backdrop-blur-sm">
-              <div className="flex items-start gap-3 pr-6">
+            <div className="relative overflow-hidden rounded-xl border border-obsidian-border bg-surface-container-low p-3 shadow-xl">
+              <div className="flex items-start gap-3">
                 <div className="relative shrink-0 overflow-hidden rounded-lg bg-black/40 shadow-md">
                   <img
                     src={linkPreview.track.thumbnailUrl}
@@ -370,17 +358,17 @@ export function RoomNavbarSearch({
                     className="h-16 w-24 object-cover"
                   />
                   {linkPreview.track.duration && (
-                    <span className="absolute bottom-1 right-1 rounded bg-black/85 px-1 py-0.5 font-mono text-[9px] font-semibold text-white">
+                    <span className="absolute bottom-1 right-1 rounded bg-black/85 px-1 py-0.5 text-[9px] font-semibold text-white">
                       {formatIsoDuration(linkPreview.track.duration)}
                     </span>
                   )}
                 </div>
 
                 <div className="min-w-0 flex-1">
-                  <h4 className="line-clamp-2 text-xs font-semibold text-ink leading-snug">
+                  <h4 className="line-clamp-2 font-body-md text-body-md font-semibold leading-snug text-on-surface">
                     {linkPreview.track.title}
                   </h4>
-                  <p className="mt-1 truncate text-[11px] text-ink-muted">
+                  <p className="mt-1 truncate font-label-md text-label-md text-on-surface-variant">
                     {linkPreview.track.channelTitle || "YouTube"}
                   </p>
 
@@ -389,11 +377,11 @@ export function RoomNavbarSearch({
                       type="button"
                       onClick={() => handlePlayVideo(linkPreview.track)}
                       disabled={disabled}
-                      className="flex items-center gap-1.5 rounded-lg bg-accent px-3 py-1.5 text-xs font-semibold text-accent-ink transition-all hover:bg-accent-hi active:scale-95 shadow-md shadow-accent/20 disabled:opacity-50"
+                      className="flex items-center gap-1.5 rounded-lg bg-gradient-to-br from-primary to-primary-container px-3 py-1.5 font-label-md text-label-md font-semibold text-white shadow-[0_0_16px_rgba(251,113,133,0.3)] transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50"
                     >
-                      <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M6.5 5.11c0-.94 1.02-1.53 1.83-1.05l11.05 6.39a1.22 1.22 0 0 1 0 2.1l-11.05 6.39c-.81.48-1.83-.11-1.83-1.05V5.11Z" />
-                      </svg>
+                      <span className="material-symbols-outlined msr-fill text-[14px]">
+                        play_arrow
+                      </span>
                       Play now
                     </button>
 
@@ -402,10 +390,12 @@ export function RoomNavbarSearch({
                         type="button"
                         onClick={() => handleQueueVideo(linkPreview.track)}
                         disabled={disabled}
-                        className="flex items-center gap-1.5 rounded-lg border border-accent/40 bg-accent/10 px-3 py-1.5 text-xs font-semibold text-accent transition-all hover:bg-accent/20 active:scale-95 disabled:opacity-50"
+                        className="flex items-center gap-1 rounded-lg border border-primary/40 bg-primary/10 px-3 py-1.5 font-label-md text-label-md font-semibold text-primary transition-all hover:bg-primary/20 active:scale-95 disabled:opacity-50"
                       >
-                        <span>+</span>
-                        Add to queue
+                        <span className="material-symbols-outlined text-[14px]">
+                          playlist_add
+                        </span>
+                        Queue
                       </button>
                     )}
                   </div>
@@ -414,22 +404,22 @@ export function RoomNavbarSearch({
             </div>
           )}
 
-          {/* Playlist Preview Card */}
           {linkPreview && linkPreview.type === "playlist" && (
-            <div className="overflow-hidden rounded-xl border border-line-strong bg-white/4 p-3 shadow-xl backdrop-blur-sm">
+            <div className="overflow-hidden rounded-xl border border-obsidian-border bg-surface-container-low p-3 shadow-xl">
               <div className="mb-2.5 flex items-center justify-between">
-                <span className="text-xs text-ink-muted font-medium">
+                <span className="font-label-md text-label-md font-medium text-on-surface-variant">
                   {linkPreview.tracks.length}{" "}
                   {linkPreview.tracks.length === 1 ? "track" : "tracks"}
                 </span>
               </div>
 
               <div className="mb-3">
-                <h3 className="font-semibold text-sm text-ink truncate">
+                <h3 className="truncate font-label-lg text-label-lg font-semibold text-on-surface">
                   {linkPreview.title}
                 </h3>
-                <p className="mt-0.5 text-[11px] text-ink-faint">
-                  1st video plays immediately, remaining {linkPreview.tracks.length - 1} queued for the room.
+                <p className="mt-0.5 font-label-md text-label-md text-on-surface-variant">
+                  1st video plays immediately, remaining{" "}
+                  {linkPreview.tracks.length - 1} queued for the room.
                 </p>
               </div>
 
@@ -438,11 +428,11 @@ export function RoomNavbarSearch({
                   type="button"
                   onClick={() => handlePlayPlaylist(linkPreview)}
                   disabled={disabled}
-                  className="flex items-center gap-1.5 rounded-lg bg-accent px-3 py-1.5 text-xs font-semibold text-accent-ink transition-all hover:bg-accent-hi active:scale-95 shadow-md shadow-accent/20 disabled:opacity-50"
+                  className="flex items-center gap-1.5 rounded-lg bg-gradient-to-br from-primary to-primary-container px-3 py-1.5 font-label-md text-label-md font-semibold text-white shadow-[0_0_16px_rgba(251,113,133,0.3)] transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50"
                 >
-                  <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M6.5 5.11c0-.94 1.02-1.53 1.83-1.05l11.05 6.39a1.22 1.22 0 0 1 0 2.1l-11.05 6.39c-.81.48-1.83-.11-1.83-1.05V5.11Z" />
-                  </svg>
+                  <span className="material-symbols-outlined msr-fill text-[14px]">
+                    play_arrow
+                  </span>
                   Play playlist
                 </button>
 
@@ -451,24 +441,25 @@ export function RoomNavbarSearch({
                     type="button"
                     onClick={() => handleQueueAllPlaylist(linkPreview)}
                     disabled={disabled}
-                    className="flex items-center gap-1.5 rounded-lg border border-accent/40 bg-accent/10 px-3 py-1.5 text-xs font-semibold text-accent transition-all hover:bg-accent/20 active:scale-95 disabled:opacity-50"
+                    className="flex items-center gap-1 rounded-lg border border-primary/40 bg-primary/10 px-3 py-1.5 font-label-md text-label-md font-semibold text-primary transition-all hover:bg-primary/20 active:scale-95 disabled:opacity-50"
                   >
-                    <span>+</span>
+                    <span className="material-symbols-outlined text-[14px]">
+                      playlist_add
+                    </span>
                     Queue all ({linkPreview.tracks.length})
                   </button>
                 )}
               </div>
 
-              {/* Scrollable list of playlist videos */}
-              <div className="space-y-1 max-h-40 overflow-y-auto jamzy-scrollbar border-t border-line/50 pt-2 pr-1">
+              <div className="jamzy-scrollbar max-h-40 space-y-0.5 overflow-y-auto border-t border-obsidian-border/60 pr-1 pt-2">
                 {linkPreview.tracks.map((t, idx) => {
                   const len = formatIsoDuration(t.duration);
                   return (
                     <div
                       key={t.videoId + idx}
-                      className="flex items-center gap-2.5 rounded-lg px-2 py-1 text-xs transition-colors hover:bg-white/5"
+                      className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-surface-container-high"
                     >
-                      <span className="w-4 shrink-0 font-mono text-[10px] text-ink-faint text-center">
+                      <span className="w-4 shrink-0 text-center font-label-sm text-label-sm text-on-surface-variant">
                         {idx + 1}
                       </span>
                       <img
@@ -477,17 +468,17 @@ export function RoomNavbarSearch({
                         className="h-7 w-11 shrink-0 rounded bg-black/40 object-cover"
                       />
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-[11px] font-medium text-ink">
+                        <p className="truncate font-label-md text-label-md font-medium text-on-surface">
                           {t.title}
                         </p>
                         {t.channelTitle && (
-                          <p className="truncate text-[10px] text-ink-muted">
+                          <p className="truncate font-label-sm text-label-sm text-on-surface-variant">
                             {t.channelTitle}
                           </p>
                         )}
                       </div>
                       {len && (
-                        <span className="shrink-0 font-mono text-[10px] text-ink-faint">
+                        <span className="shrink-0 font-label-sm text-label-sm text-on-surface-variant">
                           {len}
                         </span>
                       )}
@@ -498,50 +489,50 @@ export function RoomNavbarSearch({
             </div>
           )}
 
-          {/* Search Busy Spinner */}
           {busy && (
-            <div className="flex items-center justify-center gap-2.5 py-6 text-sm text-ink-muted">
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-accent border-t-transparent" />
+            <div className="flex items-center justify-center gap-2.5 py-6 font-body-md text-body-md text-on-surface-variant">
+              <span className="size-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
               <span>Searching YouTube…</span>
             </div>
           )}
 
-          {/* Search Error */}
-          {error && <p className="p-3 text-center text-sm text-danger">{error}</p>}
+          {error && (
+            <p className="p-3 text-center font-body-md text-body-md text-error">
+              {error}
+            </p>
+          )}
 
-          {/* No Results Message */}
           {!busy && hasSearched && results.length === 0 && !error && !linkPreview && (
-            <p className="py-6 text-center text-sm text-ink-faint">
+            <p className="py-6 text-center font-body-md text-body-md text-on-surface-variant">
               No results found. Try a different search.
             </p>
           )}
 
-          {/* Search Results List */}
           {results.length > 0 && !busy && (
-            <ul className="space-y-1">
+            <ul className="space-y-0.5">
               {results.map((result) => {
                 const length = formatIsoDuration(result.duration);
                 return (
                   <li
                     key={result.videoId}
-                    className="group flex w-full items-center gap-3 rounded-xl p-2 transition-colors hover:bg-white/5"
+                    className="group flex w-full items-center gap-3 rounded-xl p-2 transition-colors hover:bg-surface-container-low"
                   >
                     <img
                       src={result.thumbnailUrl}
                       alt=""
-                      className="h-11 w-16 shrink-0 rounded-lg bg-white/5 object-cover"
+                      className="h-11 w-16 shrink-0 rounded-lg bg-surface-container-high object-cover"
                       loading="lazy"
                     />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-xs sm:text-sm font-medium text-ink group-hover:text-accent">
+                      <p className="truncate font-body-md text-body-md font-medium text-on-surface transition-colors group-hover:text-primary">
                         {result.title}
                       </p>
-                      <p className="truncate text-[11px] text-ink-muted">
+                      <p className="truncate font-label-md text-label-md text-on-surface-variant">
                         {result.channelTitle}
                       </p>
                     </div>
                     {length && (
-                      <span className="shrink-0 font-mono text-[11px] text-ink-faint">
+                      <span className="hidden shrink-0 font-label-sm text-label-sm text-on-surface-variant sm:inline">
                         {length}
                       </span>
                     )}
@@ -549,7 +540,7 @@ export function RoomNavbarSearch({
                       <button
                         onClick={() => handlePlayVideo(result)}
                         disabled={disabled}
-                        className="rounded-lg px-2.5 py-1 text-xs font-semibold text-ink-muted ring-1 ring-white/10 transition-colors hover:bg-white/10 hover:text-ink disabled:pointer-events-none disabled:opacity-50"
+                        className="rounded-lg border border-obsidian-border bg-surface-container-high px-2.5 py-1 font-label-sm text-label-sm font-semibold text-on-surface transition-colors hover:border-primary/40 hover:bg-surface-container-highest disabled:pointer-events-none disabled:opacity-50"
                       >
                         Play now
                       </button>
@@ -557,7 +548,7 @@ export function RoomNavbarSearch({
                         <button
                           onClick={() => handleQueueVideo(result)}
                           disabled={disabled}
-                          className="rounded-lg bg-accent/15 px-2.5 py-1 text-xs font-semibold text-accent transition-colors hover:bg-accent/25 disabled:pointer-events-none disabled:opacity-50"
+                          className="rounded-lg bg-primary/15 px-2.5 py-1 font-label-sm text-label-sm font-semibold text-primary transition-colors hover:bg-primary/25 disabled:pointer-events-none disabled:opacity-50"
                         >
                           + Queue
                         </button>
@@ -570,7 +561,8 @@ export function RoomNavbarSearch({
           )}
 
           {disabled && disabledMessage && (
-            <p className="mt-2 text-center text-xs text-warning">
+            <p className="mt-1.5 flex items-center justify-center gap-1.5 text-center font-label-md text-label-md text-on-surface-variant">
+              <span className="material-symbols-outlined text-[14px]">info</span>
               {disabledMessage}
             </p>
           )}

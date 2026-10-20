@@ -1,32 +1,30 @@
 import { useState } from "react";
 import { formatIsoDuration } from "../utils/duration";
 import type { QueueItem } from "../services/types";
-import { Card } from "./ui/Card";
 
 interface QueuePanelProps {
   queue: QueueItem[];
   isHost: boolean;
+  hasPlayback: boolean;
   onRemove: (index: number) => void;
   onReorder: (fromIndex: number, toIndex: number) => void;
   onClear: () => void;
-  /** Called when the host explicitly skips to the next item. */
   onSkip: () => void;
+  onFindSongs: () => void;
 }
 
 export function QueuePanel({
   queue,
   isHost,
+  hasPlayback,
   onRemove,
   onReorder,
   onClear,
   onSkip,
+  onFindSongs,
 }: QueuePanelProps) {
   const [dragging, setDragging] = useState<number | null>(null);
   const [dragOver, setDragOver] = useState<number | null>(null);
-
-  // -------------------------------------------------------------------------
-  // Drag-to-reorder (host only, HTML5 drag-and-drop API)
-  // -------------------------------------------------------------------------
 
   function handleDragStart(index: number) {
     setDragging(index);
@@ -53,10 +51,6 @@ export function QueuePanel({
     setDragOver(null);
   }
 
-  // -------------------------------------------------------------------------
-  // Arrow-key reorder fallback (host only)
-  // -------------------------------------------------------------------------
-
   function moveUp(index: number) {
     if (index <= 0) return;
     onReorder(index, index - 1);
@@ -67,203 +61,196 @@ export function QueuePanel({
     onReorder(index, index + 1);
   }
 
-  if (queue.length === 0) {
-    return (
-      <Card className="p-4">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-ink-faint">
-            Up next
-          </h2>
-        </div>
-        <p className="py-4 text-center text-sm text-ink-faint">
-          No tracks in queue.{" "}
-          {isHost
-            ? "Search for a song and click \u201cAdd to queue\u201d."
-            : "Waiting for the host to add tracks."}
-        </p>
-      </Card>
-    );
-  }
-
   return (
-    <Card className="p-4">
-      <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-ink-faint">
-          Up next · {queue.length}
-        </h2>
-        {isHost && (
-          <div className="flex items-center gap-3">
+    <div className="flex min-h-[300px] flex-col overflow-hidden rounded-2xl border border-[#2c2b36] bg-surface-container-low shadow-xl">
+      <div className="flex shrink-0 items-center justify-between border-b border-[#2c2b36] bg-surface-container/70 px-space-md py-3.5 backdrop-blur-sm">
+        <div className="flex items-center gap-2">
+          <span className="material-symbols-outlined text-[18px] text-primary">
+            queue_music
+          </span>
+          <span className="font-headline-sm text-headline-sm font-semibold uppercase tracking-tight text-on-surface">
+            Up next
+          </span>
+          <span className="rounded-full border border-[#2c2b36] bg-surface-container-high px-2 py-0.5 font-label-sm text-label-sm font-semibold text-on-surface-variant">
+            {queue.length} {queue.length === 1 ? "track" : "tracks"}
+          </span>
+        </div>
+
+        {isHost && queue.length > 0 && (
+          <div className="flex items-center gap-2">
             <button
+              type="button"
               onClick={onSkip}
-              className="flex items-center gap-1 text-xs text-ink-muted transition-colors hover:text-ink"
+              className="flex items-center gap-1 font-label-sm text-label-sm text-on-surface-variant transition-colors hover:text-primary"
               aria-label="Skip to next track"
               title="Skip to next track"
             >
-              {/* Skip-forward icon */}
-              <svg
-                className="h-3.5 w-3.5"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path d="M6 18l8.5-6L6 6v12zm2-8.14L11.03 12 8 14.14V9.86zM16 6h2v12h-2z" />
-              </svg>
-              Skip
+              <span className="material-symbols-outlined text-[16px]">
+                skip_next
+              </span>
+              <span>Skip</span>
             </button>
             <button
+              type="button"
               onClick={onClear}
-              className="text-xs text-ink-muted transition-colors hover:text-danger"
+              className="flex items-center gap-1 font-label-sm text-label-sm text-on-surface-variant transition-colors hover:text-error"
               aria-label="Clear queue"
+              title="Clear the whole queue"
             >
-              Clear all
+              <span className="material-symbols-outlined text-[16px]">
+                delete_sweep
+              </span>
+              <span>Clear</span>
             </button>
           </div>
         )}
       </div>
 
-      <ul className="max-h-72 space-y-1 overflow-y-auto jamzy-scrollbar pr-2">
-        {queue.map((item, index) => {
-          const length = formatIsoDuration(item.duration);
-          const isFirst = index === 0;
-          const isDraggingThis = dragging === index;
-          const isDragTarget = dragOver === index;
-
-          return (
-            <li
-              key={`${item.videoId}-${index}`}
-              draggable={isHost}
-              onDragStart={() => handleDragStart(index)}
-              onDragEnter={() => handleDragEnter(index)}
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={() => handleDrop(index)}
-              onDragEnd={handleDragEnd}
-              className={`group flex items-center gap-2.5 rounded-lg px-2 py-2 transition-all ${
-                isDraggingThis ? "opacity-40" : ""
-              } ${isDragTarget ? "ring-1 ring-accent/60 bg-accent/5" : "hover:bg-white/5"}`}
-            >
-              {/* Position number / drag handle */}
-              <span
-                className={`w-5 shrink-0 text-center font-mono text-xs ${
-                  isFirst ? "text-accent font-semibold" : "text-ink-faint"
-                } ${isHost ? "cursor-grab active:cursor-grabbing" : ""}`}
-                aria-hidden="true"
-              >
-                {isFirst ? "▶" : index + 1}
+      {queue.length === 0 ? (
+        <div className="flex flex-1 flex-col items-center justify-center p-space-md text-center">
+          <div className="flex max-w-[260px] flex-col items-center gap-space-sm">
+            <div className="grid size-12 place-items-center rounded-xl border border-[#2c2b36] bg-surface-container-high text-on-surface-variant">
+              <span className="material-symbols-outlined text-[24px]">
+                library_music
               </span>
+            </div>
+            <div className="flex flex-col gap-1">
+              <p className="font-headline-sm text-headline-sm font-semibold text-on-surface">
+                Queue is empty
+              </p>
+              <p className="font-body-sm text-body-sm leading-relaxed text-on-surface-variant">
+                {isHost
+                  ? "Add songs from the search bar above to build your synchronized queue."
+                  : "Waiting for the host to add tracks."}
+              </p>
+            </div>
+            {isHost && (
+              <button
+                type="button"
+                onClick={onFindSongs}
+                className="mt-1 flex items-center gap-1.5 rounded-lg border border-[#2c2b36] bg-surface-container px-3 py-1.5 font-label-sm text-label-sm font-semibold text-primary shadow-sm transition-all hover:border-primary/40 hover:bg-surface-container-high"
+              >
+                <span className="material-symbols-outlined text-[14px]">search</span>
+                <span>Find songs</span>
+              </button>
+            )}
+          </div>
+        </div>
+      ) : (
+        <ul className="jamzy-scrollbar max-h-72 min-h-0 flex-1 space-y-0.5 overflow-y-auto p-space-sm pr-1">
+          {queue.map((item, index) => {
+            const length = formatIsoDuration(item.duration);
+            const isFirst = index === 0;
+            const isDraggingThis = dragging === index;
+            const isDragTarget = dragOver === index;
 
-              {/* Thumbnail */}
-              <img
-                src={item.thumbnailUrl}
-                alt=""
-                className="h-9 w-12 shrink-0 rounded-md bg-white/5 object-cover"
-                loading="lazy"
-              />
-
-              {/* Title + label */}
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-ink">
-                  {item.title}
-                </p>
-                {isFirst && (
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-accent/80">
-                    Up next
-                  </p>
-                )}
-              </div>
-
-              {/* Duration */}
-              {length && (
-                <span className="shrink-0 font-mono text-xs text-ink-faint">
-                  {length}
+            return (
+              <li
+                key={`${item.videoId}-${index}`}
+                draggable={isHost}
+                onDragStart={() => handleDragStart(index)}
+                onDragEnter={() => handleDragEnter(index)}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={() => handleDrop(index)}
+                onDragEnd={handleDragEnd}
+                className={`group flex items-center gap-2.5 rounded-xl px-2 py-2 transition-all ${
+                  isDraggingThis ? "opacity-40" : ""
+                } ${
+                  isDragTarget
+                    ? "bg-primary/5 ring-1 ring-primary/60"
+                    : "hover:bg-surface-container-high"
+                } ${isFirst ? "border-l-2 border-primary" : ""}`}
+              >
+                <span
+                  className={`w-5 shrink-0 text-center font-label-sm text-label-sm ${
+                    isFirst ? "font-semibold text-primary" : "text-on-surface-variant"
+                  } ${isHost ? "cursor-grab active:cursor-grabbing" : ""}`}
+                  aria-hidden="true"
+                >
+                  {index + 1}
                 </span>
-              )}
 
-              {/* Host controls */}
-              {isHost && (
-                <div className="flex shrink-0 items-center gap-1 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100">
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      moveUp(index);
-                    }}
-                    disabled={index === 0}
-                    className="flex h-7 w-7 items-center justify-center rounded-md text-ink-muted transition-all hover:bg-white/10 hover:text-ink active:scale-95 disabled:pointer-events-none disabled:opacity-20"
-                    aria-label="Move up in queue"
-                    title="Move up"
-                  >
-                    <svg
-                      className="h-4 w-4"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth={2.2}
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M5 10l7-7m0 0l7 7m-7-7v18"
-                      />
-                    </svg>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      moveDown(index);
-                    }}
-                    disabled={index === queue.length - 1}
-                    className="flex h-7 w-7 items-center justify-center rounded-md text-ink-muted transition-all hover:bg-white/10 hover:text-ink active:scale-95 disabled:pointer-events-none disabled:opacity-20"
-                    aria-label="Move down in queue"
-                    title="Move down"
-                  >
-                    <svg
-                      className="h-4 w-4"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth={2.2}
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M19 14l-7 7m0 0l-7-7m7 7V3"
-                      />
-                    </svg>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onRemove(index);
-                    }}
-                    className="flex h-7 w-7 items-center justify-center rounded-md text-ink-muted transition-all hover:bg-danger/15 hover:text-danger active:scale-95"
-                    aria-label={`Remove ${item.title} from queue`}
-                    title="Remove from queue"
-                  >
-                    <svg
-                      className="h-4 w-4"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth={2.2}
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
+                <img
+                  src={item.thumbnailUrl}
+                  alt=""
+                  className="h-9 w-12 shrink-0 rounded-md bg-surface-container-high object-cover"
+                  loading="lazy"
+                />
+
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-label-md text-label-md font-medium text-on-surface">
+                    {item.title}
+                  </p>
+                  {isFirst && (
+                    <p className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-primary/80">
+                      Up next{length ? ` · ${length}` : ""}
+                    </p>
+                  )}
                 </div>
-              )}
-            </li>
-          );
-        })}
-      </ul>
-    </Card>
+
+                {isHost && (
+                  <div className="flex shrink-0 items-center gap-0.5 transition-opacity sm:opacity-0 sm:group-hover:opacity-100">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        moveUp(index);
+                      }}
+                      disabled={index === 0}
+                      className="grid size-7 place-items-center rounded-md text-on-surface-variant transition-all hover:bg-surface-container-highest hover:text-on-surface active:scale-95 disabled:pointer-events-none disabled:opacity-20"
+                      aria-label="Move up in queue"
+                      title="Move up"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">
+                        keyboard_arrow_up
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        moveDown(index);
+                      }}
+                      disabled={index === queue.length - 1}
+                      className="grid size-7 place-items-center rounded-md text-on-surface-variant transition-all hover:bg-surface-container-highest hover:text-on-surface active:scale-95 disabled:pointer-events-none disabled:opacity-20"
+                      aria-label="Move down in queue"
+                      title="Move down"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">
+                        keyboard_arrow_down
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onRemove(index);
+                      }}
+                      className="grid size-7 place-items-center rounded-md text-on-surface-variant transition-all hover:bg-error/15 hover:text-error active:scale-95"
+                      aria-label={`Remove ${item.title} from queue`}
+                      title="Remove from queue"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">
+                        close
+                      </span>
+                    </button>
+                  </div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      <div className="flex shrink-0 items-center justify-between border-t border-[#2c2b36] bg-surface-container-lowest/70 px-space-md py-2.5 font-label-sm text-label-sm text-on-surface-variant backdrop-blur-sm">
+        <span className="flex items-center gap-1">
+          <span className="material-symbols-outlined text-[13px] text-tertiary">
+            security
+          </span>
+          <span>Host-led queue</span>
+        </span>
+        <span>{queue.length > 0 && hasPlayback ? "Auto-advance on" : "Auto-advance ready"}</span>
+      </div>
+    </div>
   );
 }

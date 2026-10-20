@@ -10,9 +10,7 @@ export type CurrentUserState =
 
 export interface CurrentUserContextValue {
   state: CurrentUserState;
-  /** Re-fetch `/me`. Used by the error screen's retry button. */
   refresh: () => void;
-  /** Adopt a freshly created profile without a second round trip. */
   applyProfile: (user: PublicUser) => void;
 }
 

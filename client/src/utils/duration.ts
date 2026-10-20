@@ -1,4 +1,3 @@
-/** Formats a number of seconds as `m:ss` or `h:mm:ss`. */
 export function formatSeconds(seconds: number): string {
   if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
 
@@ -18,10 +17,6 @@ export function formatSeconds(seconds: number): string {
 const ISO_8601_DURATION_REGEX =
   /^P(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?)?$/;
 
-/**
- * Converts the YouTube Data API's ISO 8601 duration ("PT3M45S") to `m:ss`.
- * Returns an empty string for live streams and unparseable values.
- */
 export function formatIsoDuration(raw: string): string {
   const match = ISO_8601_DURATION_REGEX.exec(raw.trim());
   if (!match) return "";

@@ -1,15 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Card } from "./Card";
 
-/**
- * `[emoji, name]`. The name drives both search and the accessible label, so
- * screen readers announce "Insert fire" rather than the raw glyph.
- *
- * This is a hand-picked set rather than the full Unicode table: it keeps the
- * picker dependency-free and, more importantly, keeps every glyph one the OS
- * font can actually render. Emoji are plain text — no sprite sheets, no image
- * requests, no CDN.
- */
 type EmojiEntry = readonly [emoji: string, name: string];
 
 interface EmojiCategory {
@@ -255,17 +245,13 @@ function writeRecents(emojis: string[]): void {
   try {
     localStorage.setItem(RECENTS_KEY, JSON.stringify(emojis));
   } catch {
-    // Storage unavailable (private mode, blocked cookies) — recents are a
-    // convenience, so silently carry on without them.
   }
 }
 
-/** Flat list and name lookup, built once at module load rather than per render. */
 const ALL_EMOJIS: readonly EmojiEntry[] = CATEGORIES.flatMap((c) => c.emojis);
 const NAME_BY_EMOJI = new Map<string, string>(ALL_EMOJIS);
 
 interface EmojiPickerProps {
-  /** Called with the chosen emoji; the panel stays open for multi-picking. */
   onSelect: (emoji: string) => void;
   disabled?: boolean;
 }
@@ -277,10 +263,8 @@ export function EmojiPicker({ onSelect, disabled = false }: EmojiPickerProps) {
   const [recents, setRecents] = useState<string[]>(readRecents);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // A disconnected composer closes the panel without needing its own effect.
   const isOpen = open && !disabled;
 
-  // Dismiss on outside click or Escape.
   useEffect(() => {
     if (!isOpen) return;
 
@@ -300,7 +284,6 @@ export function EmojiPicker({ onSelect, disabled = false }: EmojiPickerProps) {
   }, [isOpen]);
 
   function handleToggle() {
-    // Recents can change in another tab/room — re-read them on each open.
     if (!isOpen) {
       setRecents(readRecents());
       setSearch("");
@@ -340,18 +323,17 @@ export function EmojiPicker({ onSelect, disabled = false }: EmojiPickerProps) {
         disabled={disabled}
         aria-label="Insert emoji"
         aria-expanded={isOpen}
-        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-line text-lg transition-colors hover:border-accent/60 hover:bg-white/5 disabled:opacity-50 disabled:pointer-events-none ${
-          isOpen ? "border-accent/60 bg-white/5" : "bg-white/3"
+        className={`grid size-9 shrink-0 place-items-center rounded-xl border border-[#2c2b36] text-lg transition-colors hover:bg-surface-container-high disabled:pointer-events-none disabled:opacity-50 ${
+          isOpen
+            ? "border-primary/60 bg-primary/10"
+            : "bg-surface-container"
         }`}
       >
         <span aria-hidden="true">🙂</span>
       </button>
 
       {isOpen && (
-        <Card
-          level="overlay"
-          className="absolute bottom-12 left-0 z-20 w-72 p-3"
-        >
+        <div className="absolute bottom-12 left-0 z-20 w-72 rounded-2xl border border-obsidian-border bg-surface-container p-3 shadow-2xl">
           <input
             type="text"
             value={search}
@@ -359,12 +341,12 @@ export function EmojiPicker({ onSelect, disabled = false }: EmojiPickerProps) {
             placeholder="Search emoji…"
             aria-label="Search emoji"
             autoComplete="off"
-            className="mb-2 h-8 w-full rounded-md border border-line bg-white/3 px-2.5 text-xs text-ink placeholder:text-ink-faint focus:border-accent/60 focus:outline-none"
+            className="mb-2 h-8 w-full rounded-lg border border-[#2c2b36] bg-surface-container-low px-2.5 font-label-md text-label-md text-on-surface placeholder:text-on-surface-variant/70 focus:border-primary/60 focus:outline-none"
           />
 
           {query.length === 0 && recents.length > 0 && (
             <div className="mb-2">
-              <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-ink-faint">
+              <p className="mb-1 font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">
                 Recent
               </p>
               <div className="grid grid-cols-8 gap-0.5">
@@ -384,7 +366,7 @@ export function EmojiPicker({ onSelect, disabled = false }: EmojiPickerProps) {
             <div
               role="tablist"
               aria-label="Emoji categories"
-              className="mb-2 flex gap-0.5 border-b border-line pb-2"
+              className="mb-2 flex gap-0.5 border-b border-[#2c2b36] pb-2"
             >
               {CATEGORIES.map((c) => (
                 <button
@@ -397,7 +379,7 @@ export function EmojiPicker({ onSelect, disabled = false }: EmojiPickerProps) {
                   onClick={() => setCategoryId(c.id)}
                   className={`flex h-7 w-7 items-center justify-center rounded text-sm transition-colors ${
                     c.id === categoryId
-                      ? "bg-accent-lo"
+                      ? "bg-primary/15"
                       : "opacity-50 hover:opacity-100"
                   }`}
                 >
@@ -419,11 +401,11 @@ export function EmojiPicker({ onSelect, disabled = false }: EmojiPickerProps) {
           </div>
 
           {visible.length === 0 && (
-            <p className="py-4 text-center text-xs text-ink-faint">
+            <p className="py-4 text-center text-xs text-on-surface-variant">
               No emoji match “{search.trim()}”.
             </p>
           )}
-        </Card>
+        </div>
       )}
     </div>
   );
@@ -441,12 +423,11 @@ function EmojiButton({
   return (
     <button
       type="button"
-      // Keep focus in the message input so the caret position survives a pick.
       onMouseDown={(e) => e.preventDefault()}
       onClick={() => onPick(emoji)}
       title={name}
       aria-label={`Insert ${name}`}
-      className="flex h-8 w-8 items-center justify-center rounded text-lg transition-colors hover:bg-white/8"
+      className="flex h-8 w-8 items-center justify-center rounded text-lg transition-colors hover:bg-surface-container-high"
     >
       <span aria-hidden="true">{emoji}</span>
     </button>

@@ -12,16 +12,16 @@ import { AuthShell } from "./components/ui/AuthShell";
 
 const clerkAppearance = {
   variables: {
-    colorPrimary: "#f7a23b",
-    colorText: "#f5f3f0",
-    colorTextSecondary: "#b0a79c",
-    colorBackground: "#181512",
-    colorInputBackground: "#201b16",
-    colorInputText: "#f5f3f0",
-    colorDanger: "#f87171",
-    colorSuccess: "#34d399",
-    borderRadius: "12px",
-    fontFamily: '"Manrope", ui-sans-serif, system-ui, sans-serif',
+    colorPrimary: "#fb7185",
+    colorText: "#e5e1e4",
+    colorTextSecondary: "#a58a8c",
+    colorBackground: "#1c1b1d",
+    colorInputBackground: "#0e0e10",
+    colorInputText: "#e5e1e4",
+    colorDanger: "#ffb4ab",
+    colorSuccess: "#10b981",
+    borderRadius: "8px",
+    fontFamily: '"Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif',
   },
 };
 
@@ -37,8 +37,8 @@ function App() {
           <Route
             path="/signin"
             element={
-              <AuthShell wide>
-                <div className="jamzy-clerk">
+              <AuthShell>
+                <div className="jamzy-clerk w-full">
                   <SignIn
                     appearance={clerkAppearance}
                     fallbackRedirectUrl="/enter"
@@ -52,8 +52,8 @@ function App() {
           <Route
             path="/signup"
             element={
-              <AuthShell wide>
-                <div className="jamzy-clerk">
+              <AuthShell>
+                <div className="jamzy-clerk w-full">
                   <SignUp
                     appearance={clerkAppearance}
                     fallbackRedirectUrl="/enter"

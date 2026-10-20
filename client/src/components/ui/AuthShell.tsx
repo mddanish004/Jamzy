@@ -1,48 +1,49 @@
-import { Link } from "react-router-dom";
 import type { ReactNode } from "react";
+import { Link } from "react-router-dom";
 import { Logo } from "./Logo";
 
 interface AuthShellProps {
-  title?: string;
-  subtitle?: string;
-  /** Roomier column — used to host the Clerk widget, which sizes its own card. */
-  wide?: boolean;
   children: ReactNode;
 }
 
-/**
- * Centered, branded frame for the auth / onboarding / status screens. Same
- * cinematic backdrop as the landing hero so the whole product feels continuous.
- */
-export function AuthShell({ title, subtitle, wide, children }: AuthShellProps) {
+export function AuthShell({ children }: AuthShellProps) {
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-5 py-16">
-      {/* Atmospheric backdrop */}
-      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-        <img
-          src="/hero-background-abstract.png"
-          alt=""
-          className="h-full w-full object-cover opacity-40"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-canvas/70 via-canvas/85 to-canvas" />
-        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-[radial-gradient(ellipse_55%_50%_at_15%_100%,var(--color-accent-lo),transparent_70%)]" />
+    <div className="relative flex min-h-screen w-full flex-col items-center justify-center px-5 py-16">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+        <div className="absolute -top-32 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-[#fb7185]/10 blur-[130px]" />
+        <div className="absolute -bottom-24 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-[#f43f5e]/5 blur-[110px]" />
       </div>
 
-      <div className={`relative w-full ${wide ? "max-w-[28rem]" : "max-w-sm"}`}>
-        <Link to="/" aria-label="Jamzy home" className="mb-8 flex justify-center">
-          <Logo size={26} />
+      <div className="relative z-10 flex w-full max-w-md flex-col items-center">
+        <Link
+          to="/"
+          aria-label="Jamzy home"
+          className="group mb-space-lg flex cursor-pointer items-center gap-space-sm transition-transform duration-300 hover:scale-105"
+        >
+          <Logo size={40} animated />
         </Link>
 
-        {title && (
-          <div className="mb-6 text-center">
-            <h1 className="text-xl font-bold tracking-tight text-ink">{title}</h1>
-            {subtitle && (
-              <p className="mt-1.5 text-sm text-ink-muted">{subtitle}</p>
-            )}
-          </div>
-        )}
-
         {children}
+
+        <div className="mt-space-lg flex w-full flex-col items-center justify-between gap-space-sm px-space-xs font-label-sm text-label-sm text-outline sm:flex-row">
+          <div className="flex items-center gap-1.5 opacity-80 transition-opacity hover:opacity-100">
+            <span className="material-symbols-outlined text-[14px]">lock</span>
+            <span>
+              Secured by <span className="font-medium text-on-surface-variant">Clerk</span>
+            </span>
+          </div>
+          {import.meta.env.DEV && (
+            <div className="flex items-center gap-2 rounded-full border border-obsidian-border bg-surface-container-low px-2.5 py-1 shadow-inner">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-tertiary opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-tertiary" />
+              </span>
+              <span className="font-medium tracking-wide text-on-surface-variant">
+                Development mode
+              </span>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -43,18 +43,6 @@ interface HostTransferAck {
   message?: string;
 }
 
-/**
- * Combines two message lists into one, deduped by id and sorted by server
- * timestamp. ISO 8601 strings sort correctly with a plain string compare, so
- * no date parsing is needed. Used both for the join-ack history (which can
- * overlap with messages already appended live) and for a single incoming
- * `chat:new`.
- *
- * Optimistic messages use a temporary id prefixed with `optimistic:`. When
- * the real message arrives from the server (with its DB id), we remove the
- * matching optimistic entry by content + userId proximity so the message
- * doesn't flash or duplicate.
- */
 function mergeMessages(
   prev: ChatMessage[],
   incoming: ChatMessage[],
@@ -62,7 +50,6 @@ function mergeMessages(
   const byId = new Map(prev.map((m) => [m.id, m]));
   for (const m of incoming) {
     byId.set(m.id, m);
-    // If a real message just arrived, drop any optimistic placeholder for it.
     if (!m.id.startsWith("optimistic:")) {
       for (const [key, existing] of byId) {
         if (
@@ -93,7 +80,6 @@ export interface RoomSocket {
   chatError: string | null;
   chatSending: boolean;
   sendChatMessage: (content: string) => void;
-  // Queue
   queue: QueueItem[];
   addToQueue: (track: YouTubeSearchResult) => void;
   prependToQueue: (track: YouTubeSearchResult) => void;
@@ -101,26 +87,14 @@ export interface RoomSocket {
   reorderQueue: (fromIndex: number, toIndex: number) => void;
   clearQueue: () => void;
   advanceQueue: () => void;
-  // Host
-  /**
-   * Authoritative host from the socket layer. `null` until the first presence
-   * snapshot arrives — callers should fall back to the host from the room's
-   * REST payload until then.
-   */
   hostUserId: string | null;
-  /** Set for a few seconds after the host changes, for an in-room notice. */
   hostNotice: HostUpdatePayload | null;
   dismissHostNotice: () => void;
-  /** Non-null while a disconnected host's grace period is counting down. */
   hostPending: HostPendingPayload | null;
   hostError: string | null;
   transferHost: (userId: string) => void;
 }
 
-/**
- * Owns the room's Socket.IO connection: live presence plus the shared playback
- * state. Both ride the same socket so a room needs exactly one connection.
- */
 export function useRoomSocket(
   roomCode: string | null,
   initialMembers: { user: { id: string; username: string } }[],
@@ -150,15 +124,11 @@ export function useRoomSocket(
   const [hostError, setHostError] = useState<string | null>(null);
   const socketRef = useRef<Socket | null>(null);
 
-  // Clerk re-creates `getToken` on every token refresh; keeping it in a ref
-  // stops that from tearing down and rebuilding the socket.
   const getTokenRef = useRef(getToken);
   useEffect(() => {
     getTokenRef.current = getToken;
   });
 
-  // Keep current user in a ref so sendChatMessage can always read the latest
-  // value without needing it as a useCallback dependency.
   const currentUserRef = useRef(currentUser);
   useEffect(() => {
     currentUserRef.current = currentUser;
@@ -181,8 +151,6 @@ export function useRoomSocket(
       }
       if (res.playback) setPlayback(res.playback);
       if (res.queue) setQueue(res.queue);
-      // Merge rather than replace: a reconnect's history snapshot can race
-      // with a `chat:new` for a message already appended live.
       if (res.messages)
         setMessages((prev) => mergeMessages(prev, res.messages!));
     };
@@ -227,7 +195,6 @@ export function useRoomSocket(
       socket.on("host:update", (payload: HostUpdatePayload) => {
         setHostUserId(payload.hostUserId);
         setHostNotice(payload);
-        // The room has a host again, so any countdown is over.
         setHostPending(null);
         setHostError(null);
       });
@@ -309,9 +276,6 @@ export function useRoomSocket(
         return;
       }
 
-      // Optimistically append the message so it appears instantly.
-      // The placeholder id is replaced by the real DB id when the server
-      // broadcasts `chat:new` back and mergeMessages deduplicates it.
       const optimisticId = `optimistic:${Date.now()}`;
       const me = currentUserRef.current;
       const optimisticMsg: ChatMessage = {
@@ -328,7 +292,6 @@ export function useRoomSocket(
       socket.emit("chat:send", { roomCode, content }, (res: { ok: boolean; message?: string }) => {
         setChatSending(false);
         if (!res?.ok) {
-          // Roll back the optimistic message on failure.
           setMessages((prev) => prev.filter((m) => m.id !== optimisticId));
           setChatError(res?.message ?? "Could not send message");
         } else {
@@ -338,10 +301,6 @@ export function useRoomSocket(
     },
     [roomCode],
   );
-
-  // ---------------------------------------------------------------------------
-  // Queue callbacks — host-only by convention; the server enforces the boundary
-  // ---------------------------------------------------------------------------
 
   const emitQueue = useCallback(
     (event: string, payload: Record<string, unknown>) => {
@@ -393,10 +352,6 @@ export function useRoomSocket(
     if (!roomCode) return;
     emitQueue("queue:advance", { roomCode });
   }, [emitQueue, roomCode]);
-
-  // ---------------------------------------------------------------------------
-  // Host transfer — host-only; the server re-checks membership and ownership
-  // ---------------------------------------------------------------------------
 
   const transferHost = useCallback(
     (userId: string) => {

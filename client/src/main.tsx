@@ -1,17 +1,31 @@
 import { ClerkProvider } from "@clerk/react";
 import { StrictMode } from "react";
+import { BrowserRouter } from "react-router-dom";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.tsx";
 import { clientConfig } from "./config/env";
+import { AuthNotConfiguredScreen } from "./components/AuthStatusScreen";
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <ClerkProvider
-      publishableKey={clientConfig.clerkPublishableKey}
-      afterSignOutUrl="/"
-    >
-      <App />
-    </ClerkProvider>
-  </StrictMode>,
-);
+const root = createRoot(document.getElementById("root")!);
+
+if (!clientConfig.clerkPublishableKey) {
+  root.render(
+    <StrictMode>
+      <BrowserRouter>
+        <AuthNotConfiguredScreen />
+      </BrowserRouter>
+    </StrictMode>,
+  );
+} else {
+  root.render(
+    <StrictMode>
+      <ClerkProvider
+        publishableKey={clientConfig.clerkPublishableKey}
+        afterSignOutUrl="/"
+      >
+        <App />
+      </ClerkProvider>
+    </StrictMode>,
+  );
+}

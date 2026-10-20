@@ -1,27 +1,19 @@
 interface AvatarProps {
   name: string;
-  /** px size of the circle. */
   size?: number;
-  /** undefined = no dot, true = online, false = offline */
   online?: boolean;
   className?: string;
 }
 
-/**
- * CSS-only listener avatar: a deterministic gradient keyed off the name plus the
- * initial. Jamzy has no portrait assets, so presence is always drawn, never
- * photographed. The palette leans warm to sit inside the sunset system while
- * still giving each person a distinct colour.
- */
 const GRADIENTS = [
-  "from-amber-400 to-orange-600",
-  "from-rose-500 to-pink-600",
-  "from-orange-400 to-red-500",
-  "from-sky-400 to-blue-600",
-  "from-teal-400 to-emerald-600",
-  "from-fuchsia-500 to-purple-600",
-  "from-violet-500 to-indigo-600",
-  "from-yellow-400 to-amber-600",
+  "from-[#f43f5e] to-[#be123c]",
+  "from-[#fb7185] to-[#f43f5e]",
+  "from-[#10b981] to-[#047857]",
+  "from-[#fda4af] to-[#fb7185]",
+  "from-[#00b47d] to-[#005236]",
+  "from-[#fb923c] to-[#ea580c]",
+  "from-[#a78bfa] to-[#7c3aed]",
+  "from-[#38bdf8] to-[#0369a1]",
 ];
 
 function gradientFor(name: string): number {
@@ -44,14 +36,14 @@ export function Avatar({ name, size = 40, online, className = "" }: AvatarProps)
         className={`grid h-full w-full place-items-center rounded-full bg-gradient-to-br ${
           GRADIENTS[gradientFor(trimmed)]
         } font-semibold text-white`}
-        style={{ fontSize: Math.max(11, size * 0.4) }}
+        style={{ fontSize: Math.max(10, size * 0.38) }}
       >
         {initial}
       </div>
       {online !== undefined && (
         <span
-          className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-canvas ${
-            online ? "bg-online" : "bg-ink-faint"
+          className={`absolute bottom-0 right-0 size-2.5 rounded-full border border-[#1c1b1d] ${
+            online ? "bg-tertiary shadow-[0_0_8px_rgba(16,185,129,0.8)]" : "bg-surface-bright"
           }`}
           aria-hidden="true"
         />

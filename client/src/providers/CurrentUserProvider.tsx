@@ -7,7 +7,6 @@ import {
   type CurrentUserState,
 } from "./currentUserContext";
 
-/** The outcome of one `/me` attempt. Never derived from a failed request. */
 type FetchOutcome =
   | { status: "unauthenticated" }
   | { status: "needs-onboarding" }
@@ -15,7 +14,6 @@ type FetchOutcome =
   | { status: "error"; message: string };
 
 interface FetchRecord {
-  /** Clerk user the outcome belongs to, so a re-login cannot show stale data. */
   forUserId: string;
   reloadKey: number;
   outcome: FetchOutcome;
@@ -37,14 +35,6 @@ function statusOf(err: unknown): number | null {
   return null;
 }
 
-/**
- * Fetches `/me` once per signed-in session and shares the result with every
- * route.
- *
- * Only a successful response with `onboardingComplete: false` means the user
- * needs onboarding. A failed request never does — mapping errors onto
- * "needs-onboarding" is what made sign-in bounce back to the username form.
- */
 export function CurrentUserProvider({
   children,
 }: {
@@ -54,8 +44,6 @@ export function CurrentUserProvider({
   const [record, setRecord] = useState<FetchRecord | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
 
-  // Clerk re-creates `getToken` on every token refresh. Reading it from a ref
-  // keeps that churn out of the effect deps so `/me` is fetched once.
   const getTokenRef = useRef(getToken);
   useEffect(() => {
     getTokenRef.current = getToken;
@@ -71,9 +59,6 @@ export function CurrentUserProvider({
     };
 
     (async () => {
-      // Right after the Clerk redirect the session token can lag behind
-      // `isSignedIn`. Sending the request without it yields a 401 that has
-      // nothing to do with onboarding, so wait for the token first.
       let token: string | null = null;
       for (let attempt = 0; attempt < TOKEN_WAIT_ATTEMPTS; attempt++) {
         token = await getTokenRef.current();
@@ -100,8 +85,6 @@ export function CurrentUserProvider({
         } catch (err) {
           if (cancelled) return;
 
-          // A single 401 is usually a stale token; give Clerk one chance to
-          // mint a fresh one before treating the session as gone.
           if (statusOf(err) === 401 && attempt === 0) {
             await delay(UNAUTHORIZED_RETRY_DELAY_MS);
             if (cancelled) return;

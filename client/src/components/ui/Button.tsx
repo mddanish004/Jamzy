@@ -1,57 +1,40 @@
-import { Link } from "react-router-dom";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
+import { Link } from "react-router-dom";
 
-type Variant = "primary" | "light" | "secondary" | "ghost";
+type Variant = "primary" | "surface" | "secondary" | "ghost";
 type Size = "sm" | "md" | "lg";
 
 interface CommonProps {
-  /**
-   *  - "primary"   amber fill — the product's main action
-   *  - "light"     white fill — top-of-funnel marketing CTA
-   *  - "secondary" hairline outline
-   *  - "ghost"     text only
-   */
   variant?: Variant;
   size?: Size;
-  /** Fully rounded — used for marketing CTAs. */
-  pill?: boolean;
-  /** Adds the reserved accent glow (primary / light only). */
-  glow?: boolean;
   className?: string;
   children: ReactNode;
 }
 
 const BASE =
-  "inline-flex items-center justify-center gap-2 font-semibold whitespace-nowrap " +
-  "transition-colors duration-150 focus:outline-none focus-visible:ring-2 " +
-  "focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas " +
-  "disabled:opacity-50 disabled:pointer-events-none";
+  "inline-flex items-center justify-center gap-space-sm font-headline-sm text-headline-sm whitespace-nowrap " +
+  "transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 " +
+  "disabled:opacity-40 disabled:pointer-events-none";
 
 const VARIANTS: Record<Variant, string> = {
-  primary: "bg-accent text-accent-ink hover:bg-accent-hi",
-  light: "bg-white text-canvas hover:bg-stone-200",
+  primary:
+    "bg-gradient-to-r from-[#f43f5e] to-[#fb7185] text-white border border-primary/30 shadow-lg shadow-primary-container/25 hover:opacity-95 hover:scale-[1.02] active:scale-[0.98]",
+  surface:
+    "bg-surface-container-low border border-obsidian-border text-on-surface hover:bg-surface-bright shadow-sm",
   secondary:
-    "border border-line-strong bg-white/5 text-ink hover:bg-white/10 hover:border-white/25",
-  ghost: "text-ink-muted hover:text-ink hover:bg-white/5",
+    "bg-surface-container-high hover:bg-surface-bright border border-obsidian-border/60 text-on-surface active:scale-[0.98]",
+  ghost:
+    "text-on-surface-variant hover:text-on-surface hover:bg-surface-container",
 };
 
 const SIZES: Record<Size, string> = {
-  sm: "h-9 px-3.5 text-[13px]",
-  md: "h-11 px-5 text-sm",
-  lg: "h-12 px-6 text-[15px]",
+  sm: "rounded-lg px-3 py-1.5 text-label-md font-label-md font-semibold",
+  md: "rounded-xl px-space-lg py-3",
+  lg: "rounded-xl px-8 py-3.5",
 };
 
-function classes({ variant = "primary", size = "md", pill, glow, className = "" }: CommonProps) {
-  return [
-    BASE,
-    VARIANTS[variant],
-    SIZES[size],
-    pill ? "rounded-full" : "rounded-md",
-    glow && (variant === "primary" || variant === "light") ? "jamzy-glow" : "",
-    className,
-  ]
-    .filter(Boolean)
-    .join(" ");
+function classes({ variant = "primary", size = "md", className = "" }: CommonProps) {
+  return [BASE, VARIANTS[variant], SIZES[size], className].filter(Boolean).join(" ");
 }
 
 type ButtonProps = CommonProps &
@@ -63,15 +46,13 @@ type ButtonProps = CommonProps &
 export function Button({
   variant,
   size,
-  pill,
-  glow,
   className,
   children,
   to,
   href,
   ...rest
 }: ButtonProps) {
-  const cls = classes({ variant, size, pill, glow, className, children });
+  const cls = classes({ variant, size, className, children });
 
   if (to) {
     return (

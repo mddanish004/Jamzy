@@ -19,10 +19,6 @@ export interface ApiError {
   authenticated?: boolean;
 }
 
-/**
- * A person as the room API exposes them. Narrower than `PublicUser`: the server
- * does not hand out other people's Clerk identifiers.
- */
 export interface RoomUser {
   id: string;
   username: string;
@@ -72,7 +68,6 @@ export interface PresenceMember {
 
 export interface PresenceSnapshot {
   members: PresenceMember[];
-  /** Authoritative host at the time of the broadcast. */
   hostUserId: string;
 }
 
@@ -97,13 +92,6 @@ export interface YouTubePlaylistResponse {
   playlistTitle?: string;
 }
 
-/**
- * The room's shared playback state, broadcast over Socket.IO.
- *
- * `position` is the playhead in seconds as of `updatedAt`. Both timestamps come
- * from the server, so elapsed time must be computed as
- * `serverTime - updatedAt` — never against the local clock.
- */
 export interface PlaybackSnapshot {
   videoId: string | null;
   title: string | null;
@@ -126,19 +114,15 @@ export interface ChatMessage {
   createdAt: string;
 }
 
-/** A single item in the room's shared playback queue. */
 export interface QueueItem {
   videoId: string;
   title: string;
   thumbnailUrl: string;
-  /** ISO 8601 duration string, e.g. "PT3M45S". */
   duration: string;
 }
 
-/** The full ordered queue as broadcast over Socket.IO. */
 export type QueueSnapshot = QueueItem[];
 
-/** Why the room's host changed. */
 export type HostChangeReason = "manual" | "disconnect" | "left";
 
 export interface HostUpdatePayload {
@@ -149,10 +133,6 @@ export interface HostUpdatePayload {
   reason: HostChangeReason;
 }
 
-/**
- * Sent when the host's connection drops (`pending: true`, with the deadline
- * the automatic transfer fires at) and again if they return in time.
- */
 export interface HostPendingPayload {
   pending: boolean;
   hostUserId: string;
