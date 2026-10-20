@@ -235,7 +235,7 @@ export function Room() {
   }
 
   return (
-    <div className="min-h-screen bg-background font-body-md text-on-surface antialiased selection:bg-primary selection:text-white">
+    <div className="min-h-dvh bg-background font-body-md text-on-surface antialiased selection:bg-primary selection:text-white">
       <header className="sticky top-0 z-50 border-b border-obsidian-border/60 bg-background/95 backdrop-blur-xl">
         <section className="flex w-full flex-col items-center justify-between gap-space-md px-gutter py-space-sm md:flex-row">
           <div className="flex w-full items-center gap-space-md lg:max-w-xl">
@@ -259,7 +259,7 @@ export function Room() {
             <button
               type="button"
               onClick={() => setPeopleOpen((o) => !o)}
-              className="flex items-center gap-1.5 rounded-full border border-obsidian-border bg-surface-container-low px-2.5 py-1.5 font-label-md text-label-md text-on-surface-variant shadow-sm transition-colors hover:border-primary/40 hover:text-on-surface"
+              className="flex items-center gap-1.5 rounded-full border border-obsidian-border bg-surface-container-low px-2.5 py-1.5 font-label-md text-label-md text-on-surface-variant shadow-sm transition-colors hover:border-primary/40 hover:text-on-surface pointer-coarse:px-3 pointer-coarse:py-2.5"
               aria-label={`${presence.length} in room — view people`}
             >
               <span className="material-symbols-outlined text-[16px]">group</span>
@@ -277,7 +277,7 @@ export function Room() {
                 type="button"
                 onClick={handleCopyCode}
                 title="Copy room invite code"
-                className={`flex items-center gap-1 rounded-full border border-obsidian-border/60 bg-surface-container-high px-2.5 py-1 font-label-sm text-label-sm transition-all active:scale-95 hover:bg-surface-bright ${
+                className={`pointer-coarse:px-3 pointer-coarse:py-2 flex items-center gap-1 rounded-full border border-obsidian-border/60 bg-surface-container-high px-2.5 py-1 font-label-sm text-label-sm transition-all active:scale-95 hover:bg-surface-bright ${
                   copied ? "text-tertiary" : "text-on-surface"
                 }`}
               >
@@ -295,7 +295,7 @@ export function Room() {
               type="button"
               onClick={handleLeave}
               title="Leave room"
-              className="group flex items-center gap-1.5 rounded-xl border border-obsidian-border bg-surface-container-low px-3.5 py-2 font-label-md text-label-md text-on-surface-variant transition-all hover:bg-surface-container-highest hover:text-error"
+              className="group flex items-center gap-1.5 rounded-xl border border-obsidian-border bg-surface-container-low px-3.5 py-2 font-label-md text-label-md text-on-surface-variant transition-all hover:bg-surface-container-highest hover:text-error pointer-coarse:py-2.5"
             >
               <span className="material-symbols-outlined text-[18px] transition-transform group-hover:translate-x-0.5">
                 logout
@@ -309,7 +309,7 @@ export function Room() {
       {peopleOpen && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setPeopleOpen(false)} />
-          <div className="fixed right-gutter top-[4.75rem] z-50 w-64 rounded-2xl border border-obsidian-border bg-surface-container p-3 shadow-2xl">
+          <div className="fixed inset-x-gutter bottom-4 z-50 max-h-[70dvh] overflow-y-auto rounded-2xl border border-obsidian-border bg-surface-container p-3 shadow-2xl sm:inset-x-auto sm:bottom-auto sm:right-gutter sm:top-[4.75rem] sm:w-64 sm:overflow-y-auto">
             <p className="mb-3 flex items-center justify-between font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">
               <span>People in room</span>
               <span className="rounded-full bg-surface-container-high px-2 py-0.5 text-on-surface-variant">
@@ -335,7 +335,7 @@ export function Room() {
                           transferHost(member.userId);
                           setPeopleOpen(false);
                         }}
-                        className="rounded-full border border-obsidian-border px-2 py-0.5 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant transition-colors hover:border-primary hover:text-primary"
+                        className="rounded-full border border-obsidian-border px-2 py-0.5 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant transition-colors hover:border-primary hover:text-primary pointer-coarse:px-3 pointer-coarse:py-1.5"
                       >
                         Make host
                       </button>
@@ -387,7 +387,7 @@ export function Room() {
               <button
                 type="button"
                 onClick={dismissHostNotice}
-                className="rounded-full px-2 py-0.5 font-label-sm text-label-sm text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface"
+                className="pointer-coarse:px-2.5 pointer-coarse:py-1.5 rounded-full px-2 py-0.5 font-label-sm text-label-sm text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface"
                 aria-label="Dismiss"
               >
                 <span className="material-symbols-outlined text-[14px]">close</span>

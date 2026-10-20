@@ -16,7 +16,7 @@ export function Hero() {
       <div className="pointer-events-none absolute -top-32 left-1/2 h-[360px] w-[720px] -translate-x-1/2 rounded-full bg-primary-container/15 blur-[140px]" />
       <div className="pointer-events-none absolute top-[480px] -left-20 h-[420px] w-[420px] rounded-full bg-secondary-container/20 blur-[130px]" />
 
-      <section className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center px-gutter pt-12 pb-20 text-center">
+      <section className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center px-gutter pb-16 pt-28 text-center sm:pb-20 sm:pt-32">
         <div className="inline-flex items-center gap-space-sm rounded-full border border-obsidian-border bg-surface-container-low px-4 py-1.5 shadow-sm">
           <span className="h-2 w-2 animate-pulse rounded-full bg-primary-container shadow-[0_0_10px_#fb7185]" />
           <span className="font-label-ui text-label-ui uppercase tracking-wider text-primary">
@@ -24,7 +24,7 @@ export function Hero() {
           </span>
         </div>
 
-        <h1 className="mt-8 max-w-4xl font-display-hero text-display-hero tracking-tight text-on-surface">
+        <h1 className="mt-8 max-w-4xl font-display-hero-mobile text-display-hero-mobile tracking-tight text-on-surface sm:font-display-hero sm:text-display-hero">
           Play it together. Stay in{" "}
           <span className="bg-gradient-to-r from-[#fda4af] via-[#fb7185] to-[#f43f5e] bg-clip-text text-transparent drop-shadow-[0_2px_15px_rgba(251,113,133,0.3)]">
             step.
@@ -173,7 +173,7 @@ export function Hero() {
                 <div className="flex items-center justify-center gap-6 pt-3">
                   <button
                     type="button"
-                    className="text-on-surface-variant transition-colors hover:text-on-surface"
+                    className="pointer-coarse:p-2 text-on-surface-variant transition-colors hover:text-on-surface"
                     aria-label="Shuffle"
                   >
                     <span className="material-symbols-outlined text-[24px]">
@@ -182,7 +182,7 @@ export function Hero() {
                   </button>
                   <button
                     type="button"
-                    className="text-on-surface-variant transition-colors hover:text-on-surface"
+                    className="pointer-coarse:p-2 text-on-surface-variant transition-colors hover:text-on-surface"
                     aria-label="Skip previous"
                   >
                     <span className="material-symbols-outlined text-[28px]">
@@ -200,7 +200,7 @@ export function Hero() {
                   </button>
                   <button
                     type="button"
-                    className="text-on-surface-variant transition-colors hover:text-on-surface"
+                    className="pointer-coarse:p-2 text-on-surface-variant transition-colors hover:text-on-surface"
                     aria-label="Skip next"
                   >
                     <span className="material-symbols-outlined text-[28px]">
@@ -209,7 +209,7 @@ export function Hero() {
                   </button>
                   <button
                     type="button"
-                    className="text-on-surface-variant transition-colors hover:text-on-surface"
+                    className="pointer-coarse:p-2 text-on-surface-variant transition-colors hover:text-on-surface"
                     aria-label="Repeat"
                   >
                     <span className="material-symbols-outlined text-[24px]">

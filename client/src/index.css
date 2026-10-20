@@ -73,6 +73,7 @@
   --font-headline-xl-mobile: "Plus Jakarta Sans";
   --font-headline-lg-mobile: "Plus Jakarta Sans";
   --font-display-hero: "Plus Jakarta Sans";
+  --font-display-hero-mobile: "Plus Jakarta Sans";
 
   --text-label-sm: 10px;
   --text-label-sm--line-height: 14px;
@@ -134,6 +135,10 @@
   --text-display-hero--line-height: 64px;
   --text-display-hero--letter-spacing: -0.03em;
   --text-display-hero--font-weight: 700;
+  --text-display-hero-mobile: 38px;
+  --text-display-hero-mobile--line-height: 46px;
+  --text-display-hero-mobile--letter-spacing: -0.02em;
+  --text-display-hero-mobile--font-weight: 700;
 
   --spacing-space-xs: 0.25rem;
   --spacing-space-sm: 0.5rem;
@@ -144,6 +149,13 @@
   --spacing-gutter-mobile: 1rem;
   --spacing-margin: 2rem;
   --spacing-margin-mobile: 1rem;
+}
+
+@media (width < 40rem) {
+  :root {
+    --spacing-gutter: var(--spacing-gutter-mobile);
+    --spacing-margin: var(--spacing-margin-mobile);
+  }
 }
 
 html,
@@ -157,6 +169,8 @@ body {
   line-height: 22px;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   overscroll-behavior: none;
 }
 
@@ -340,6 +354,26 @@ body {
 }
 .jamzy-range:disabled::-webkit-slider-thumb {
   opacity: 0;
+}
+
+@media (pointer: coarse) {
+  .jamzy-range::-webkit-slider-thumb {
+    height: 20px;
+    width: 20px;
+  }
+  .jamzy-range::-moz-range-thumb {
+    height: 20px;
+    width: 20px;
+  }
+  input:not([type="checkbox"]):not([type="radio"]),
+  textarea,
+  select {
+    font-size: 16px;
+  }
+  .jamzy-clerk .cl-formFieldInput,
+  .jamzy-clerk .cl-otpCodeFieldInput {
+    font-size: 16px !important;
+  }
 }
 
 @keyframes jamzy-equalizer {

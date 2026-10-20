@@ -24,7 +24,7 @@ export function Navbar() {
           <Link
             to="/enter"
             aria-label="Open Jamzy"
-            className="grid size-8 place-items-center rounded-full bg-gradient-to-tr from-primary-container to-primary shadow-[0_0_12px_rgba(251,113,133,0.35)]"
+            className="pointer-coarse:size-11 grid size-8 place-items-center rounded-full bg-gradient-to-tr from-primary-container to-primary shadow-[0_0_12px_rgba(251,113,133,0.35)]"
           >
             <span className="material-symbols-outlined text-[18px] text-white msr-fill">
               person

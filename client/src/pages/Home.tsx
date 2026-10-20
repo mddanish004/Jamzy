@@ -100,7 +100,7 @@ export function Home() {
   const busy = creating || joining;
 
   return (
-    <div className="relative flex min-h-screen flex-col bg-surface-container-lowest font-body-md text-on-surface antialiased selection:bg-primary selection:text-white">
+    <div className="relative flex min-h-dvh flex-col overflow-x-clip bg-surface-container-lowest font-body-md text-on-surface antialiased selection:bg-primary selection:text-white">
       <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center justify-between border-b border-obsidian-border/60 bg-surface-container-lowest/85 px-gutter shadow-[0_1px_8px_rgba(0,0,0,0.25)] backdrop-blur-xl">
         <Link to="/" aria-label="Jamzy home" className="shrink-0">
           <Logo size={30} dot={false} />
@@ -140,10 +140,10 @@ export function Home() {
 
         <div className="relative z-10 mx-auto flex w-full max-w-4xl flex-col items-center px-gutter pb-space-xl pt-space-xl">
           <div className="mx-auto mb-space-xl flex max-w-xl flex-col items-center text-center">
-            <h1 className="relative mb-3 font-headline-xl text-headline-xl font-bold tracking-tight text-on-surface sm:text-[52px] sm:leading-[60px]">
+            <h1 className="relative mb-3 font-headline-xl-mobile text-headline-xl-mobile font-bold tracking-tight text-on-surface sm:text-[52px] sm:leading-[60px]">
               Listen together
               <span className="text-primary">.</span>
-              <span className="absolute -inset-x-8 -bottom-2 h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+              <span className="absolute -inset-x-4 -bottom-2 h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent sm:-inset-x-8" />
             </h1>
             <p className="font-body-lg text-body-lg leading-relaxed text-on-surface-variant">
               Start a new room or join one with a code.
@@ -277,7 +277,7 @@ export function Home() {
                       <button
                         type="button"
                         onClick={handlePasteCode}
-                        className="p-2 text-on-surface-variant transition-colors hover:text-primary"
+                        className="pointer-coarse:p-3 p-2 text-on-surface-variant transition-colors hover:text-primary"
                         title="Paste clipboard"
                         aria-label="Paste clipboard"
                       >
@@ -311,7 +311,7 @@ export function Home() {
                   </button>
                 </form>
 
-                <div className="mt-space-md flex items-center justify-between border-t border-obsidian-border/40 pt-space-md font-label-md text-label-md text-on-surface-variant">
+                <div className="mt-space-md flex flex-wrap items-center justify-between gap-y-0.5 border-t border-obsidian-border/40 pt-space-md font-label-md text-label-md text-on-surface-variant">
                   {lastRoom ? (
                     <span className="flex items-center gap-1.5">
                       <span className="material-symbols-outlined text-[16px] text-tertiary">

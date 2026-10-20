@@ -152,7 +152,7 @@ export function ChatPanel({
             <button
               type="button"
               onClick={() => setCollapsed((c) => !c)}
-              className="text-on-surface-variant transition-colors hover:text-on-surface"
+              className="pointer-coarse:-m-2 pointer-coarse:p-2 text-on-surface-variant transition-colors hover:text-on-surface"
               aria-label={collapsed ? "Expand chat" : "Collapse chat"}
             >
               <span
@@ -248,7 +248,7 @@ export function ChatPanel({
               <button
                 type="button"
                 onClick={scrollToBottom}
-                className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-1.5 font-label-md text-label-md font-medium text-white shadow-lg transition-colors hover:bg-primary-container"
+                className="pointer-coarse:px-4 pointer-coarse:py-2.5 absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-1.5 font-label-md text-label-md font-medium text-white shadow-lg transition-colors hover:bg-primary-container"
               >
                 ↓ New messages
               </button>
@@ -298,7 +298,7 @@ export function ChatPanel({
                 }
                 aria-label="Send message"
                 title="Send message"
-                className="grid size-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-primary to-primary-container text-white shadow-[0_0_16px_rgba(251,113,133,0.4)] transition-all hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-40 disabled:shadow-none"
+                className="pointer-coarse:size-11 grid size-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-primary to-primary-container text-white shadow-[0_0_16px_rgba(251,113,133,0.4)] transition-all hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-40 disabled:shadow-none"
               >
                 <span className="material-symbols-outlined text-[18px]">send</span>
               </button>

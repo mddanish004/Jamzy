@@ -14,7 +14,7 @@ export function EmotionalBanner() {
           Being present isn’t staring at faces through a webcam; it’s the exact
           same bassline hitting everyone at the very same instant.
         </p>
-        <div className="mt-8 flex items-center gap-6 font-label-ui text-label-ui text-on-surface-variant">
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-label-ui text-label-ui text-on-surface-variant">
           <span className="flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-tertiary" />Free, No Strings
           </span>

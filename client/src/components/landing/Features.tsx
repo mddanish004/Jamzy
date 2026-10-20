@@ -51,7 +51,7 @@ export function Features() {
         {FEATURES.map((feature) => (
           <div
             key={feature.title}
-            className="rounded-2xl border border-obsidian-border bg-[#141418] p-8 transition-all hover:border-primary/40 hover:bg-[#1c1b1d]"
+            className="rounded-2xl border border-obsidian-border bg-[#141418] p-6 transition-all hover:border-primary/40 hover:bg-[#1c1b1d] sm:p-8"
           >
             <div className="mb-6 grid size-12 place-items-center rounded-xl border border-obsidian-border bg-surface-container text-primary">
               <span className="material-symbols-outlined text-[26px]">

@@ -4,7 +4,7 @@ import { Button } from "./ui/Button";
 export function AuthNotConfiguredScreen() {
   return (
     <AuthShell>
-      <div className="w-full space-y-4 rounded-2xl border border-obsidian-border bg-surface-container-low p-8 shadow-2xl">
+      <div className="w-full space-y-4 rounded-2xl border border-obsidian-border bg-surface-container-low p-6 shadow-2xl sm:p-8">
         <p className="text-center font-headline-sm text-headline-sm font-semibold text-on-surface">
           Auth is not configured
         </p>
@@ -49,7 +49,7 @@ interface AuthErrorScreenProps {
 export function AuthLoadingScreen() {
   return (
     <AuthShell>
-      <div className="flex w-full items-center justify-center gap-3 rounded-2xl border border-obsidian-border bg-surface-container-low p-8 shadow-2xl">
+      <div className="flex w-full items-center justify-center gap-3 rounded-2xl border border-obsidian-border bg-surface-container-low p-6 shadow-2xl sm:p-8">
         <span className="h-2 w-2 animate-pulse rounded-full bg-primary" />
         <p className="text-body-md font-body-md text-on-surface-variant">
           Checking your session…
@@ -62,7 +62,7 @@ export function AuthLoadingScreen() {
 export function AuthErrorScreen({ message, onRetry }: AuthErrorScreenProps) {
   return (
     <AuthShell>
-      <div className="w-full space-y-4 rounded-2xl border border-obsidian-border bg-surface-container-low p-8 text-center shadow-2xl">
+      <div className="w-full space-y-4 rounded-2xl border border-obsidian-border bg-surface-container-low p-6 text-center shadow-2xl sm:p-8">
         <p className="text-body-md font-body-md text-error">{message}</p>
         <p className="text-body-sm font-body-sm text-outline">
           You are still signed in — this is a connection problem, not a missing

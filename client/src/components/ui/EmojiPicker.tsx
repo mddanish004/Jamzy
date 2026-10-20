@@ -323,7 +323,7 @@ export function EmojiPicker({ onSelect, disabled = false }: EmojiPickerProps) {
         disabled={disabled}
         aria-label="Insert emoji"
         aria-expanded={isOpen}
-        className={`grid size-9 shrink-0 place-items-center rounded-xl border border-[#2c2b36] text-lg transition-colors hover:bg-surface-container-high disabled:pointer-events-none disabled:opacity-50 ${
+        className={`grid size-9 shrink-0 place-items-center rounded-xl border border-[#2c2b36] text-lg transition-colors hover:bg-surface-container-high disabled:pointer-events-none disabled:opacity-50 pointer-coarse:size-11 ${
           isOpen
             ? "border-primary/60 bg-primary/10"
             : "bg-surface-container"
@@ -341,7 +341,7 @@ export function EmojiPicker({ onSelect, disabled = false }: EmojiPickerProps) {
             placeholder="Search emoji…"
             aria-label="Search emoji"
             autoComplete="off"
-            className="mb-2 h-8 w-full rounded-lg border border-[#2c2b36] bg-surface-container-low px-2.5 font-label-md text-label-md text-on-surface placeholder:text-on-surface-variant/70 focus:border-primary/60 focus:outline-none"
+            className="mb-2 h-9 w-full rounded-lg border border-[#2c2b36] bg-surface-container-low px-2.5 font-label-md text-label-md text-on-surface placeholder:text-on-surface-variant/70 focus:border-primary/60 focus:outline-none pointer-coarse:h-10"
           />
 
           {query.length === 0 && recents.length > 0 && (
@@ -349,7 +349,7 @@ export function EmojiPicker({ onSelect, disabled = false }: EmojiPickerProps) {
               <p className="mb-1 font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">
                 Recent
               </p>
-              <div className="grid grid-cols-8 gap-0.5">
+              <div className="grid grid-cols-8 gap-0.5 pointer-coarse:grid-cols-6">
                 {recents.map((emoji) => (
                   <EmojiButton
                     key={`recent-${emoji}`}
@@ -377,7 +377,7 @@ export function EmojiPicker({ onSelect, disabled = false }: EmojiPickerProps) {
                   title={c.label}
                   aria-label={c.label}
                   onClick={() => setCategoryId(c.id)}
-                  className={`flex h-7 w-7 items-center justify-center rounded text-sm transition-colors ${
+                  className={`flex h-7 w-7 items-center justify-center rounded text-sm transition-colors pointer-coarse:size-9 ${
                     c.id === categoryId
                       ? "bg-primary/15"
                       : "opacity-50 hover:opacity-100"
@@ -389,7 +389,7 @@ export function EmojiPicker({ onSelect, disabled = false }: EmojiPickerProps) {
             </div>
           )}
 
-          <div className="grid max-h-44 grid-cols-8 gap-0.5 overflow-y-auto">
+          <div className="grid max-h-44 grid-cols-8 gap-0.5 overflow-y-auto pointer-coarse:max-h-56 pointer-coarse:grid-cols-6">
             {visible.map(([emoji, name]) => (
               <EmojiButton
                 key={emoji}
@@ -427,7 +427,7 @@ function EmojiButton({
       onClick={() => onPick(emoji)}
       title={name}
       aria-label={`Insert ${name}`}
-      className="flex h-8 w-8 items-center justify-center rounded text-lg transition-colors hover:bg-surface-container-high"
+      className="flex h-8 w-8 items-center justify-center rounded text-lg transition-colors hover:bg-surface-container-high pointer-coarse:h-10 pointer-coarse:w-10"
     >
       <span aria-hidden="true">{emoji}</span>
     </button>

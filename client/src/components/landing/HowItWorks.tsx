@@ -65,7 +65,7 @@ function Step({
   card?: boolean;
 }) {
   return (
-    <div className="group flex flex-col justify-between rounded-2xl border border-obsidian-border bg-[#141418] p-8 transition-colors hover:border-primary/40 hover:bg-[#1c1b1d]">
+    <div className="group flex flex-col justify-between rounded-2xl border border-obsidian-border bg-[#141418] p-6 transition-colors hover:border-primary/40 hover:bg-[#1c1b1d] sm:p-8">
       <div>
         <div className="mb-6 flex size-12 items-center justify-center rounded-xl border border-obsidian-border bg-surface-container font-headline-sm text-headline-sm text-primary transition-colors group-hover:text-primary-container">
           {number}

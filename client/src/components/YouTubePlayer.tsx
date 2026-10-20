@@ -653,7 +653,7 @@ export function YouTubePlayer({
             type="button"
             onClick={() => setShowShortcutsModal((prev) => !prev)}
             aria-label="Keyboard shortcuts"
-            className="flex items-center gap-1.5 rounded-lg border border-[#2c2b36] bg-surface-container-low px-2.5 py-1 font-label-sm text-label-sm text-on-surface-variant transition-all hover:bg-surface-container-high hover:text-on-surface"
+            className="pointer-coarse:hidden flex items-center gap-1.5 rounded-lg border border-[#2c2b36] bg-surface-container-low px-2.5 py-1 font-label-sm text-label-sm text-on-surface-variant transition-all hover:bg-surface-container-high hover:text-on-surface"
           >
             <span className="material-symbols-outlined text-[15px]">keyboard</span>
             <span className="hidden sm:inline">Shortcuts</span>
@@ -790,7 +790,7 @@ export function YouTubePlayer({
                 disabled={!onControl}
                 aria-label="Clear the stage"
                 title="Clear the stage"
-                className="pointer-events-auto grid size-8 place-items-center rounded-md text-on-surface-variant transition-colors hover:text-primary disabled:pointer-events-none disabled:opacity-40"
+                className="pointer-coarse:size-10 pointer-events-auto grid size-8 place-items-center rounded-md text-on-surface-variant transition-colors hover:text-primary disabled:pointer-events-none disabled:opacity-40"
               >
                 <span className="material-symbols-outlined text-[20px]">close</span>
               </button>
@@ -802,7 +802,7 @@ export function YouTubePlayer({
                 }}
                 aria-label="Toggle fullscreen"
                 title="Fullscreen"
-                className="pointer-events-auto grid size-8 place-items-center rounded-md text-on-surface-variant transition-colors hover:text-primary"
+                className="pointer-coarse:size-10 pointer-events-auto grid size-8 place-items-center rounded-md text-on-surface-variant transition-colors hover:text-primary"
               >
                 <span className="material-symbols-outlined text-[20px]">fullscreen</span>
               </button>
@@ -844,7 +844,7 @@ export function YouTubePlayer({
           </div>
         )}
 
-        <div className="pointer-events-none relative z-20 flex items-center justify-between font-label-sm text-label-sm text-on-surface-variant">
+        <div className="pointer-events-none relative z-20 flex flex-wrap items-center justify-between gap-y-1 font-label-sm text-label-sm text-on-surface-variant">
           <div className="flex items-center gap-2">
             <span className="size-1.5 rounded-full bg-primary" />
             <span>Room host: {hostUsername ?? "—"}</span>
@@ -908,7 +908,7 @@ export function YouTubePlayer({
           )}
         </div>
 
-        <div className="flex items-center justify-between pt-1">
+        <div className="flex flex-wrap items-center justify-between gap-y-2.5 pt-1 max-sm:flex-col max-sm:items-center">
           <div className="flex items-center gap-space-xs">
             <button
               type="button"
@@ -916,7 +916,7 @@ export function YouTubePlayer({
               disabled={controlsDisabled}
               aria-label={isLooping ? "Disable looping" : "Loop current video"}
               title={isLooping ? "Looper: ON (R)" : "Looper: OFF (R)"}
-              className={`grid size-9 place-items-center rounded-full transition-all active:scale-95 disabled:pointer-events-none disabled:opacity-30 ${
+              className={`pointer-coarse:size-11 grid size-9 place-items-center rounded-full transition-all active:scale-95 disabled:pointer-events-none disabled:opacity-30 ${
                 isLooping
                   ? "bg-primary/15 text-primary"
                   : "text-on-surface-variant hover:bg-surface-container-high hover:text-primary"
@@ -931,7 +931,7 @@ export function YouTubePlayer({
                 onClick={() => setShowSpeedMenu((prev) => !prev)}
                 aria-label={`Playback speed: ${playbackRate}x`}
                 title="Playback speed (Q: slower, E: faster)"
-                className="flex items-center gap-1 rounded-full px-2 py-1 font-label-md text-label-md text-on-surface-variant transition-all hover:bg-surface-container-high hover:text-primary active:scale-95"
+                className="pointer-coarse:px-3 pointer-coarse:py-2 flex items-center gap-1 rounded-full px-2 py-1 font-label-md text-label-md text-on-surface-variant transition-all hover:bg-surface-container-high hover:text-primary active:scale-95"
               >
                 <span className="material-symbols-outlined text-[20px]">speed</span>
                 <span>{playbackRate === 1 ? "1x" : `${playbackRate}x`}</span>
@@ -976,7 +976,7 @@ export function YouTubePlayer({
               disabled={!onPrevious || !canPrevious || controlsDisabled}
               aria-label="Previous video"
               title={canPrevious ? "Previous video (Y)" : "No previous video"}
-              className="grid size-10 place-items-center rounded-full text-on-surface transition-all hover:bg-surface-container-high hover:text-primary active:scale-95 disabled:pointer-events-none disabled:opacity-30"
+              className="grid size-10 place-items-center rounded-full text-on-surface transition-all hover:bg-surface-container-high hover:text-primary active:scale-95 disabled:pointer-events-none disabled:opacity-30 pointer-coarse:size-11"
             >
               <span className="material-symbols-outlined text-[24px]">
                 skip_previous
@@ -1002,7 +1002,7 @@ export function YouTubePlayer({
               disabled={!onSkip || controlsDisabled}
               aria-label="Skip to next video"
               title={hasQueue ? "Skip to next video (T)" : "Skip current video (T)"}
-              className="grid size-10 place-items-center rounded-full text-on-surface transition-all hover:bg-surface-container-high hover:text-primary active:scale-95 disabled:pointer-events-none disabled:opacity-30"
+              className="grid size-10 place-items-center rounded-full text-on-surface transition-all hover:bg-surface-container-high hover:text-primary active:scale-95 disabled:pointer-events-none disabled:opacity-30 pointer-coarse:size-11"
             >
               <span className="material-symbols-outlined text-[24px]">skip_next</span>
             </button>
@@ -1015,7 +1015,7 @@ export function YouTubePlayer({
                 onClick={toggleMute}
                 aria-label={isMuted || volume === 0 ? "Unmute" : "Mute"}
                 title={isMuted || volume === 0 ? "Unmute (M)" : `Mute (M) · Vol: ${volume}% (A / D)`}
-                className="text-on-surface-variant transition-colors hover:text-primary"
+                className="pointer-coarse:p-2.5 text-on-surface-variant transition-colors hover:text-primary"
               >
                 <span className="material-symbols-outlined text-[20px]">
                   {isMuted || volume === 0
@@ -1047,7 +1047,7 @@ export function YouTubePlayer({
               disabled={!videoId || !ready}
               aria-label="Re-sync to the room"
               title="Re-anchor to the room's playhead (local catch-up)"
-              className={`grid size-9 place-items-center rounded-full transition-colors hover:bg-surface-container-high disabled:pointer-events-none disabled:opacity-30 ${
+              className={`pointer-coarse:size-11 grid size-9 place-items-center rounded-full transition-colors hover:bg-surface-container-high disabled:pointer-events-none disabled:opacity-30 ${
                 message ? "text-error" : "text-tertiary"
               }`}
             >

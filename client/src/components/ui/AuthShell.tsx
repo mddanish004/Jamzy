@@ -8,7 +8,7 @@ interface AuthShellProps {
 
 export function AuthShell({ children }: AuthShellProps) {
   return (
-    <div className="relative flex min-h-screen w-full flex-col items-center justify-center px-5 py-16">
+    <div className="relative flex min-h-dvh w-full flex-col items-center justify-center px-5 py-16">
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
         <div className="absolute -top-32 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-[#fb7185]/10 blur-[130px]" />
         <div className="absolute -bottom-24 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-[#f43f5e]/5 blur-[110px]" />

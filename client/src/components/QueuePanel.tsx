@@ -81,7 +81,7 @@ export function QueuePanel({
             <button
               type="button"
               onClick={onSkip}
-              className="flex items-center gap-1 font-label-sm text-label-sm text-on-surface-variant transition-colors hover:text-primary"
+              className="pointer-coarse:py-2 flex items-center gap-1 font-label-sm text-label-sm text-on-surface-variant transition-colors hover:text-primary"
               aria-label="Skip to next track"
               title="Skip to next track"
             >
@@ -93,7 +93,7 @@ export function QueuePanel({
             <button
               type="button"
               onClick={onClear}
-              className="flex items-center gap-1 font-label-sm text-label-sm text-on-surface-variant transition-colors hover:text-error"
+              className="pointer-coarse:py-2 flex items-center gap-1 font-label-sm text-label-sm text-on-surface-variant transition-colors hover:text-error"
               aria-label="Clear queue"
               title="Clear the whole queue"
             >
@@ -128,7 +128,7 @@ export function QueuePanel({
               <button
                 type="button"
                 onClick={onFindSongs}
-                className="mt-1 flex items-center gap-1.5 rounded-lg border border-[#2c2b36] bg-surface-container px-3 py-1.5 font-label-sm text-label-sm font-semibold text-primary shadow-sm transition-all hover:border-primary/40 hover:bg-surface-container-high"
+                className="pointer-coarse:py-2 mt-1 flex items-center gap-1.5 rounded-lg border border-[#2c2b36] bg-surface-container px-3 py-1.5 font-label-sm text-label-sm font-semibold text-primary shadow-sm transition-all hover:border-primary/40 hover:bg-surface-container-high"
               >
                 <span className="material-symbols-outlined text-[14px]">search</span>
                 <span>Find songs</span>
@@ -197,7 +197,7 @@ export function QueuePanel({
                         moveUp(index);
                       }}
                       disabled={index === 0}
-                      className="grid size-7 place-items-center rounded-md text-on-surface-variant transition-all hover:bg-surface-container-highest hover:text-on-surface active:scale-95 disabled:pointer-events-none disabled:opacity-20"
+                      className="pointer-coarse:size-9 grid size-7 place-items-center rounded-md text-on-surface-variant transition-all hover:bg-surface-container-highest hover:text-on-surface active:scale-95 disabled:pointer-events-none disabled:opacity-20"
                       aria-label="Move up in queue"
                       title="Move up"
                     >
@@ -212,7 +212,7 @@ export function QueuePanel({
                         moveDown(index);
                       }}
                       disabled={index === queue.length - 1}
-                      className="grid size-7 place-items-center rounded-md text-on-surface-variant transition-all hover:bg-surface-container-highest hover:text-on-surface active:scale-95 disabled:pointer-events-none disabled:opacity-20"
+                      className="pointer-coarse:size-9 grid size-7 place-items-center rounded-md text-on-surface-variant transition-all hover:bg-surface-container-highest hover:text-on-surface active:scale-95 disabled:pointer-events-none disabled:opacity-20"
                       aria-label="Move down in queue"
                       title="Move down"
                     >
@@ -226,7 +226,7 @@ export function QueuePanel({
                         e.stopPropagation();
                         onRemove(index);
                       }}
-                      className="grid size-7 place-items-center rounded-md text-on-surface-variant transition-all hover:bg-error/15 hover:text-error active:scale-95"
+                      className="pointer-coarse:size-9 grid size-7 place-items-center rounded-md text-on-surface-variant transition-all hover:bg-error/15 hover:text-error active:scale-95"
                       aria-label={`Remove ${item.title} from queue`}
                       title="Remove from queue"
                     >

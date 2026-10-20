@@ -21,7 +21,7 @@ export function Landing() {
   }
 
   return (
-    <div className="min-h-screen bg-[#131315] font-body-md text-on-surface antialiased">
+    <div className="min-h-dvh overflow-x-clip bg-[#131315] font-body-md text-on-surface antialiased">
       <Navbar />
       <main className="w-full bg-[#131315] pt-16">
         <Hero />

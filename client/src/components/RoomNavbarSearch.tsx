@@ -270,14 +270,14 @@ export function RoomNavbarSearch({
           placeholder="Search songs or paste YouTube link…"
           autoComplete="off"
           disabled={disabled}
-          className="w-full rounded-xl border border-[#2c2b36] bg-surface-container-low py-2.5 pl-12 pr-24 font-body-md text-body-md text-on-surface transition-all placeholder:text-on-surface-variant/70 focus:border-primary/50 focus:bg-surface-container focus:outline-none disabled:opacity-50"
+          className="w-full rounded-xl border border-[#2c2b36] bg-surface-container-low py-2.5 pl-12 pr-20 font-body-md text-body-md text-on-surface transition-all placeholder:text-on-surface-variant/70 focus:border-primary/50 focus:bg-surface-container focus:outline-none disabled:opacity-50 sm:pr-24"
         />
 
         {query.length > 0 && (
           <button
             type="button"
             onClick={handleClearQuery}
-            className="absolute right-16 grid size-6 place-items-center rounded-full text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface"
+            className="pointer-coarse:size-8 absolute right-11 grid size-6 place-items-center rounded-full text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface sm:right-16"
             aria-label="Clear search"
           >
             <span className="material-symbols-outlined text-[14px]">close</span>
@@ -285,7 +285,7 @@ export function RoomNavbarSearch({
         )}
 
         <div className="pointer-events-none absolute right-3 flex items-center gap-1.5">
-          <kbd className="pointer-events-none rounded border border-[#2c2b36] bg-surface-container-high px-2 py-0.5 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">
+          <kbd className="pointer-events-none hidden rounded border border-[#2c2b36] bg-surface-container-high px-2 py-0.5 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant sm:block">
             ⌘K
           </kbd>
           {busy ? (
@@ -296,7 +296,7 @@ export function RoomNavbarSearch({
               disabled={disabled || query.trim().length === 0}
               aria-label="Search"
               title="Search"
-              className="pointer-events-auto disabled:pointer-events-none disabled:opacity-40"
+              className="pointer-events-auto disabled:pointer-events-none disabled:opacity-40 pointer-coarse:p-2"
             >
               <span className="material-symbols-outlined text-[18px] text-primary">
                 search
@@ -377,7 +377,7 @@ export function RoomNavbarSearch({
                       type="button"
                       onClick={() => handlePlayVideo(linkPreview.track)}
                       disabled={disabled}
-                      className="flex items-center gap-1.5 rounded-lg bg-gradient-to-br from-primary to-primary-container px-3 py-1.5 font-label-md text-label-md font-semibold text-white shadow-[0_0_16px_rgba(251,113,133,0.3)] transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50"
+                      className="pointer-coarse:py-2.5 flex items-center gap-1.5 rounded-lg bg-gradient-to-br from-primary to-primary-container px-3 py-1.5 font-label-md text-label-md font-semibold text-white shadow-[0_0_16px_rgba(251,113,133,0.3)] transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50"
                     >
                       <span className="material-symbols-outlined msr-fill text-[14px]">
                         play_arrow
@@ -390,7 +390,7 @@ export function RoomNavbarSearch({
                         type="button"
                         onClick={() => handleQueueVideo(linkPreview.track)}
                         disabled={disabled}
-                        className="flex items-center gap-1 rounded-lg border border-primary/40 bg-primary/10 px-3 py-1.5 font-label-md text-label-md font-semibold text-primary transition-all hover:bg-primary/20 active:scale-95 disabled:opacity-50"
+                        className="pointer-coarse:py-2.5 flex items-center gap-1 rounded-lg border border-primary/40 bg-primary/10 px-3 py-1.5 font-label-md text-label-md font-semibold text-primary transition-all hover:bg-primary/20 active:scale-95 disabled:opacity-50"
                       >
                         <span className="material-symbols-outlined text-[14px]">
                           playlist_add
@@ -540,7 +540,7 @@ export function RoomNavbarSearch({
                       <button
                         onClick={() => handlePlayVideo(result)}
                         disabled={disabled}
-                        className="rounded-lg border border-obsidian-border bg-surface-container-high px-2.5 py-1 font-label-sm text-label-sm font-semibold text-on-surface transition-colors hover:border-primary/40 hover:bg-surface-container-highest disabled:pointer-events-none disabled:opacity-50"
+                        className="pointer-coarse:px-3 pointer-coarse:py-2 rounded-lg border border-obsidian-border bg-surface-container-high px-2.5 py-1 font-label-sm text-label-sm font-semibold text-on-surface transition-colors hover:border-primary/40 hover:bg-surface-container-highest disabled:pointer-events-none disabled:opacity-50"
                       >
                         Play now
                       </button>
@@ -548,7 +548,7 @@ export function RoomNavbarSearch({
                         <button
                           onClick={() => handleQueueVideo(result)}
                           disabled={disabled}
-                          className="rounded-lg bg-primary/15 px-2.5 py-1 font-label-sm text-label-sm font-semibold text-primary transition-colors hover:bg-primary/25 disabled:pointer-events-none disabled:opacity-50"
+                          className="pointer-coarse:px-3 pointer-coarse:py-2 rounded-lg bg-primary/15 px-2.5 py-1 font-label-sm text-label-sm font-semibold text-primary transition-colors hover:bg-primary/25 disabled:pointer-events-none disabled:opacity-50"
                         >
                           + Queue
                         </button>

@@ -81,7 +81,7 @@ export function Showcase() {
               </div>
             </div>
 
-            <div className="mt-6 grid grid-cols-3 gap-4 text-center">
+            <div className="mt-6 grid grid-cols-1 gap-4 text-center sm:grid-cols-3">
               {[
                 { label: "Drift Gap", value: "< 2s", tone: "text-tertiary" },
                 { label: "Recovery", value: "Auto", tone: "text-on-surface" },
