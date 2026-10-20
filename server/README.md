@@ -72,7 +72,7 @@ All endpoints except `GET /api/health` require a Clerk session token in the `Aut
 
 Room codes are six characters. Thumbnail URLs are accepted only from YouTube's CDN hosts, video IDs are validated against a strict 11-character pattern, and message contents are capped at 500 characters, all server-side regardless of what any client sends.
 
-Interactive OpenAPI reference documentation is served at `/docs`, with the machine-readable document at `/docs/openapi.json`.
+Engineering documentation and the interactive API reference are served at `/docs`, with the machine-readable OpenAPI document at `/docs/openapi.json`.
 
 ## Socket.IO API
 
