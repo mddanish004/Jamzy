@@ -7,6 +7,7 @@ import (
 	"github.com/mddanish004/jamzy/server/internal/httpx"
 	"github.com/mddanish004/jamzy/server/internal/logging"
 	"github.com/mddanish004/jamzy/server/internal/music"
+	"github.com/mddanish004/jamzy/server/internal/openapi"
 	"github.com/mddanish004/jamzy/server/internal/rooms"
 	"github.com/mddanish004/jamzy/server/internal/users"
 )
@@ -31,6 +32,10 @@ func New(deps Deps) http.Handler {
 			"message": "API is running",
 		})
 	})
+
+	mux.HandleFunc("GET /docs", openapi.Docs)
+	mux.HandleFunc("GET /docs/{$}", openapi.Docs)
+	mux.HandleFunc("GET /docs/openapi.json", openapi.Spec)
 
 	mux.Handle("GET /api/me", deps.Middleware.Route("me", config.REST.Me, deps.Users.GetMe))
 	mux.Handle("POST /api/users/profile", deps.Middleware.Route("createProfile", config.REST.CreateProfile, deps.Users.CreateProfile))

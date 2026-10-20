@@ -1,0 +1,892 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Jamzy API",
+    "version": "1.0.0",
+    "description": "REST contract for the Jamzy backend, a real-time shared music-listening service.\n\nAuthentication: every endpoint except GET /api/health requires a Clerk session token in the Authorization: Bearer <token> header. The API derives the application user from the verified token and never accepts identity from the request body.\n\nErrors: failures return a JSON object with a single message field. Rate-limited requests answer 429 and carry a Retry-After header holding the number of seconds to wait.\n\nReal-time: presence, playback, queue, chat, and host handover travel over Socket.IO at /socket.io/ and are documented in the server README.",
+    "contact": {
+      "name": "Md Danish Ansari",
+      "url": "https://www.mddanish.dev/"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://jamzy-api.onrender.com",
+      "description": "Production"
+    },
+    {
+      "url": "http://localhost:5000",
+      "description": "Local development"
+    }
+  ],
+  "externalDocs": {
+    "description": "Socket.IO real-time contract, configuration, and deployment notes",
+    "url": "https://github.com/mddanish004/Jamzy/blob/main/server/README.md#socketio-api"
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Health",
+      "description": "Unauthenticated liveness probe"
+    },
+    {
+      "name": "Users",
+      "description": "Profile resolution and onboarding"
+    },
+    {
+      "name": "Rooms",
+      "description": "Room lifecycle and membership"
+    },
+    {
+      "name": "Music",
+      "description": "YouTube search and link resolution"
+    }
+  ],
+  "paths": {
+    "/api/health": {
+      "get": {
+        "tags": ["Health"],
+        "operationId": "getHealth",
+        "summary": "Liveness probe",
+        "description": "Public endpoint used by the hosting platform's health checks. No authentication and no rate limit.",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "The API process is up.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me": {
+      "get": {
+        "tags": ["Users"],
+        "operationId": "getMe",
+        "summary": "Resolve the authenticated user",
+        "description": "Returns the application user bound to the verified Clerk token, or a null user when onboarding has not happened yet. Rate limit: 60 requests per 60 seconds per user.",
+        "responses": {
+          "200": {
+            "description": "The caller's authentication state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/users/profile": {
+      "post": {
+        "tags": ["Users"],
+        "operationId": "createProfile",
+        "summary": "Create the user profile",
+        "description": "Completes onboarding by claiming a username for the authenticated Clerk user. Idempotent: when a profile already exists it is returned unchanged with 200 instead of creating a second one. Rate limit: 10 requests per 10 minutes per user.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProfileRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "A profile already existed for this Clerk user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "The profile was created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "413": {
+            "$ref": "#/components/responses/PayloadTooLarge"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/rooms": {
+      "post": {
+        "tags": ["Rooms"],
+        "operationId": "createRoom",
+        "summary": "Create a room",
+        "description": "Creates a room with a six-character code and makes the caller its host and first member. The caller must have completed onboarding. Rate limit: 15 requests per 5 minutes per user.",
+        "responses": {
+          "201": {
+            "description": "The room was created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateRoomResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/rooms/{roomCode}/join": {
+      "post": {
+        "tags": ["Rooms"],
+        "operationId": "joinRoom",
+        "summary": "Join a room",
+        "description": "Adds the caller to the room membership and returns the room state. Joining is idempotent: an existing member receives the same 200 response. The caller must have completed onboarding. Rate limit: 30 requests per 5 minutes per user.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RoomCode"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The room, including the caller's membership.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JoinRoomResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/rooms/{roomCode}": {
+      "get": {
+        "tags": ["Rooms"],
+        "operationId": "getRoom",
+        "summary": "Fetch room state",
+        "description": "Returns the persisted room state: host, members, the current track, and the playback snapshot. Rate limit: 60 requests per 5 minutes per user.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RoomCode"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The room state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoomResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/rooms/{roomCode}/leave": {
+      "post": {
+        "tags": ["Rooms"],
+        "operationId": "leaveRoom",
+        "summary": "Leave a room",
+        "description": "Removes the caller from the membership. When the host leaves, the longest-standing remaining member is promoted in the same transaction; when the host was the last member, the room is deleted. Calling this as a non-member is a no-op success. Rate limit: 60 requests per 5 minutes per user.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RoomCode"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The leave result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeaveRoomResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/music/search": {
+      "get": {
+        "tags": ["Music"],
+        "operationId": "musicSearch",
+        "summary": "Search YouTube",
+        "description": "Searches YouTube and returns up to 20 playable tracks. Rate limit: 30 requests per 60 seconds per user.",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "description": "Search text, 1 to 200 characters after trimming.",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Matching tracks, up to 20.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "502": {
+            "$ref": "#/components/responses/BadGateway"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        }
+      }
+    },
+    "/api/music/video": {
+      "get": {
+        "tags": ["Music"],
+        "operationId": "musicVideo",
+        "summary": "Resolve a single video",
+        "description": "Resolves a bare video id or any common YouTube URL form into a playable track. Rate limit: 60 requests per 60 seconds per user.",
+        "parameters": [
+          {
+            "name": "url",
+            "in": "query",
+            "required": true,
+            "description": "An 11-character video id, or a youtube.com, m.youtube.com, music.youtube.com, youtube-nocookie.com, or youtu.be link.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The resolved track.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VideoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/UnprocessableEntity"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "502": {
+            "$ref": "#/components/responses/BadGateway"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        }
+      }
+    },
+    "/api/music/playlist": {
+      "get": {
+        "tags": ["Music"],
+        "operationId": "musicPlaylist",
+        "summary": "Resolve a playlist",
+        "description": "Expands a YouTube playlist into up to 50 playable tracks. Rate limit: 15 requests per 60 seconds per user.",
+        "parameters": [
+          {
+            "name": "url",
+            "in": "query",
+            "required": true,
+            "description": "A YouTube playlist URL with a list parameter, or a bare playlist id.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The tracks in the playlist, up to 50.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "502": {
+            "$ref": "#/components/responses/BadGateway"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Clerk session token. The token's azp claim must match one of the server's authorized parties (CLERK_AUTHORIZED_PARTIES)."
+      }
+    },
+    "parameters": {
+      "RoomCode": {
+        "name": "roomCode",
+        "in": "path",
+        "required": true,
+        "description": "Six-character room code. Case-insensitive; the server normalizes it to uppercase.",
+        "schema": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9]{6}$"
+        }
+      }
+    },
+    "responses": {
+      "Unauthorized": {
+        "description": "The Authorization header is missing or the session token failed verification.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Unauthorized"
+            }
+          }
+        }
+      },
+      "BadRequest": {
+        "description": "The request body, room code, search query, or link failed validation.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "The room, profile, video, or playlist does not exist. Some endpoints also answer 404 when the caller has no profile yet.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Conflict": {
+        "description": "A record with the supplied unique field already exists, such as a taken username.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "PayloadTooLarge": {
+        "description": "The request body exceeds 100 KB.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "UnprocessableEntity": {
+        "description": "The video owner does not allow playback outside YouTube.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "TooManyRequests": {
+        "description": "The per-user rate limit for this endpoint was exceeded. Wait the number of seconds in the Retry-After header before retrying.",
+        "headers": {
+          "Retry-After": {
+            "description": "Seconds until the rate-limit window resets.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "InternalServerError": {
+        "description": "Unexpected server-side failure. Internal details are never included in the response.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "BadGateway": {
+        "description": "The upstream YouTube request failed or returned an invalid response.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "ServiceUnavailable": {
+        "description": "The server has no YouTube API key configured, or YouTube is temporarily unreachable.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "HealthResponse": {
+        "type": "object",
+        "required": ["success", "message"],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Always true when the process is up."
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable status line."
+          }
+        },
+        "example": {
+          "success": true,
+          "message": "API is running"
+        }
+      },
+      "Error": {
+        "type": "object",
+        "required": ["message"],
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "What went wrong, phrased for the client."
+          }
+        },
+        "example": {
+          "message": "Room not found"
+        }
+      },
+      "Unauthorized": {
+        "type": "object",
+        "required": ["authenticated", "message"],
+        "properties": {
+          "authenticated": {
+            "type": "boolean",
+            "const": false,
+            "description": "Always false."
+          },
+          "message": {
+            "type": "string",
+            "description": "Always Unauthorized."
+          }
+        },
+        "example": {
+          "authenticated": false,
+          "message": "Unauthorized"
+        }
+      },
+      "PublicUser": {
+        "type": "object",
+        "required": ["id", "clerkUserId", "username"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Application user id."
+          },
+          "clerkUserId": {
+            "type": "string",
+            "description": "Clerk user id (user_...)."
+          },
+          "username": {
+            "type": "string",
+            "description": "Claimed username, unique across the application."
+          }
+        }
+      },
+      "MeResponse": {
+        "type": "object",
+        "required": ["authenticated", "user", "onboardingComplete"],
+        "properties": {
+          "authenticated": {
+            "type": "boolean",
+            "description": "Always true when the request reaches the handler; unauthenticated requests get 401 instead."
+          },
+          "user": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PublicUser"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The application user, or null before onboarding."
+          },
+          "onboardingComplete": {
+            "type": "boolean",
+            "description": "True when a profile exists for this Clerk user."
+          }
+        }
+      },
+      "ProfileResponse": {
+        "type": "object",
+        "required": ["user"],
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/PublicUser"
+          }
+        }
+      },
+      "CreateProfileRequest": {
+        "type": "object",
+        "required": ["username"],
+        "properties": {
+          "username": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 20,
+            "pattern": "^[a-zA-Z0-9_]+$",
+            "description": "3 to 20 characters after trimming; letters, numbers, and underscores only. The server trims surrounding whitespace before validating."
+          }
+        }
+      },
+      "RoomUser": {
+        "type": "object",
+        "required": ["id", "username"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Application user id."
+          },
+          "username": {
+            "type": "string",
+            "description": "The member's username."
+          }
+        }
+      },
+      "RoomMember": {
+        "type": "object",
+        "required": ["user", "joinedAt"],
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/RoomUser"
+          },
+          "joinedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 timestamp of when the member joined."
+          }
+        }
+      },
+      "Room": {
+        "type": "object",
+        "required": [
+          "id",
+          "roomCode",
+          "host",
+          "members",
+          "currentVideoId",
+          "currentTitle",
+          "currentThumbnailUrl",
+          "currentDuration",
+          "isPlaying",
+          "playbackPosition",
+          "playbackUpdatedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Application room id."
+          },
+          "roomCode": {
+            "type": "string",
+            "description": "Six-character join code."
+          },
+          "host": {
+            "$ref": "#/components/schemas/RoomUser"
+          },
+          "members": {
+            "type": "array",
+            "description": "Current members, ordered by join time.",
+            "items": {
+              "$ref": "#/components/schemas/RoomMember"
+            }
+          },
+          "currentVideoId": {
+            "type": ["string", "null"],
+            "description": "YouTube video id of the loaded track, or null when nothing is loaded."
+          },
+          "currentTitle": {
+            "type": ["string", "null"],
+            "description": "Title of the loaded track, or null."
+          },
+          "currentThumbnailUrl": {
+            "type": ["string", "null"],
+            "format": "uri",
+            "description": "Thumbnail of the loaded track. Only https URLs from YouTube's CDN are stored."
+          },
+          "currentDuration": {
+            "type": ["number", "null"],
+            "description": "Duration of the loaded track in seconds, or null."
+          },
+          "isPlaying": {
+            "type": "boolean",
+            "description": "Whether the room is currently playing."
+          },
+          "playbackPosition": {
+            "type": "number",
+            "description": "Playhead position in seconds at the moment of the last playback write."
+          },
+          "playbackUpdatedAt": {
+            "type": ["string", "null"],
+            "format": "date-time",
+            "description": "UTC wall-clock timestamp of the last playback write, or null."
+          }
+        }
+      },
+      "CreateRoomResponse": {
+        "type": "object",
+        "required": ["room"],
+        "properties": {
+          "room": {
+            "$ref": "#/components/schemas/Room"
+          }
+        }
+      },
+      "JoinRoomResponse": {
+        "type": "object",
+        "required": ["room"],
+        "properties": {
+          "room": {
+            "$ref": "#/components/schemas/Room"
+          }
+        }
+      },
+      "RoomResponse": {
+        "type": "object",
+        "required": ["room"],
+        "properties": {
+          "room": {
+            "$ref": "#/components/schemas/Room"
+          }
+        }
+      },
+      "LeaveRoomResponse": {
+        "type": "object",
+        "required": ["left", "roomDeleted"],
+        "properties": {
+          "left": {
+            "type": "boolean",
+            "description": "Always true on success."
+          },
+          "roomDeleted": {
+            "type": "boolean",
+            "description": "True when the caller was the host and the last member, so the room was deleted."
+          }
+        }
+      },
+      "MusicTrack": {
+        "type": "object",
+        "required": ["videoId", "title", "channelTitle", "thumbnailUrl", "duration"],
+        "properties": {
+          "videoId": {
+            "type": "string",
+            "description": "Eleven-character YouTube video id."
+          },
+          "title": {
+            "type": "string",
+            "description": "Track title."
+          },
+          "channelTitle": {
+            "type": "string",
+            "description": "Channel or artist name."
+          },
+          "thumbnailUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "Thumbnail URL on YouTube's CDN."
+          },
+          "duration": {
+            "type": "string",
+            "description": "ISO 8601 duration as returned by YouTube, for example PT4M13S."
+          }
+        }
+      },
+      "SearchResponse": {
+        "type": "object",
+        "required": ["results"],
+        "properties": {
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MusicTrack"
+            }
+          }
+        }
+      },
+      "VideoResponse": {
+        "type": "object",
+        "required": ["result"],
+        "properties": {
+          "result": {
+            "$ref": "#/components/schemas/MusicTrack"
+          }
+        }
+      }
+    }
+  }
+}

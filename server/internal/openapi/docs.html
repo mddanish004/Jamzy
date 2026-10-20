@@ -1,0 +1,1025 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Jamzy API — OpenAPI Reference</title>
+<meta name="description" content="REST API reference for the Jamzy backend: profiles, rooms, and YouTube music resolution." />
+<style>
+  :root {
+    --bg: #0b0b0d;
+    --panel: #131316;
+    --panel-2: #1a191d;
+    --border: #2b2a33;
+    --text: #ece9ef;
+    --muted: #a49eac;
+    --faint: #756e7d;
+    --rose: #fb7185;
+    --rose-deep: #f43f5e;
+    --mint: #34d399;
+    --amber: #fbbf24;
+    --violet: #b9a8f7;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --radius: 14px;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    font-family: var(--sans);
+    color: var(--text);
+    background:
+      radial-gradient(900px 480px at 12% -8%, rgba(244, 63, 94, 0.14), transparent 60%),
+      radial-gradient(800px 420px at 92% 4%, rgba(251, 113, 133, 0.07), transparent 55%),
+      var(--bg);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  a {
+    color: var(--rose);
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  .bar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 12px 28px;
+    border-bottom: 1px solid rgba(43, 42, 51, 0.8);
+    background: rgba(11, 11, 13, 0.82);
+    backdrop-filter: blur(14px);
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text);
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+
+  .brand:hover {
+    text-decoration: none;
+  }
+
+  .logo {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 2.5px;
+    height: 18px;
+  }
+
+  .logo span {
+    width: 3px;
+    border-radius: 2px;
+    background: linear-gradient(to top, var(--rose-deep), var(--rose));
+    animation: eq 1.8s ease-in-out infinite;
+  }
+
+  .logo span:nth-child(1) {
+    height: 7px;
+  }
+
+  .logo span:nth-child(2) {
+    height: 14px;
+    animation-delay: -0.45s;
+  }
+
+  .logo span:nth-child(3) {
+    height: 10px;
+    animation-delay: -0.9s;
+  }
+
+  .logo span:nth-child(4) {
+    height: 16px;
+    animation-delay: -1.35s;
+  }
+
+  @keyframes eq {
+    50% {
+      transform: scaleY(0.5);
+    }
+  }
+
+  .name {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .name em {
+    font-style: normal;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--rose);
+    margin-left: 8px;
+    vertical-align: 2px;
+  }
+
+  .toc {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-left: auto;
+  }
+
+  .toc a {
+    font-size: 12.5px;
+    color: var(--muted);
+    padding: 5px 10px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+  }
+
+  .toc a:hover {
+    color: var(--text);
+    background: var(--panel-2);
+    border-color: var(--border);
+    text-decoration: none;
+  }
+
+  .download {
+    flex-shrink: 0;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text);
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--panel);
+  }
+
+  .download:hover {
+    background: var(--panel-2);
+    text-decoration: none;
+  }
+
+  main {
+    max-width: 1060px;
+    margin: 0 auto;
+    padding: 0 28px 72px;
+  }
+
+  .hero {
+    padding: 56px 0 8px;
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--rose);
+    margin: 0 0 14px;
+  }
+
+  h1 {
+    font-size: clamp(30px, 4.6vw, 44px);
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+    margin: 0 0 14px;
+  }
+
+  .lede {
+    color: var(--muted);
+    font-size: 15.5px;
+    line-height: 1.65;
+    max-width: 72ch;
+    margin: 0 0 22px;
+  }
+
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .fact {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 12.5px;
+    padding: 7px 12px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: rgba(19, 19, 22, 0.7);
+  }
+
+  .fact b {
+    font: 600 10px var(--mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+
+  .fact span {
+    font-family: var(--mono);
+    color: var(--text);
+    word-break: break-all;
+  }
+
+  .notes {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 30px 0 8px;
+  }
+
+  .note {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+  }
+
+  .note h3 {
+    margin: 0 0 8px;
+    font: 600 10.5px var(--mono);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+
+  .note p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .note p + p {
+    margin-top: 8px;
+  }
+
+  .note code {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text);
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1px 6px;
+  }
+
+  .tag {
+    margin-top: 54px;
+    scroll-margin-top: 76px;
+  }
+
+  .tag-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+  }
+
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: var(--rose);
+    align-self: center;
+    box-shadow: 0 0 10px rgba(251, 113, 133, 0.6);
+  }
+
+  .tag h2 {
+    font-size: 21px;
+    letter-spacing: -0.015em;
+    margin: 0;
+  }
+
+  .count {
+    font: 500 11px var(--mono);
+    color: var(--faint);
+  }
+
+  .tag-desc {
+    margin: 2px 0 16px;
+    color: var(--faint);
+    font-size: 13px;
+  }
+
+  .op {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.014), transparent 40%), var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin: 12px 0;
+    scroll-margin-top: 76px;
+  }
+
+  .op-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 16px 20px 0;
+  }
+
+  .method {
+    font: 600 11px/1 var(--mono);
+    letter-spacing: 0.08em;
+    padding: 6px 9px;
+    border-radius: 7px;
+    align-self: center;
+  }
+
+  .method-get {
+    color: var(--mint);
+    background: rgba(52, 211, 153, 0.09);
+    border: 1px solid rgba(52, 211, 153, 0.24);
+  }
+
+  .method-post {
+    color: var(--rose);
+    background: rgba(251, 113, 133, 0.09);
+    border: 1px solid rgba(251, 113, 133, 0.26);
+  }
+
+  .method-other {
+    color: var(--violet);
+    background: rgba(185, 168, 247, 0.09);
+    border: 1px solid rgba(185, 168, 247, 0.24);
+  }
+
+  .path {
+    font: 500 14.5px var(--mono);
+    color: var(--text);
+    word-break: break-all;
+  }
+
+  .path b {
+    color: var(--rose);
+    font-weight: 500;
+  }
+
+  .summary {
+    color: var(--muted);
+    font-size: 13.5px;
+  }
+
+  .op-id {
+    margin-left: auto;
+    font: 500 11px var(--mono);
+    color: var(--faint);
+  }
+
+  .op-body {
+    padding: 4px 20px 18px;
+  }
+
+  .op-desc {
+    color: var(--muted);
+    font-size: 13.5px;
+    line-height: 1.65;
+    max-width: 82ch;
+    margin: 8px 0 4px;
+  }
+
+  .sub {
+    font: 600 10.5px var(--mono);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--faint);
+    margin: 18px 0 8px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+  }
+
+  th {
+    text-align: left;
+    font: 600 10px var(--mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--faint);
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  td {
+    padding: 8px 10px;
+    border-bottom: 1px solid rgba(43, 42, 51, 0.55);
+    vertical-align: top;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  td.name {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  .req {
+    display: inline-block;
+    margin-left: 7px;
+    font: 600 9px var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--rose);
+    border: 1px solid rgba(251, 113, 133, 0.3);
+    border-radius: 5px;
+    padding: 1px 5px;
+    vertical-align: 1px;
+  }
+
+  .type {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--violet);
+    white-space: nowrap;
+  }
+
+  .responses {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .res {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 8px 12px;
+    border: 1px solid rgba(43, 42, 51, 0.6);
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.012);
+  }
+
+  .code {
+    font: 600 12px var(--mono);
+    min-width: 34px;
+  }
+
+  .code-ok {
+    color: var(--mint);
+  }
+
+  .code-warn {
+    color: var(--amber);
+  }
+
+  .code-err {
+    color: var(--rose);
+  }
+
+  .res-desc {
+    color: var(--muted);
+    font-size: 13px;
+    flex: 1;
+    min-width: 220px;
+  }
+
+  .chips {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .chip {
+    font: 500 11.5px var(--mono);
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 3px 9px;
+    white-space: nowrap;
+  }
+
+  a.chip:hover {
+    color: var(--text);
+    border-color: var(--rose);
+    text-decoration: none;
+  }
+
+  .models {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .model {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    scroll-margin-top: 76px;
+  }
+
+  .model h3 {
+    margin: 0 0 2px;
+    font: 600 13px var(--mono);
+    color: var(--text);
+  }
+
+  .model .sub {
+    margin-top: 12px;
+  }
+
+  .example {
+    margin: 12px 0 0;
+    padding: 12px 14px;
+    background: #0d0d10;
+    border: 1px solid rgba(43, 42, 51, 0.7);
+    border-radius: 9px;
+    font: 12px/1.6 var(--mono);
+    color: var(--muted);
+    overflow-x: auto;
+  }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.65;
+    margin-top: 32px;
+  }
+
+  .foot {
+    border-top: 1px solid rgba(43, 42, 51, 0.7);
+    padding: 22px 28px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--faint);
+    font-size: 12.5px;
+  }
+
+  .foot .links {
+    display: inline-flex;
+    gap: 18px;
+  }
+
+  .foot a {
+    color: var(--muted);
+  }
+
+  .foot a:hover {
+    color: var(--text);
+  }
+
+  @media (max-width: 880px) {
+    .notes {
+      grid-template-columns: 1fr;
+    }
+
+    .tag,
+    .op,
+    .model {
+      scroll-margin-top: 128px;
+    }
+
+    .bar {
+      flex-wrap: wrap;
+      padding: 10px 18px;
+    }
+
+    .toc {
+      order: 3;
+      width: 100%;
+      margin-left: 0;
+      overflow-x: auto;
+      flex-wrap: nowrap;
+      padding-bottom: 2px;
+    }
+
+    .download {
+      margin-left: auto;
+    }
+
+    main {
+      padding: 0 18px 56px;
+    }
+
+    .hero {
+      padding-top: 38px;
+    }
+
+    .op-id {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    .logo span {
+      animation: none;
+    }
+  }
+</style>
+</head>
+<body>
+<header class="bar">
+  <a class="brand" href="/docs">
+    <span class="logo" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+    <span class="name">Jamzy<em>API</em></span>
+  </a>
+  <nav class="toc" id="toc" aria-label="Sections"></nav>
+  <a class="download" href="/docs/openapi.json">openapi.json</a>
+</header>
+<main>
+  <section class="hero">
+    <p class="eyebrow">OpenAPI 3.1 · REST Reference</p>
+    <h1>Every endpoint, in one place.</h1>
+    <p class="lede" id="lede">Loading the specification…</p>
+    <div class="facts" id="facts"></div>
+  </section>
+  <div id="content"></div>
+  <noscript>
+    <p class="panel">This reference renders from the OpenAPI document and needs JavaScript. The raw document is available at <a href="/docs/openapi.json">/docs/openapi.json</a>.</p>
+  </noscript>
+</main>
+<footer class="foot">
+  <span>Jamzy — music heard together, in real time</span>
+  <span class="links">
+    <a href="https://jamzy.mddanish.dev/">App</a>
+    <a href="https://github.com/mddanish004/Jamzy">Source</a>
+    <a href="/docs/openapi.json">Spec</a>
+  </span>
+</footer>
+<script>
+  const el = (tag, cls, text) => {
+    const node = document.createElement(tag);
+    if (cls) node.className = cls;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  };
+
+  const refName = (ref) => ref.split("/").pop();
+
+  let spec = null;
+  let schemas = {};
+  let responseIndex = {};
+  let parameterIndex = {};
+
+  const resolve = (schema) => (schema && schema.$ref ? schemas[refName(schema.$ref)] || schema : schema);
+
+  const resolveParameter = (param) => (param.$ref ? parameterIndex[refName(param.$ref)] || param : param);
+
+  const resolveResponse = (response) => (response.$ref ? responseIndex[refName(response.$ref)] || response : response);
+
+  function typeLabel(schema) {
+    if (!schema) return "any";
+    if (schema.$ref) return refName(schema.$ref);
+    if (schema.anyOf) return schema.anyOf.map(typeLabel).join(" | ");
+    if (Array.isArray(schema.type)) return schema.type.join(" | ");
+    if (schema.type === "array") return typeLabel(schema.items) + "[]";
+    return schema.type || (schema.properties ? "object" : "any");
+  }
+
+  function schemaChips(schema) {
+    const names = new Set();
+    const walk = (s) => {
+      if (!s) return;
+      if (s.$ref) {
+        names.add(refName(s.$ref));
+        return;
+      }
+      if (s.anyOf) s.anyOf.forEach(walk);
+      if (s.type === "array") walk(s.items);
+    };
+    walk(schema);
+    return [...names];
+  }
+
+  function fieldTable(schema) {
+    let resolved = resolve(schema);
+    if (resolved && resolved.type === "array") resolved = resolve(resolved.items);
+    if (!resolved || !resolved.properties) return null;
+
+    const required = resolved.required || [];
+    const table = el("table");
+    const head = el("thead");
+    const headRow = el("tr");
+    ["Field", "Type", "Description"].forEach((label) => headRow.appendChild(el("th", null, label)));
+    head.appendChild(headRow);
+    table.appendChild(head);
+
+    const body = el("tbody");
+    Object.entries(resolved.properties).forEach(([name, property]) => {
+      const row = el("tr");
+      const nameCell = el("td", "name", name);
+      if (required.includes(name)) nameCell.appendChild(el("span", "req", "required"));
+      row.appendChild(nameCell);
+      row.appendChild(el("td", "type", typeLabel(property)));
+      row.appendChild(el("td", null, (resolve(property) && resolve(property).description) || ""));
+      body.appendChild(row);
+    });
+    table.appendChild(body);
+
+    const wrapper = el("div", "table-wrap");
+    wrapper.appendChild(table);
+    return wrapper;
+  }
+
+  function appendFields(parent, schema, label) {
+    const table = fieldTable(schema);
+    if (!table) return;
+    parent.appendChild(el("p", "sub", label));
+    parent.appendChild(table);
+  }
+
+  function pathElement(path) {
+    const code = el("code", "path");
+    path.split(/(\{[^}]+\})/).forEach((part) => {
+      if (!part) return;
+      if (part.startsWith("{")) code.appendChild(el("b", null, part));
+      else code.appendChild(document.createTextNode(part));
+    });
+    return code;
+  }
+
+  function statusClass(status) {
+    if (status.startsWith("2")) return "code code-ok";
+    if (status.startsWith("3")) return "code code-warn";
+    return "code code-err";
+  }
+
+  function operationCard(method, path, operation) {
+    const card = el("article", "op");
+    card.id = "op-" + operation.operationId;
+
+    const head = el("div", "op-head");
+    head.appendChild(el("span", "method method-" + (method === "get" || method === "post" ? method : "other"), method.toUpperCase()));
+    head.appendChild(pathElement(path));
+    head.appendChild(el("span", "summary", operation.summary || ""));
+    head.appendChild(el("span", "op-id", operation.operationId || ""));
+    card.appendChild(head);
+
+    const body = el("div", "op-body");
+    if (operation.description) body.appendChild(el("p", "op-desc", operation.description));
+
+    const params = (operation.parameters || []).map(resolveParameter);
+    if (params.length) {
+      const table = el("table");
+      const headRow = el("tr");
+      ["Parameter", "In", "Type", "Description"].forEach((label) => headRow.appendChild(el("th", null, label)));
+      const thead = el("thead");
+      thead.appendChild(headRow);
+      table.appendChild(thead);
+      const tbody = el("tbody");
+      params.forEach((param) => {
+        const row = el("tr");
+        const nameCell = el("td", "name", param.name);
+        if (param.required) nameCell.appendChild(el("span", "req", "required"));
+        row.appendChild(nameCell);
+        row.appendChild(el("td", null, param.in));
+        row.appendChild(el("td", "type", typeLabel(param.schema)));
+        row.appendChild(el("td", null, param.description || ""));
+        tbody.appendChild(row);
+      });
+      table.appendChild(tbody);
+      body.appendChild(el("p", "sub", "Parameters"));
+      const wrapper = el("div", "table-wrap");
+      wrapper.appendChild(table);
+      body.appendChild(wrapper);
+    }
+
+    const requestSchema = operation.requestBody && operation.requestBody.content && operation.requestBody.content["application/json"] && operation.requestBody.content["application/json"].schema;
+    if (requestSchema) appendFields(body, requestSchema, "Request body · application/json");
+
+    if (operation.responses) {
+      body.appendChild(el("p", "sub", "Responses"));
+      const list = el("div", "responses");
+      Object.entries(operation.responses).forEach(([status, raw]) => {
+        const response = resolveResponse(raw);
+        const row = el("div", "res");
+        row.appendChild(el("span", statusClass(status), status));
+        row.appendChild(el("span", "res-desc", response.description || ""));
+        const chips = el("span", "chips");
+        const json = response.content && response.content["application/json"];
+        if (json && json.schema) {
+          schemaChips(json.schema).forEach((name) => {
+            const chip = el("a", "chip", name);
+            chip.href = "#model-" + name;
+            chips.appendChild(chip);
+          });
+        }
+        if (response.headers) {
+          Object.entries(response.headers).forEach(([header, headerSpec]) => {
+            chips.appendChild(el("span", "chip", header + " · " + typeLabel(headerSpec.schema)));
+          });
+        }
+        if (chips.childNodes.length) row.appendChild(chips);
+        list.appendChild(row);
+      });
+      body.appendChild(list);
+    }
+
+    card.appendChild(body);
+    return card;
+  }
+
+  function notePanel(title, lines) {
+    const panel = el("div", "note");
+    panel.appendChild(el("h3", null, title));
+    lines.forEach((line) => {
+      const paragraph = el("p");
+      if (typeof line === "string") paragraph.textContent = line;
+      else paragraph.appendChild(line);
+      panel.appendChild(paragraph);
+    });
+    return panel;
+  }
+
+  function codeLine(text) {
+    const line = document.createElement("span");
+    line.appendChild(el("code", null, text));
+    return line;
+  }
+
+  function renderNotes() {
+    const notes = el("section", "notes");
+
+    const scheme = (spec.components && spec.components.securitySchemes && spec.components.securitySchemes.bearerAuth) || {};
+    notes.appendChild(
+      notePanel("Authentication", [
+        scheme.description || "Every endpoint except the health probe requires a session token.",
+        codeLine("Authorization: Bearer <token>"),
+      ]),
+    );
+
+    notes.appendChild(
+      notePanel("Errors & rate limits", [
+        'Failures return a JSON object with a single "message" field. Unauthenticated requests answer 401 with "authenticated": false.',
+        "Rate-limited requests answer 429 and include a Retry-After header with the number of seconds to wait.",
+      ]),
+    );
+
+    const docs = spec.externalDocs;
+    const realtimeLine = el("span");
+    realtimeLine.textContent = "Playback, queue, chat, presence, and host handover travel over Socket.IO at /socket.io/ — outside the REST contract.";
+    const linkLine = el("p");
+    if (docs) {
+      const link = el("a", null, docs.description || "Real-time documentation");
+      link.href = docs.url;
+      link.target = "_blank";
+      link.rel = "noreferrer";
+      linkLine.appendChild(link);
+    }
+    notes.appendChild(notePanel("Real-time", [realtimeLine, linkLine]));
+
+    return notes;
+  }
+
+  function renderFacts() {
+    const facts = document.getElementById("facts");
+    const server = (spec.servers && spec.servers[0]) || { url: "" };
+    const entries = [
+      ["Base URL", server.url],
+      ["Auth", "Clerk · Bearer token"],
+      ["Format", "JSON · OpenAPI 3.1"],
+    ];
+    entries.forEach(([label, value]) => {
+      const fact = el("span", "fact");
+      fact.appendChild(el("b", null, label));
+      fact.appendChild(el("span", null, value));
+      facts.appendChild(fact);
+    });
+  }
+
+  function renderToc() {
+    const toc = document.getElementById("toc");
+    spec.tags.forEach((tag) => {
+      const link = el("a", null, tag.name);
+      link.href = "#tag-" + tag.name.toLowerCase();
+      toc.appendChild(link);
+    });
+    const models = el("a", null, "Models");
+    models.href = "#models";
+    toc.appendChild(models);
+  }
+
+  function renderTags() {
+    const container = document.getElementById("content");
+    container.appendChild(renderNotes());
+
+    spec.tags.forEach((tag) => {
+      const section = el("section", "tag");
+      section.id = "tag-" + tag.name.toLowerCase();
+
+      const operations = [];
+      Object.entries(spec.paths).forEach(([path, methods]) => {
+        Object.entries(methods).forEach(([method, operation]) => {
+          if ((operation.tags || []).includes(tag.name)) operations.push([method, path, operation]);
+        });
+      });
+
+      const head = el("div", "tag-head");
+      head.appendChild(el("span", "dot"));
+      head.appendChild(el("h2", null, tag.name));
+      head.appendChild(el("span", "count", operations.length + (operations.length === 1 ? " endpoint" : " endpoints")));
+      section.appendChild(head);
+      if (tag.description) section.appendChild(el("p", "tag-desc", tag.description));
+
+      operations.forEach(([method, path, operation]) => {
+        section.appendChild(operationCard(method, path, operation));
+      });
+
+      container.appendChild(section);
+    });
+  }
+
+  function renderModels() {
+    const section = el("section", "tag");
+    section.id = "models";
+
+    const head = el("div", "tag-head");
+    head.appendChild(el("span", "dot"));
+    head.appendChild(el("h2", null, "Models"));
+    head.appendChild(el("span", "count", Object.keys(schemas).length + " schemas"));
+    section.appendChild(head);
+    section.appendChild(el("p", "tag-desc", "Every object the API sends or accepts."));
+
+    const grid = el("div", "models");
+    Object.entries(schemas).forEach(([name, schema]) => {
+      const card = el("div", "model");
+      card.id = "model-" + name;
+      card.appendChild(el("h3", null, name));
+      const table = fieldTable(schema);
+      if (table) {
+        card.appendChild(el("p", "sub", "Fields"));
+        card.appendChild(table);
+      }
+      if (schema.example !== undefined) {
+        const example = el("pre", "example", JSON.stringify(schema.example, null, 2));
+        card.appendChild(example);
+      }
+      grid.appendChild(card);
+    });
+    section.appendChild(grid);
+    document.getElementById("content").appendChild(section);
+  }
+
+  function render() {
+    document.title = spec.info.title + " — OpenAPI Reference";
+    document.getElementById("lede").textContent =
+      "The complete REST contract for the Jamzy backend. Interactive reference generated from the OpenAPI 3.1 document served at /docs/openapi.json.";
+    schemas = (spec.components && spec.components.schemas) || {};
+    responseIndex = (spec.components && spec.components.responses) || {};
+    parameterIndex = (spec.components && spec.components.parameters) || {};
+    renderFacts();
+    renderToc();
+    renderTags();
+    renderModels();
+  }
+
+  fetch("/docs/openapi.json")
+    .then((response) => {
+      if (!response.ok) throw new Error("HTTP " + response.status);
+      return response.json();
+    })
+    .then((data) => {
+      spec = data;
+      render();
+    })
+    .catch(() => {
+      document.getElementById("lede").textContent =
+        "The specification could not be loaded. The raw document is available at /docs/openapi.json.";
+    });
+</script>
+</body>
+</html>
