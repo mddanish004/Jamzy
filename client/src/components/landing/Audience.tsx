@@ -1,3 +1,5 @@
+import { Reveal } from "../ui/Reveal";
+
 const AUDIENCES = [
   {
     icon: "diversity_1",
@@ -55,50 +57,53 @@ const TONES = {
 export function Audience() {
   return (
     <section className="mx-auto w-full max-w-7xl px-gutter py-24">
-      <div className="mx-auto mb-16 max-w-2xl text-center">
-        <span className="font-label-caption text-label-caption uppercase tracking-widest text-primary">
-          Built For Every Circle
-        </span>
-        <h2 className="mt-2 font-headline-lg text-headline-lg text-on-surface">
-          Who's Jamzy made for?
-        </h2>
-        <p className="mt-4 font-body-lg text-body-lg text-on-surface-variant">
-          From quiet study nights to friendships across oceans.
-        </p>
-      </div>
+      <Reveal delay={0}>
+        <div className="mx-auto mb-16 max-w-2xl text-center">
+          <span className="font-label-caption text-label-caption uppercase tracking-widest text-primary">
+            Built For Every Circle
+          </span>
+          <h2 className="mt-2 font-headline-lg text-headline-lg text-on-surface">
+            Who's Jamzy made for?
+          </h2>
+          <p className="mt-4 font-body-lg text-body-lg text-on-surface-variant">
+            From quiet study nights to friendships across oceans.
+          </p>
+        </div>
+      </Reveal>
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {AUDIENCES.map((audience) => {
+        {AUDIENCES.map((audience, index) => {
           const tone = TONES[audience.tone];
           return (
-            <div
-              key={audience.title}
-              className={`flex flex-col justify-between rounded-2xl border border-obsidian-border bg-[#141418] p-6 transition-colors hover:bg-[#1c1b1d] ${tone.hover}`}
-            >
-              <div>
+            <Reveal key={audience.title} delay={index * 90}>
+              <div
+                className={`flex flex-col justify-between rounded-2xl border border-obsidian-border bg-[#141418] p-6 transition-colors hover:bg-[#1c1b1d] ${tone.hover}`}
+              >
+                <div>
+                  <div
+                    className={`mb-4 grid size-10 place-items-center rounded-lg border ${tone.chip}`}
+                  >
+                    <span className="material-symbols-outlined text-[22px]">
+                      {audience.icon}
+                    </span>
+                  </div>
+                  <h3 className="font-headline-sm text-headline-sm text-on-surface">
+                    {audience.title}
+                  </h3>
+                  <p className="mt-2 font-body-sm text-body-sm leading-relaxed text-on-surface-variant">
+                    {audience.copy}
+                  </p>
+                </div>
                 <div
-                  className={`mb-4 grid size-10 place-items-center rounded-lg border ${tone.chip}`}
+                  className={`mt-6 flex items-center gap-1 font-label-caption text-label-caption uppercase tracking-wider ${tone.label}`}
                 >
-                  <span className="material-symbols-outlined text-[22px]">
-                    {audience.icon}
+                  {audience.footer}
+                  <span className="material-symbols-outlined text-[14px]">
+                    arrow_forward
                   </span>
                 </div>
-                <h3 className="font-headline-sm text-headline-sm text-on-surface">
-                  {audience.title}
-                </h3>
-                <p className="mt-2 font-body-sm text-body-sm leading-relaxed text-on-surface-variant">
-                  {audience.copy}
-                </p>
               </div>
-              <div
-                className={`mt-6 flex items-center gap-1 font-label-caption text-label-caption uppercase tracking-wider ${tone.label}`}
-              >
-                {audience.footer}
-                <span className="material-symbols-outlined text-[14px]">
-                  arrow_forward
-                </span>
-              </div>
-            </div>
+            </Reveal>
           );
         })}
       </div>

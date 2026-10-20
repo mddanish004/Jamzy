@@ -12,7 +12,7 @@ export function ShowcaseArt({ src, alt, className = "" }: ShowcaseArtProps) {
   if (failed) {
     return (
       <div
-        className={`${className} grid place-items-center bg-gradient-to-br from-[#73323d] via-[#f43f5e]/40 to-[#0e0e10]`}
+        className={`${className} grid place-items-center bg-gradient-to-br from-[#73323d] via-[#f43f5e]/40 to-[#0e0e10] transition-transform duration-500 hover:scale-[1.04]`}
         role="img"
         aria-label={alt}
       >
@@ -27,7 +27,7 @@ export function ShowcaseArt({ src, alt, className = "" }: ShowcaseArtProps) {
     <img
       src={src}
       alt={alt}
-      className={className}
+      className={`${className} transition-transform duration-500 hover:scale-[1.04]`}
       onError={() => setFailed(true)}
       loading="lazy"
     />

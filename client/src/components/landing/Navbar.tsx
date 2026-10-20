@@ -3,7 +3,7 @@ import { Logo } from "../ui/Logo";
 
 export function Navbar() {
   return (
-    <header className="fixed top-0 z-50 w-full border-b border-obsidian-border/50 bg-[#0e0e10]/85 shadow-[0_1px_12px_rgba(0,0,0,0.4)] backdrop-blur-xl">
+    <header className="jamzy-nav-in fixed top-0 z-50 w-full border-b border-obsidian-border/50 bg-[#0e0e10]/85 shadow-[0_1px_12px_rgba(0,0,0,0.4)] backdrop-blur-xl">
       <div className="flex h-16 w-full items-center justify-between px-gutter">
         <div className="flex items-center gap-space-md">
           <Link to="/" aria-label="Jamzy home" className="shrink-0">

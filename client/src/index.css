@@ -169,6 +169,7 @@ body {
   line-height: 22px;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   overscroll-behavior: none;
@@ -438,6 +439,55 @@ body {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.jamzy-reveal {
+  opacity: 0;
+}
+
+.jamzy-reveal-in {
+  animation: jamzy-rise 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes jamzy-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 26px, 0);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    filter: blur(0);
+  }
+}
+
+@keyframes jamzy-float {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(0, -22px, 0) scale(1.03);
+  }
+}
+
+.jamzy-float {
+  animation: jamzy-float 11s ease-in-out infinite alternate;
+}
+
+@keyframes jamzy-nav-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.jamzy-nav-in {
+  animation: jamzy-nav-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @media (prefers-reduced-motion: reduce) {
