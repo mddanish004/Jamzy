@@ -44,7 +44,7 @@ func (s *Service) SetTrack(ctx context.Context, roomCode string, userID string, 
 			current_duration = $5,
 			is_playing = true,
 			playback_position = 0,
-			playback_updated_at = now(),
+			playback_updated_at = timezone('UTC', now()),
 			playback_updated_by = $6,
 			updated_at = now()
 		WHERE room_code = $1
@@ -99,7 +99,7 @@ func (s *Service) ApplyControl(ctx context.Context, roomCode string, userID stri
 		UPDATE rooms SET
 			is_playing = $2,
 			playback_position = $3,
-			playback_updated_at = now(),
+			playback_updated_at = timezone('UTC', now()),
 			playback_updated_by = $4,
 			updated_at = now()
 		WHERE room_code = $1
@@ -119,7 +119,7 @@ func (s *Service) Clear(ctx context.Context, roomCode string, userID string) (*S
 			current_duration = NULL,
 			is_playing = false,
 			playback_position = 0,
-			playback_updated_at = now(),
+			playback_updated_at = timezone('UTC', now()),
 			playback_updated_by = $2,
 			updated_at = now()
 		WHERE room_code = $1
