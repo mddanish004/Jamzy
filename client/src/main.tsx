@@ -1,4 +1,5 @@
 import { ClerkProvider } from "@clerk/react";
+import { Analytics } from "@vercel/analytics/react";
 import { StrictMode } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { createRoot } from "react-dom/client";
@@ -12,6 +13,7 @@ const root = createRoot(document.getElementById("root")!);
 if (!clientConfig.clerkPublishableKey) {
   root.render(
     <StrictMode>
+      <Analytics />
       <BrowserRouter>
         <AuthNotConfiguredScreen />
       </BrowserRouter>
@@ -20,6 +22,7 @@ if (!clientConfig.clerkPublishableKey) {
 } else {
   root.render(
     <StrictMode>
+      <Analytics />
       <ClerkProvider
         publishableKey={clientConfig.clerkPublishableKey}
         afterSignOutUrl="/"
