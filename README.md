@@ -15,7 +15,6 @@ The full system is a React single-page app, a Go API with a Socket.IO real-time 
 
 Watching a playlist together over a video call degrades audio quality, screen sharing burns bandwidth, and syncing separate browser tabs never quite lines up. Jamzy avoids all three by making the server the single authority on playback state: the host's controls are mutations on a database row, and every client derives its own playhead from the same timestamped snapshot. One clean websocket event replaces user-orchestrated tab alignment.
 
-This is a personal full-stack engineering project. It was built incrementally through phases (authentication, room lifecycle, playback sync, chat, queue), including a full backend port from Node.js/Express/Prisma to Go without changing the client-facing API contract.
 
 ## Why not an existing tool
 
