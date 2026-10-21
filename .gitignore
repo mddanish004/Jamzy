@@ -11,3 +11,4 @@ build/
 !.env.example
 .agent/
 sli.md
+design/
