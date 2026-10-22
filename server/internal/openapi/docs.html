@@ -8,6 +8,7 @@
 <meta name="description" content="Engineering reference for Jamzy: architecture, database design, playback synchronization, control flows, realtime events, security, operations, and the full REST API." />
 <style>
   :root {
+    color-scheme: dark;
     --bg: #0b0b0d;
     --panel: #131316;
     --panel-2: #1a191d;
@@ -20,9 +21,37 @@
     --mint: #34d399;
     --amber: #fbbf24;
     --violet: #b9a8f7;
+    --bar-bg: rgba(11, 11, 13, 0.82);
+    --bar-line: rgba(43, 42, 51, 0.8);
+    --fact-bg: rgba(19, 19, 22, 0.7);
+    --res-bg: rgba(255, 255, 255, 0.012);
+    --code-bg: #0d0d10;
+    --node-soft: rgba(255, 255, 255, 0.022);
     --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
     --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     --radius: 14px;
+  }
+
+  [data-theme="light"] {
+    color-scheme: light;
+    --bg: #faf9fb;
+    --panel: #ffffff;
+    --panel-2: #f2f1f5;
+    --border: #e4e2e9;
+    --text: #1c1a22;
+    --muted: #5b5464;
+    --faint: #8a8392;
+    --rose: #e11d48;
+    --rose-deep: #f43f5e;
+    --mint: #059669;
+    --amber: #b45309;
+    --violet: #7c3aed;
+    --bar-bg: rgba(250, 249, 251, 0.82);
+    --bar-line: rgba(28, 26, 34, 0.09);
+    --fact-bg: rgba(255, 255, 255, 0.75);
+    --res-bg: #f7f6f9;
+    --code-bg: #f6f5f8;
+    --node-soft: rgba(28, 26, 34, 0.035);
   }
 
   * {
@@ -45,6 +74,13 @@
     text-rendering: optimizeLegibility;
   }
 
+  [data-theme="light"] body {
+    background:
+      radial-gradient(900px 480px at 12% -8%, rgba(244, 63, 94, 0.07), transparent 60%),
+      radial-gradient(800px 420px at 92% 4%, rgba(251, 113, 133, 0.05), transparent 55%),
+      var(--bg);
+  }
+
   a {
     color: var(--rose);
     text-decoration: none;
@@ -62,8 +98,8 @@
     align-items: center;
     gap: 18px;
     padding: 12px 28px;
-    border-bottom: 1px solid rgba(43, 42, 51, 0.8);
-    background: rgba(11, 11, 13, 0.82);
+    border-bottom: 1px solid var(--bar-line);
+    background: var(--bar-bg);
     backdrop-filter: blur(14px);
   }
 
@@ -175,6 +211,49 @@
     text-decoration: none;
   }
 
+  .theme-toggle {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--panel);
+    color: var(--muted);
+    cursor: pointer;
+  }
+
+  .theme-toggle:hover {
+    background: var(--panel-2);
+    color: var(--text);
+  }
+
+  .theme-toggle:focus-visible {
+    outline: 2px solid var(--rose);
+    outline-offset: 1px;
+  }
+
+  .theme-toggle svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .theme-toggle .icon-sun {
+    display: block;
+  }
+
+  .theme-toggle .icon-moon,
+  [data-theme="light"] .theme-toggle .icon-sun {
+    display: none;
+  }
+
+  [data-theme="light"] .theme-toggle .icon-moon {
+    display: block;
+  }
+
   main {
     max-width: 1060px;
     margin: 0 auto;
@@ -224,7 +303,7 @@
     padding: 7px 12px;
     border: 1px solid var(--border);
     border-radius: 9px;
-    background: rgba(19, 19, 22, 0.7);
+    background: var(--fact-bg);
   }
 
   .fact b {
@@ -479,7 +558,7 @@
     padding: 8px 12px;
     border: 1px solid rgba(43, 42, 51, 0.6);
     border-radius: 9px;
-    background: rgba(255, 255, 255, 0.012);
+    background: var(--res-bg);
   }
 
   .code {
@@ -555,7 +634,7 @@
   .example {
     margin: 12px 0 0;
     padding: 12px 14px;
-    background: #0d0d10;
+    background: var(--code-bg);
     border: 1px solid rgba(43, 42, 51, 0.7);
     border-radius: 9px;
     font: 12px/1.6 var(--mono);
@@ -797,7 +876,7 @@
   }
 
   svg .node-soft {
-    fill: rgba(255, 255, 255, 0.022);
+    fill: var(--node-soft);
     stroke: var(--border);
   }
 
@@ -932,7 +1011,7 @@
   .formula {
     margin: 14px 0 0;
     padding: 15px 18px;
-    background: #0d0d10;
+    background: var(--code-bg);
     border: 1px solid var(--border);
     border-left: 2px solid var(--rose);
     border-radius: 10px;
@@ -1113,6 +1192,16 @@
       padding: 5px 9px;
     }
 
+    .theme-toggle {
+      width: 24px;
+      height: 24px;
+    }
+
+    .theme-toggle svg {
+      width: 12px;
+      height: 12px;
+    }
+
     .toc a {
       font-size: 12px;
       padding: 4px 8px;
@@ -1190,6 +1279,17 @@
     }
   }
 </style>
+<script>
+  (function () {
+    let stored = null;
+    try {
+      stored = localStorage.getItem("jamzy-docs-theme");
+    } catch (error) {}
+    if (stored === "light" || (!stored && window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches)) {
+      document.documentElement.dataset.theme = "light";
+    }
+  })();
+</script>
 </head>
 <body>
 <header class="bar">
@@ -1207,6 +1307,10 @@
     <a href="#security">Security</a>
     <a href="#operations">Operations</a>
   </nav>
+  <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle color theme" title="Toggle color theme">
+    <svg class="icon-sun" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+    <svg class="icon-moon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79Z"/></svg>
+  </button>
   <a class="download" href="/docs/openapi.json">openapi.json</a>
 </header>
 <main>
@@ -2173,6 +2277,29 @@ expected = position + (now − updatedAt) × playbackRate
   </span>
 </footer>
 <script>
+  const themeKey = "jamzy-docs-theme";
+  const themeToggle = document.getElementById("theme-toggle");
+  const themeLabel = (theme) => "Switch to " + (theme === "light" ? "dark" : "light") + " mode";
+  let theme = document.documentElement.dataset.theme === "light" ? "light" : "dark";
+
+  const setTheme = (next) => {
+    theme = next;
+    if (next === "light") document.documentElement.dataset.theme = "light";
+    else delete document.documentElement.dataset.theme;
+    themeToggle.setAttribute("aria-label", themeLabel(next));
+    themeToggle.title = themeLabel(next);
+  };
+
+  setTheme(theme);
+
+  themeToggle.addEventListener("click", () => {
+    const next = theme === "light" ? "dark" : "light";
+    try {
+      localStorage.setItem(themeKey, next);
+    } catch (error) {}
+    setTheme(next);
+  });
+
   const el = (tag, cls, text) => {
     const node = document.createElement(tag);
     if (cls) node.className = cls;
